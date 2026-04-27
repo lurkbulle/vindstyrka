@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="sand">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vindmätaren</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Inconsolata:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+[data-theme="sand"] {
+  --bg:      #707a65;
+  --bg2:     #626b58;
+  --surface: #e7d5b6;
+  --surf2:   #dcc8a2;
+  --border:  rgba(166,169,148,0.35);
+  --border2: rgba(166,169,148,0.65);
+  --text:    #2e2c24;
+  --muted:   #a6a994;
+  --accent:  #6b6e58;
+  --acc2:    #a6a994;
+  --red:     #8a3a2a;
+}
+
+[data-theme="fjord"] {
+  --bg:      #0b1a26;
+  --bg2:     #081320;
+  --surface: #112030;
+  --surf2:   #172a3c;
+  --border:  rgba(80,170,210,0.13);
+  --border2: rgba(80,170,210,0.24);
+  --text:    #cce4f4;
+  --muted:   #5e96b4;
+  --accent:  #38b4e8;
+  --acc2:    #70d0f8;
+  --red:     #f06060;
+}
+
+body {
+  font-family: 'Inconsolata', monospace;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  transition: background 0.5s, color 0.5s;
+}
+
+.wrapper { width: 100%; max-width: 440px; }
+
+/* ── Theme toggle ── */
+.toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+}
+
+.toggle-wrap {
+  display: flex;
+  background: var(--surf2);
+  border: 1px solid var(--border2);
+  border-radius: 99px;
+  padding: 3px;
+  gap: 2px;
+  transition: background 0.5s, border-color 0.5s;
+}
+
+.tbtn {
+  font-family: 'Inconsolata', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 5px 16px;
+  border-radius: 99px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+
+.tbtn.on {
+  background: var(--accent);
+  color: #fff;
+}
+[data-theme="fjord"] .tbtn.on { color: #0b1a26; }
+
+/* ── Header ── */
+header { margin-bottom: 1.75rem; }
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.45rem;
+}
+.eyebrow::before {
+  content: '';
+  width: 20px; height: 1.5px;
+  background: var(--accent);
+  display: block;
+  border-radius: 1px;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 54px;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  transition: color 0.5s;
+}
+h1 em { font-style: italic; color: var(--accent); }
+
+/* ── Card ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 1.75rem;
+  margin-bottom: 0.75rem;
+  transition: background 0.5s, border-color 0.5s;
+}
+
+/* ── Status ── */
+.status {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  padding: 1rem 0 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+}
+
+/* ── Hero ── */
+.hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.4rem;
+}
+
+.speed-big {
+  font-family: 'Playfair Display', serif;
+  font-size: 86px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  transition: color 0.4s;
+}
+.speed-big .u {
+  font-family: 'Inconsolata', monospace;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.bf-label {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 17px;
+  color: var(--muted);
+  margin-top: 3px;
+  transition: color 0.4s;
+}
+
+.hero-r { text-align: right; padding-bottom: 4px; }
+
+.wind-icon {
+  font-size: 50px;
+  line-height: 1;
+  display: block;
+  animation: drift 4s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%,100% { transform: rotate(-4deg) translateX(0); }
+  50% { transform: rotate(3deg) translateX(5px); }
+}
+
+.bf-badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-top: 5px;
+  text-transform: uppercase;
+}
+
+/* ── Beaufort bar ── */
+.bar-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  margin-bottom: 5px;
+}
+.bseg {
+  flex: 1;
+  border-radius: 2px;
+  background: var(--border2);
+  transition: background 0.5s;
+}
+.bseg.on { background: var(--accent); }
+
+.bar-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 1.4rem;
+}
+
+/* ── Stats ── */
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.stat {
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  transition: background 0.5s, border-color 0.5s;
+}
+.slbl {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.sval {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+}
+.sval .su {
+  font-family: 'Inconsolata', monospace;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.loc-tag {
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 1rem;
+  display: none;
+}
+
+/* ── Error ── */
+.err {
+  background: rgba(200,50,30,0.08);
+  border: 1px solid rgba(200,50,30,0.22);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 13px;
+  color: var(--red);
+  display: none;
+  margin-bottom: 0.75rem;
+}
+
+/* ── Button ── */
+.btn {
+  width: 100%;
+  padding: 15px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: opacity 0.2s, transform 0.1s, background 0.5s;
+}
+[data-theme="fjord"] .btn { color: #0b1a26; }
+.btn:hover { opacity: 0.85; }
+.btn:active { transform: scale(0.985); }
+.btn:disabled { opacity: 0.32; cursor: not-allowed; }
+
+/* ── Spinner ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin {
+  display: inline-block;
+  width: 13px; height: 13px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Footer ── */
+footer {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  opacity: 0.55;
+  margin-top: 1.25rem;
+}
+footer a { color: inherit; }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="toggle-row">
+    <div class="toggle-wrap">
+      <button class="tbtn on" id="btn-sand" onclick="setTheme('sand')">☀ Sand</button>
+      <button class="tbtn"    id="btn-fjord" onclick="setTheme('fjord')">❄ Fjord</button>
+    </div>
+  </div>
+
+  <header>
+    <p class="eyebrow">Realtid · Open-Meteo</p>
+    <h1>Vind<em>mätaren</em></h1>
+  </header>
+
+  <div id="err" class="err"></div>
+
+  <div class="card">
+    <div id="status" class="status">Klicka nedan för att mäta vinden.</div>
+
+    <div id="view" class="hidden">
+      <div class="hero">
+        <div>
+          <div class="speed-big" id="speed">—<span class="u"> m/s</span></div>
+          <div class="bf-label" id="bfdesc">&nbsp;</div>
+        </div>
+        <div class="hero-r">
+          <span class="wind-icon" id="wicon">💨</span>
+          <div class="bf-badge" id="bfbadge">BF —</div>
+        </div>
+      </div>
+
+      <div class="bar-row" id="bar-row"></div>
+      <div class="bar-axis"><span>0</span><span>3</span><span>6</span><span>9</span><span>12</span></div>
+
+      <div class="stats">
+        <div class="stat">
+          <p class="slbl">Vindbyar</p>
+          <p class="sval" id="vgust">—<span class="su"> m/s</span></p>
+        </div>
+        <div class="stat">
+          <p class="slbl">Riktning</p>
+          <p class="sval" id="vdir" style="font-size:19px">—</p>
+        </div>
+        <div class="stat">
+          <p class="slbl">Hastighet</p>
+          <p class="sval" id="vkmh">—<span class="su"> km/h</span></p>
+        </div>
+        <div class="stat">
+          <p class="slbl">Beaufort</p>
+          <p class="sval" id="vbf">—<span class="su"> /12</span></p>
+        </div>
+      </div>
+
+      <p class="loc-tag" id="loctag"></p>
+    </div>
+  </div>
+
+  <button class="btn" id="fetchbtn" onclick="fetchWind()">Mät vinden nu</button>
+
+  <footer>Data: <a href="https://open-meteo.com" target="_blank">open-meteo.com</a> &nbsp;·&nbsp; Ingen API-nyckel krävs</footer>
+</div>
+
+<script>
+const BF=[
+  {max:0.3,label:"Stiltje",icon:"🌫️"},
+  {max:1.5,label:"Nästan stiltje",icon:"🌿"},
+  {max:3.4,label:"Lätt bris",icon:"🍃"},
+  {max:5.4,label:"Svag bris",icon:"💨"},
+  {max:7.9,label:"Måttlig bris",icon:"🌬️"},
+  {max:10.7,label:"Frisk bris",icon:"🌬️"},
+  {max:13.8,label:"Hård bris",icon:"🌊"},
+  {max:17.1,label:"Hård vind",icon:"🌊"},
+  {max:20.7,label:"Stormig vind",icon:"⛈️"},
+  {max:24.4,label:"Storm",icon:"🌪️"},
+  {max:28.4,label:"Svår storm",icon:"🌪️"},
+  {max:32.6,label:"Orkanartad storm",icon:"🌀"},
+  {max:Infinity,label:"Orkan",icon:"🌀"}
+];
+const DIRS=["N","NNO","NO","ONO","O","OSO","SO","SSO","S","SSV","SV","VSV","V","VNV","NV","NNV"];
+function getBF(ms){for(let i=0;i<BF.length;i++)if(ms<=BF[i].max)return{level:i,...BF[i]};}
+function d2dir(d){return DIRS[Math.round(d/22.5)%16];}
+
+// Build bar
+const bar=document.getElementById('bar-row');
+for(let i=0;i<=12;i++){
+  const s=document.createElement('div');
+  s.className='bseg';s.id='bs'+i;
+  s.style.height=(10+i*4)+'px';
+  bar.appendChild(s);
+}
+function renderBar(lv){
+  for(let i=0;i<=12;i++)document.getElementById('bs'+i).classList.toggle('on',i<=lv);
+}
+
+// Theme
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('btn-sand').classList.toggle('on',t==='sand');
+  document.getElementById('btn-fjord').classList.toggle('on',t==='fjord');
+  try{localStorage.setItem('vt',t);}catch(e){}
+}
+try{const s=localStorage.getItem('vt');if(s)setTheme(s);}catch(e){}
+
+async function fetchWind(){
+  const btn=document.getElementById('fetchbtn');
+  const stat=document.getElementById('status');
+  const errEl=document.getElementById('err');
+  const view=document.getElementById('view');
+  errEl.style.display='none';
+  view.classList.add('hidden');
+  stat.classList.remove('hidden');
+  stat.innerHTML='<span class="spin"></span> Hämtar position…';
+  btn.disabled=true;
+  if(!navigator.geolocation){showErr('Webbläsaren stöder inte geolokalisering.');btn.disabled=false;return;}
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const{latitude:lat,longitude:lon}=pos.coords;
+    stat.innerHTML='<span class="spin"></span> Hämtar väderdata…';
+    try{
+      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m&wind_speed_unit=ms&timezone=auto`);
+      const d=await r.json();
+      const c=d.current;
+      const ms=c.wind_speed_10m,gust=c.wind_gusts_10m,dir=c.wind_direction_10m;
+      const bf=getBF(ms);
+      document.getElementById('speed').innerHTML=`${ms.toFixed(1)}<span class="u"> m/s</span>`;
+      document.getElementById('bfdesc').textContent=bf.label;
+      document.getElementById('wicon').textContent=bf.icon;
+      document.getElementById('bfbadge').textContent=`BF ${bf.level}`;
+      document.getElementById('vgust').innerHTML=`${gust.toFixed(1)}<span class="su"> m/s</span>`;
+      document.getElementById('vdir').textContent=`${d2dir(dir)} ${dir}°`;
+      document.getElementById('vkmh').innerHTML=`${(ms*3.6).toFixed(0)}<span class="su"> km/h</span>`;
+      document.getElementById('vbf').innerHTML=`${bf.level}<span class="su"> /12</span>`;
+      const lt=document.getElementById('loctag');
+      lt.textContent=`📍 ${lat.toFixed(3)}° N  ${lon.toFixed(3)}° E`;
+      lt.style.display='block';
+      renderBar(bf.level);
+      stat.classList.add('hidden');
+      view.classList.remove('hidden');
+      btn.textContent='Uppdatera';
+    }catch(e){showErr('Kunde inte hämta väderdata.');}
+    btn.disabled=false;
+  },e=>{
+    showErr(e.code===1?'Platsåtkomst nekades. Tillåt platsinformation och försök igen.':'Kunde inte hämta position.');
+    stat.classList.add('hidden');btn.disabled=false;
+  });
+}
+function showErr(msg){
+  const e=document.getElementById('err');e.textContent=msg;e.style.display='block';
+  document.getElementById('status').classList.add('hidden');
+}
+</script>
+</body>
+</html>
