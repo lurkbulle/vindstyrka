@@ -12,7 +12,6 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
   --bg:    #D6CEBC;
   --bg2:   #C4BAA4;
@@ -21,133 +20,117 @@
   --light: #7A9AA4;
   --fjord: #2E5C6E;
   --fjord2:#1E3E4E;
+  --warm:  #A07030;
   --danger:#7A2010;
 }
-
-/* Lock everything to screen — no scroll at all */
 html, body {
   position: fixed; inset: 0; overflow: hidden;
   background: var(--bg);
-  font-family: 'DM Sans', sans-serif;
-  color: var(--ink);
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
+  font-family: 'DM Sans', sans-serif; color: var(--ink);
+  -webkit-tap-highlight-color: transparent; user-select: none;
 }
-
-/* Full-screen flex shell, respects notch top + home-bar bottom */
 .shell {
   position: fixed; inset: 0;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: space-between;
   background: var(--bg);
 }
-
-/* grain texture */
 .shell::before {
   content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
 }
-
-/* Middle grows, button stays fixed at bottom */
 .mid {
-  flex: 1;
-  position: relative; z-index: 1;
+  flex: 1; position: relative; z-index: 1;
   width: 100%; max-width: 440px;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 1rem 1.5rem 0;
-  gap: 0;
+  padding: 0.75rem 1.25rem 0;
+  overflow: hidden;
 }
-
 .foot {
   position: relative; z-index: 1;
   width: 100%; max-width: 440px;
-  padding: 0.75rem 1.5rem 1rem;
+  padding: 0.6rem 1.25rem 0.9rem;
 }
 
 /* ── IDLE ── */
-.idle-screen {
-  display: flex; flex-direction: column;
-  align-items: center; text-align: center; gap: 0.6rem;
-}
-.idle-compass { width: 90px; height: 90px; }
-.idle-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.6rem; color: var(--ink); line-height: 1.1;
-}
-.idle-sub { font-size: 13px; color: var(--mid); line-height: 1.5; max-width: 240px; }
+.idle-screen { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; }
+@keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.idle-compass { width: 80px; height: 80px; }
+.compass-tick { animation: spin-slow 12s linear infinite; transform-origin: 60px 60px; }
+.idle-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--ink); line-height: 1.1; }
+.idle-sub { font-size: 13px; color: var(--mid); line-height: 1.5; max-width: 230px; }
 
 /* ── LOADING ── */
 .loading-msg { font-size: 14px; color: var(--mid); }
 
 /* ── HERO ── */
-.hero {
-  width: 100%;
-  text-align: center;
-  opacity: 0; transform: translateY(8px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
-}
+.hero { width: 100%; text-align: center; opacity: 0; transform: translateY(8px); transition: opacity 0.45s, transform 0.45s; }
 .hero.on { opacity: 1; transform: none; }
-
 .compass-ring {
-  width: 44px; height: 44px; border-radius: 50%;
+  width: 40px; height: 40px; border-radius: 50%;
   background: var(--bg2); display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 0.6rem;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+  margin: 0 auto 0.5rem; box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
 }
 .speed-row { display: flex; align-items: baseline; justify-content: center; gap: 6px; }
-.speed-num {
-  font-family: 'DM Serif Display', serif;
-  font-size: clamp(56px, 18vw, 84px);
-  color: var(--ink); line-height: 1;
-}
-.speed-unit { font-size: 18px; color: var(--mid); font-weight: 300; }
-.dir-label { font-size: 14px; color: var(--mid); margin-top: 2px; letter-spacing: 0.04em; }
+.speed-num { font-family: 'DM Serif Display', serif; font-size: clamp(52px, 16vw, 78px); color: var(--ink); line-height: 1; }
+.speed-unit { font-size: 17px; color: var(--mid); font-weight: 300; }
+.dir-label { font-size: 13px; color: var(--mid); margin-top: 2px; letter-spacing: 0.04em; }
 
 /* ── BEAUFORT ── */
-.bf-wrap {
-  width: 100%; margin-top: 1rem;
-  opacity: 0; transform: translateY(6px);
-  transition: opacity 0.45s ease 0.08s, transform 0.45s ease 0.08s;
-}
+.bf-wrap { width: 100%; margin-top: 0.7rem; opacity: 0; transform: translateY(6px); transition: opacity 0.45s ease 0.08s, transform 0.45s ease 0.08s; }
 .bf-wrap.on { opacity: 1; transform: none; }
-.bf-track { height: 3px; border-radius: 2px; background: var(--bg2); overflow: hidden; margin-bottom: 6px; }
+.bf-track { height: 3px; border-radius: 2px; background: var(--bg2); overflow: hidden; margin-bottom: 5px; }
 .bf-fill { height: 100%; border-radius: 2px; background: var(--fjord); transition: width 0.8s cubic-bezier(0.4,0,0.2,1); width: 0%; }
-.bf-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--mid); }
+.bf-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--mid); }
 
 /* ── CARDS ── */
-.cards {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-  width: 100%; margin-top: 0.8rem;
-  opacity: 0; transform: translateY(6px);
-  transition: opacity 0.45s ease 0.16s, transform 0.45s ease 0.16s;
-}
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; width: 100%; margin-top: 0.65rem; opacity: 0; transform: translateY(6px); transition: opacity 0.45s ease 0.16s, transform 0.45s ease 0.16s; }
 .cards.on { opacity: 1; transform: none; }
-.card { background: var(--bg2); border-radius: 12px; padding: 0.75rem 1rem; }
-.card-label { font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--mid); margin-bottom: 4px; }
-.card-val { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--ink); line-height: 1; }
-.card-unit { font-size: 12px; color: var(--mid); font-family: 'DM Sans', sans-serif; font-weight: 300; margin-left: 1px; }
+.card { background: var(--bg2); border-radius: 11px; padding: 0.65rem 0.9rem; }
+.card-label { font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--mid); margin-bottom: 3px; }
+.card-val { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--ink); line-height: 1; }
+.card-unit { font-size: 11px; color: var(--mid); font-family: 'DM Sans', sans-serif; font-weight: 300; margin-left: 1px; }
+
+/* ── CHART ── */
+.chart-wrap {
+  width: 100%; margin-top: 0.65rem;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.45s ease 0.24s, transform 0.45s ease 0.24s;
+}
+.chart-wrap.on { opacity: 1; transform: none; }
+.chart-tabs {
+  display: flex; gap: 6px; margin-bottom: 0.5rem;
+}
+.chart-tab {
+  font-size: 11px; font-weight: 500; padding: 4px 10px;
+  border-radius: 20px; border: none; cursor: pointer;
+  background: var(--bg2); color: var(--mid);
+  letter-spacing: 0.03em; transition: background 0.15s, color 0.15s;
+}
+.chart-tab.active { background: var(--fjord); color: #E8E0D0; }
+.chart-box { background: var(--bg2); border-radius: 11px; padding: 0.6rem 0.7rem 0.4rem; }
+.chart-svg { width: 100%; display: block; }
+.chart-label-row {
+  display: flex; justify-content: space-between;
+  padding: 0 2px; margin-top: 2px;
+}
+.chart-label-row span { font-size: 9px; color: var(--mid); }
 
 /* ── LOC ── */
-.loc {
-  font-size: 10px; color: var(--light); letter-spacing: 0.04em;
-  margin-top: 0.6rem; text-align: center;
-  opacity: 0; transition: opacity 0.45s ease 0.24s;
-}
+.loc { font-size: 10px; color: var(--light); letter-spacing: 0.04em; margin-top: 0.5rem; text-align: center; opacity: 0; transition: opacity 0.45s ease 0.32s; }
 .loc.on { opacity: 1; }
 
 /* ── ERROR ── */
-.err { background: #EDD5CE; border-radius: 10px; padding: 0.65rem 0.9rem; font-size: 13px; color: var(--danger); margin-bottom: 0.6rem; width: 100%; }
+.err { background: #EDD5CE; border-radius: 10px; padding: 0.6rem 0.9rem; font-size: 13px; color: var(--danger); margin-bottom: 0.5rem; width: 100%; }
 
 /* ── BUTTON ── */
 .btn {
-  width: 100%; padding: 14px;
+  width: 100%; padding: 13px;
   font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.04em;
   cursor: pointer; border-radius: 13px; border: none;
   background: var(--fjord); color: #E8E0D0;
@@ -156,12 +139,8 @@ html, body {
 .btn:active { transform: scale(0.98); background: var(--fjord2); }
 .btn:disabled { opacity: 0.4; }
 
-/* ── INSTALL BANNER ── */
-.install-banner {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--bg2); border-radius: 11px;
-  padding: 0.7rem 0.9rem; margin-bottom: 0.6rem; width: 100%;
-}
+/* ── INSTALL ── */
+.install-banner { display: flex; align-items: center; gap: 8px; background: var(--bg2); border-radius: 11px; padding: 0.65rem 0.9rem; margin-bottom: 0.5rem; width: 100%; }
 .install-banner p { font-size: 12px; color: var(--mid); flex: 1; line-height: 1.3; }
 .install-banner p strong { color: var(--ink); }
 .install-btn { padding: 6px 12px; font-size: 12px; font-weight: 500; background: var(--fjord); color: #E8E0D0; border: none; border-radius: 7px; cursor: pointer; white-space: nowrap; }
@@ -170,13 +149,13 @@ html, body {
 </head>
 <body>
 <div class="shell">
-
   <div class="mid">
+
     <!-- IDLE -->
     <div class="idle-screen" id="idle">
       <svg class="idle-compass" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
         <circle cx="60" cy="60" r="54" fill="none" stroke="#C4BAA4" stroke-width="1.5"/>
-        <g stroke="#B5A98F" stroke-width="1">
+        <g class="compass-tick" stroke="#B5A98F" stroke-width="1">
           <line x1="60" y1="8"   x2="60" y2="18"/>
           <line x1="60" y1="102" x2="60" y2="112"/>
           <line x1="8"  y1="60"  x2="18" y2="60"/>
@@ -204,7 +183,7 @@ html, body {
     <!-- HERO -->
     <div class="hero" id="hero" style="display:none">
       <div class="compass-ring">
-        <svg id="arrow" width="24" height="24" viewBox="0 0 28 28" style="transition:transform 0.8s cubic-bezier(0.4,0,0.2,1)">
+        <svg id="arrow" width="22" height="22" viewBox="0 0 28 28" style="transition:transform 0.8s cubic-bezier(0.4,0,0.2,1)">
           <polygon points="14,3 18,22 14,19 10,22" fill="#2E5C6E"/>
           <polygon points="14,25 10,6 14,9 18,6" fill="#7A9AA4" opacity="0.4"/>
         </svg>
@@ -217,10 +196,7 @@ html, body {
 
       <div class="bf-wrap" id="bf-wrap">
         <div class="bf-track"><div class="bf-fill" id="bf-fill"></div></div>
-        <div class="bf-meta">
-          <span id="bf-desc">–</span>
-          <span id="bf-num">–</span>
-        </div>
+        <div class="bf-meta"><span id="bf-desc">–</span><span id="bf-num">–</span></div>
       </div>
 
       <div class="cards" id="cards">
@@ -234,11 +210,23 @@ html, body {
         </div>
       </div>
 
+      <!-- CHART -->
+      <div class="chart-wrap" id="chart-wrap">
+        <div class="chart-tabs">
+          <button class="chart-tab active" id="tab-wind" onclick="switchTab('wind')">Vind m/s</button>
+          <button class="chart-tab" id="tab-temp" onclick="switchTab('temp')">Temp °C</button>
+        </div>
+        <div class="chart-box">
+          <svg class="chart-svg" id="chart-svg" height="60" viewBox="0 0 300 60" preserveAspectRatio="none"></svg>
+          <div class="chart-label-row" id="chart-labels"></div>
+        </div>
+      </div>
+
       <div class="loc" id="loc"></div>
     </div>
   </div>
 
-  <!-- STICKY FOOTER -->
+  <!-- FOOTER -->
   <div class="foot">
     <div class="install-banner" id="install-banner" style="display:none">
       <p><strong>Installera appen</strong><br>Lägg till på hemskärmen</p>
@@ -248,88 +236,159 @@ html, body {
     <div class="err" id="err" style="display:none"></div>
     <button class="btn" id="btn" onclick="fetchWind()">Hämta vinddata</button>
   </div>
-
 </div>
+
 <script>
 // Service Worker
-const SW=`const C='vind-v2';self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))))});self.addEventListener('fetch',e=>{if(e.request.url.includes('open-meteo')||e.request.url.includes('fonts.g')){e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));return;}e.respondWith(caches.match(e.request).then(h=>h||fetch(e.request).then(r=>{caches.open(C).then(c=>c.put(e.request,r.clone()));return r;})))});`;
+const SW=`const C='vind-v3';self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))))});self.addEventListener('fetch',e=>{if(e.request.url.includes('open-meteo')||e.request.url.includes('fonts.g')){e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));return;}e.respondWith(caches.match(e.request).then(h=>h||fetch(e.request).then(r=>{caches.open(C).then(c=>c.put(e.request,r.clone()));return r;})))});`;
 if('serviceWorker'in navigator)navigator.serviceWorker.register(URL.createObjectURL(new Blob([SW],{type:'application/javascript'}))).catch(()=>{});
 
 // Install
 let dp=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;g('install-banner').style.display='flex';});
-g2('install-btn').onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;g('install-banner').style.display='none';};
-g2('install-close').onclick=()=>{g('install-banner').style.display='none';};
-window.addEventListener('appinstalled',()=>{g('install-banner').style.display='none';});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;el('install-banner').style.display='flex';});
+el('install-btn').onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;el('install-banner').style.display='none';};
+el('install-close').onclick=()=>{el('install-banner').style.display='none';};
+window.addEventListener('appinstalled',()=>{el('install-banner').style.display='none';});
 
-const bf=[
-  {max:0.3,  label:"Stiltje",          color:"#2E5C6E"},
-  {max:1.5,  label:"Nästan stiltje",   color:"#2E5C6E"},
-  {max:3.4,  label:"Lätt bris",        color:"#3A8A6E"},
-  {max:5.4,  label:"Svag bris",        color:"#3A8A6E"},
-  {max:7.9,  label:"Måttlig bris",     color:"#A07030"},
-  {max:10.7, label:"Frisk bris",       color:"#A07030"},
-  {max:13.8, label:"Hård bris",        color:"#904020"},
-  {max:17.1, label:"Hård vind",        color:"#904020"},
-  {max:20.7, label:"Stormig vind",     color:"#782020"},
-  {max:24.4, label:"Storm",            color:"#5E1010"},
-  {max:28.4, label:"Svår storm",       color:"#420808"},
-  {max:32.6, label:"Orkanartad",       color:"#2E0404"},
-  {max:Infinity,label:"Orkan",         color:"#2E0404"}
+const bfScale=[
+  {max:0.3,  label:"Stiltje",        color:"#2E5C6E"},
+  {max:1.5,  label:"Nästan stiltje", color:"#2E5C6E"},
+  {max:3.4,  label:"Lätt bris",      color:"#3A8A6E"},
+  {max:5.4,  label:"Svag bris",      color:"#3A8A6E"},
+  {max:7.9,  label:"Måttlig bris",   color:"#A07030"},
+  {max:10.7, label:"Frisk bris",     color:"#A07030"},
+  {max:13.8, label:"Hård bris",      color:"#904020"},
+  {max:17.1, label:"Hård vind",      color:"#904020"},
+  {max:20.7, label:"Stormig vind",   color:"#782020"},
+  {max:24.4, label:"Storm",          color:"#5E1010"},
+  {max:28.4, label:"Svår storm",     color:"#420808"},
+  {max:32.6, label:"Orkanartad",     color:"#2E0404"},
+  {max:Infinity,label:"Orkan",       color:"#2E0404"}
 ];
 const dirs=["N","NNO","NO","ONO","O","OSO","SO","SSO","S","SSV","SV","VSV","V","VNV","NV","NNV"];
-function g(id){return document.getElementById(id);}
-function g2(id){return document.getElementById(id);}
-function getBf(ms){for(let i=0;i<bf.length;i++)if(ms<=bf[i].max)return{level:i,...bf[i]};}
+function el(id){return document.getElementById(id);}
+function getBf(ms){for(let i=0;i<bfScale.length;i++)if(ms<=bfScale[i].max)return{level:i,...bfScale[i]};}
 function degToDir(d){return dirs[Math.round(d/22.5)%16];}
 
+// chart state
+let chartWindData=[], chartTempData=[], chartLabels=[], activeTab='wind';
+
+function switchTab(tab) {
+  activeTab = tab;
+  el('tab-wind').classList.toggle('active', tab==='wind');
+  el('tab-temp').classList.toggle('active', tab==='temp');
+  drawChart();
+}
+
+function drawChart() {
+  const data = activeTab==='wind' ? chartWindData : chartTempData;
+  const color = activeTab==='wind' ? '#2E5C6E' : '#A07030';
+  const fillColor = activeTab==='wind' ? 'rgba(46,92,110,0.15)' : 'rgba(160,112,48,0.15)';
+  const W=300, H=60, pad=2;
+  if(!data.length) return;
+  const mn=Math.min(...data), mx=Math.max(...data);
+  const range=mx-mn||1;
+  const xs=data.map((_,i)=>pad + i*(W-pad*2)/(data.length-1));
+  const ys=data.map(v=>H-pad-(v-mn)/(range)*(H-pad*2));
+  // area path
+  let area=`M${xs[0]},${H} `;
+  xs.forEach((x,i)=>area+=`L${x},${ys[i]} `);
+  area+=`L${xs[xs.length-1]},${H} Z`;
+  // line path
+  let line=`M${xs[0]},${ys[0]} `;
+  xs.forEach((x,i)=>{ if(i>0) line+=`L${x},${ys[i]} `; });
+
+  el('chart-svg').innerHTML=`
+    <path d="${area}" fill="${fillColor}"/>
+    <path d="${line}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>
+    ${data.map((v,i)=>`<circle cx="${xs[i]}" cy="${ys[i]}" r="2" fill="${color}"/>`).join('')}
+    ${data.map((v,i)=>{
+      const lbl = activeTab==='wind' ? v.toFixed(1) : v.toFixed(0)+'°';
+      const anchor = i===0 ? 'start' : i===data.length-1 ? 'end' : 'middle';
+      const show = i===0 || i===data.length-1 || i===Math.floor(data.length/2);
+      return show ? `<text x="${xs[i]}" y="${ys[i]-4}" text-anchor="${anchor}" font-size="7" fill="#4A6068" font-family="DM Sans,sans-serif">${lbl}</text>` : '';
+    }).join('')}
+  `;
+  // hour labels
+  const labelEl = el('chart-labels');
+  labelEl.innerHTML='';
+  chartLabels.forEach((lbl,i)=>{
+    if(i===0||i===chartLabels.length-1||i===Math.floor(chartLabels.length/2)){
+      const s=document.createElement('span');
+      s.textContent=lbl;
+      labelEl.appendChild(s);
+    }
+  });
+}
+
 async function fetchWind(){
-  const btn=g('btn');
-  g('err').style.display='none';
-  g('idle').style.display='none';
-  g('loading').style.display='';
-  g('hero').style.display='none';
-  g('loading').textContent='Hämtar din position…';
+  const btn=el('btn');
+  el('err').style.display='none';
+  el('idle').style.display='none';
+  el('loading').style.display='';
+  el('hero').style.display='none';
+  el('loading').textContent='Hämtar din position…';
   btn.disabled=true;
   if(!navigator.geolocation){showErr('Platsinformation stöds ej.');btn.disabled=false;return;}
   navigator.geolocation.getCurrentPosition(async pos=>{
     const {latitude:lat,longitude:lon}=pos.coords;
-    g('loading').textContent='Hämtar väderdata…';
+    el('loading').textContent='Hämtar väderdata…';
     try{
-      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m&wind_speed_unit=ms&timezone=auto`);
-      const d=await r.json(); const c=d.current;
-      const ms=c.wind_speed_10m,gust=c.wind_gusts_10m,deg=c.wind_direction_10m,temp=c.temperature_2m;
+      // Get current + hourly forecast to midnight
+      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m&hourly=wind_speed_10m,temperature_2m&wind_speed_unit=ms&timezone=auto&forecast_days=1`);
+      const d=await r.json();
+      const c=d.current;
+      const ms=c.wind_speed_10m, gust=c.wind_gusts_10m, deg=c.wind_direction_10m, temp=c.temperature_2m;
       const b=getBf(ms);
-      g('speed').textContent=ms.toFixed(1);
-      g('gust').innerHTML=`${gust.toFixed(1)}<span class="card-unit"> m/s</span>`;
-      g('temp').innerHTML=`${temp.toFixed(1)}<span class="card-unit"> °C</span>`;
-      g('dir').textContent=`Vind från ${degToDir(deg)}`;
-      g('bf-fill').style.width=`${(b.level/12)*100}%`;
-      g('bf-fill').style.background=b.color;
-      g('bf-desc').textContent=b.label;
-      g('bf-num').textContent=`Beaufort ${b.level}`;
-      g('arrow').style.transform=`rotate(${deg}deg)`;
+
+      el('speed').textContent=ms.toFixed(1);
+      el('gust').innerHTML=`${gust.toFixed(1)}<span class="card-unit"> m/s</span>`;
+      el('temp').innerHTML=`${temp.toFixed(1)}<span class="card-unit"> °C</span>`;
+      el('dir').textContent=`Vind från ${degToDir(deg)}`;
+      el('bf-fill').style.width=`${(b.level/12)*100}%`;
+      el('bf-fill').style.background=b.color;
+      el('bf-desc').textContent=b.label;
+      el('bf-num').textContent=`Beaufort ${b.level}`;
+      el('arrow').style.transform=`rotate(${deg}deg)`;
       const now=new Date();
-      g('loc').textContent=`${lat.toFixed(3)}°N · ${lon.toFixed(3)}°E · ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-      g('loading').style.display='none';
-      g('hero').style.display='';
+      el('loc').textContent=`${lat.toFixed(3)}°N · ${lon.toFixed(3)}°E · ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      // Build hourly data from now → midnight
+      const nowH=now.getHours();
+      const times=d.hourly.time; // "2024-04-28T00:00"
+      const winds=d.hourly.wind_speed_10m;
+      const temps=d.hourly.temperature_2m;
+      chartWindData=[]; chartTempData=[]; chartLabels=[];
+      times.forEach((t,i)=>{
+        const h=parseInt(t.slice(11,13));
+        if(h>=nowH && h<=23){
+          chartWindData.push(winds[i]);
+          chartTempData.push(temps[i]);
+          chartLabels.push(h===0||h===12||h===nowH||h===23 ? `${h}:00` : `${h}`);
+        }
+      });
+      drawChart();
+
+      el('loading').style.display='none';
+      el('hero').style.display='';
       setTimeout(()=>{
-        g('hero').classList.add('on');
-        g('bf-wrap').classList.add('on');
-        g('cards').classList.add('on');
-        g('loc').classList.add('on');
+        el('hero').classList.add('on');
+        el('bf-wrap').classList.add('on');
+        el('cards').classList.add('on');
+        el('chart-wrap').classList.add('on');
+        el('loc').classList.add('on');
       },20);
       btn.textContent='Uppdatera';
     }catch(e){showErr('Kunde inte hämta väderdata.');}
     btn.disabled=false;
   },err=>{
-    g('loading').style.display='none';
-    g('idle').style.display='';
+    el('loading').style.display='none';
+    el('idle').style.display='';
     showErr(err.code===1?'Platsåtkomst nekades. Tillåt platsinformation och försök igen.':'Kunde inte hämta din position.');
     btn.disabled=false;
   });
 }
-function showErr(msg){g('err').textContent=msg;g('err').style.display='';}
+function showErr(msg){el('err').textContent=msg;el('err').style.display='';}
 </script>
 </body>
 </html>
