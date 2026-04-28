@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#D6CEBC">
+<meta name="theme-color" content="#D6CEBC" id="theme-meta">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Vind">
@@ -12,9 +12,12 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── THEMES ── */
 :root {
   --bg:    #D6CEBC;
   --bg2:   #C4BAA4;
+  --bg3:   #B8AE98;
   --ink:   #1A2A2F;
   --mid:   #4A6068;
   --light: #7A9AA4;
@@ -22,12 +25,28 @@
   --fjord2:#1E3E4E;
   --warm:  #A07030;
   --danger:#7A2010;
+  --card-shadow: rgba(0,0,0,0.06);
 }
+[data-theme="dark"] {
+  --bg:    #1A1F22;
+  --bg2:   #252C30;
+  --bg3:   #2F383D;
+  --ink:   #E8E0D0;
+  --mid:   #8AABB5;
+  --light: #5A8090;
+  --fjord: #4A8FA6;
+  --fjord2:#3A7A90;
+  --warm:  #C09050;
+  --danger:#E07060;
+  --card-shadow: rgba(0,0,0,0.3);
+}
+
 html, body {
   position: fixed; inset: 0; overflow: hidden;
   background: var(--bg);
   font-family: 'DM Sans', sans-serif; color: var(--ink);
   -webkit-tap-highlight-color: transparent; user-select: none;
+  transition: background 0.3s, color 0.3s;
 }
 .shell {
   position: fixed; inset: 0;
@@ -36,25 +55,58 @@ html, body {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   display: flex; flex-direction: column;
-  align-items: center; justify-content: space-between;
-  background: var(--bg);
+  align-items: center; background: var(--bg);
+  transition: background 0.3s;
 }
 .shell::before {
   content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 }
+
+/* ── TOPBAR ── */
+.topbar {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 440px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.6rem 1.25rem 0;
+}
+.topbar-title { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--mid); }
+.topbar-right { display: flex; gap: 8px; align-items: center; }
+
+/* source toggle */
+.src-toggle {
+  display: flex; background: var(--bg2); border-radius: 20px; padding: 2px;
+  transition: background 0.3s;
+}
+.src-btn {
+  font-size: 11px; font-weight: 500; padding: 4px 10px;
+  border-radius: 18px; border: none; cursor: pointer;
+  background: transparent; color: var(--mid);
+  transition: background 0.15s, color 0.15s;
+}
+.src-btn.active { background: var(--fjord); color: #E8E0D0; }
+
+/* theme toggle */
+.theme-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--bg2); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; transition: background 0.2s;
+}
+
+/* ── MID ── */
 .mid {
   flex: 1; position: relative; z-index: 1;
   width: 100%; max-width: 440px;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 0.75rem 1.25rem 0;
+  padding: 0.4rem 1.25rem 0;
   overflow: hidden;
 }
 .foot {
   position: relative; z-index: 1;
   width: 100%; max-width: 440px;
-  padding: 0.6rem 1.25rem 0.9rem;
+  padding: 0.5rem 1.25rem 0.8rem;
 }
 
 /* ── IDLE ── */
@@ -62,8 +114,8 @@ html, body {
 @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .idle-compass { width: 80px; height: 80px; }
 .compass-tick { animation: spin-slow 12s linear infinite; transform-origin: 60px 60px; }
-.idle-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--ink); line-height: 1.1; }
-.idle-sub { font-size: 13px; color: var(--mid); line-height: 1.5; max-width: 230px; }
+.idle-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--ink); line-height: 1.1; transition: color 0.3s; }
+.idle-sub { font-size: 13px; color: var(--mid); line-height: 1.5; max-width: 230px; transition: color 0.3s; }
 
 /* ── LOADING ── */
 .loading-msg { font-size: 14px; color: var(--mid); }
@@ -71,76 +123,85 @@ html, body {
 /* ── HERO ── */
 .hero { width: 100%; text-align: center; opacity: 0; transform: translateY(8px); transition: opacity 0.45s, transform 0.45s; }
 .hero.on { opacity: 1; transform: none; }
-.compass-ring {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--bg2); display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 0.5rem; box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+
+/* ── COMPASS ── */
+.compass-outer {
+  width: 80px; height: 80px; margin: 0 auto 0.5rem;
+  position: relative;
 }
+.compass-svg { width: 80px; height: 80px; }
+/* The needle rotates — wind FROM direction means needle points toward that direction */
+.needle-group { transition: transform 0.8s cubic-bezier(0.4,0,0.2,1); transform-origin: 40px 40px; }
+
 .speed-row { display: flex; align-items: baseline; justify-content: center; gap: 6px; }
-.speed-num { font-family: 'DM Serif Display', serif; font-size: clamp(52px, 16vw, 78px); color: var(--ink); line-height: 1; }
-.speed-unit { font-size: 17px; color: var(--mid); font-weight: 300; }
-.dir-label { font-size: 13px; color: var(--mid); margin-top: 2px; letter-spacing: 0.04em; }
+.speed-num { font-family: 'DM Serif Display', serif; font-size: clamp(50px, 14vw, 74px); color: var(--ink); line-height: 1; transition: color 0.3s; }
+.speed-unit { font-size: 16px; color: var(--mid); font-weight: 300; }
+.dir-label { font-size: 13px; color: var(--mid); margin-top: 1px; letter-spacing: 0.04em; }
 
 /* ── BEAUFORT ── */
-.bf-wrap { width: 100%; margin-top: 0.7rem; opacity: 0; transform: translateY(6px); transition: opacity 0.45s ease 0.08s, transform 0.45s ease 0.08s; }
+.bf-wrap { width: 100%; margin-top: 0.6rem; opacity: 0; transform: translateY(6px); transition: opacity 0.45s ease 0.08s, transform 0.45s ease 0.08s; }
 .bf-wrap.on { opacity: 1; transform: none; }
-.bf-track { height: 3px; border-radius: 2px; background: var(--bg2); overflow: hidden; margin-bottom: 5px; }
-.bf-fill { height: 100%; border-radius: 2px; background: var(--fjord); transition: width 0.8s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+.bf-track { height: 3px; border-radius: 2px; background: var(--bg2); overflow: hidden; margin-bottom: 4px; transition: background 0.3s; }
+.bf-fill { height: 100%; border-radius: 2px; background: var(--fjord); transition: width 0.8s cubic-bezier(0.4,0,0.2,1), background 0.3s; width: 0%; }
 .bf-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--mid); }
 
 /* ── CARDS ── */
-.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; width: 100%; margin-top: 0.65rem; opacity: 0; transform: translateY(6px); transition: opacity 0.45s ease 0.16s, transform 0.45s ease 0.16s; }
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; width: 100%; margin-top: 0.55rem; opacity: 0; transform: translateY(6px); transition: opacity 0.45s ease 0.16s, transform 0.45s ease 0.16s; }
 .cards.on { opacity: 1; transform: none; }
-.card { background: var(--bg2); border-radius: 11px; padding: 0.65rem 0.9rem; }
-.card-label { font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--mid); margin-bottom: 3px; }
-.card-val { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--ink); line-height: 1; }
+.card { background: var(--bg2); border-radius: 11px; padding: 0.6rem 0.85rem; box-shadow: 0 1px 3px var(--card-shadow); transition: background 0.3s; }
+.card-label { font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--mid); margin-bottom: 3px; transition: color 0.3s; }
+.card-val { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--ink); line-height: 1; transition: color 0.3s; }
 .card-unit { font-size: 11px; color: var(--mid); font-family: 'DM Sans', sans-serif; font-weight: 300; margin-left: 1px; }
 
 /* ── CHART ── */
-.chart-wrap {
-  width: 100%; margin-top: 0.65rem;
-  opacity: 0; transform: translateY(6px);
-  transition: opacity 0.45s ease 0.24s, transform 0.45s ease 0.24s;
-}
+.chart-wrap { width: 100%; margin-top: 0.55rem; opacity: 0; transform: translateY(6px); transition: opacity 0.45s ease 0.24s, transform 0.45s ease 0.24s; }
 .chart-wrap.on { opacity: 1; transform: none; }
-.chart-tabs {
-  display: flex; gap: 6px; margin-bottom: 0.5rem;
-}
-.chart-tab {
-  font-size: 11px; font-weight: 500; padding: 4px 10px;
-  border-radius: 20px; border: none; cursor: pointer;
-  background: var(--bg2); color: var(--mid);
-  letter-spacing: 0.03em; transition: background 0.15s, color 0.15s;
-}
+.chart-tabs { display: flex; gap: 6px; margin-bottom: 0.4rem; }
+.chart-tab { font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; border: none; cursor: pointer; background: var(--bg2); color: var(--mid); letter-spacing: 0.03em; transition: background 0.15s, color 0.15s; }
 .chart-tab.active { background: var(--fjord); color: #E8E0D0; }
-.chart-box { background: var(--bg2); border-radius: 11px; padding: 0.6rem 0.7rem 0.4rem; }
-.chart-svg { width: 100%; display: block; }
-.chart-label-row {
-  display: flex; justify-content: space-between;
-  padding: 0 2px; margin-top: 2px;
-}
+.chart-box { background: var(--bg2); border-radius: 11px; padding: 0.55rem 0.6rem 0.35rem; position: relative; transition: background 0.3s; }
+.chart-svg { width: 100%; display: block; overflow: visible; }
+.chart-label-row { display: flex; justify-content: space-between; padding: 0 2px; margin-top: 1px; }
 .chart-label-row span { font-size: 9px; color: var(--mid); }
 
+/* tooltip */
+.chart-tooltip {
+  position: absolute; background: var(--bg3); border-radius: 6px;
+  padding: 3px 7px; font-size: 11px; font-weight: 500; color: var(--ink);
+  pointer-events: none; white-space: nowrap;
+  transform: translate(-50%, -120%);
+  opacity: 0; transition: opacity 0.15s;
+  top: 0; left: 0;
+}
+.chart-tooltip.show { opacity: 1; }
+
+/* ── ALERT BANNER ── */
+.alert-banner {
+  display: flex; align-items: center; gap: 8px;
+  background: #4A1A10; border-radius: 11px;
+  padding: 0.65rem 0.9rem; margin-bottom: 0.5rem; width: 100%;
+  border-left: 3px solid #E07060;
+}
+[data-theme="dark"] .alert-banner { background: #3A1508; }
+.alert-banner p { font-size: 12px; color: #E8C8C0; flex: 1; line-height: 1.4; }
+.alert-banner p strong { color: #F0D0C8; }
+.alert-close { background: none; border: none; color: #E07060; font-size: 18px; cursor: pointer; line-height: 1; padding: 0 2px; }
+
 /* ── LOC ── */
-.loc { font-size: 10px; color: var(--light); letter-spacing: 0.04em; margin-top: 0.5rem; text-align: center; opacity: 0; transition: opacity 0.45s ease 0.32s; }
+.loc { font-size: 10px; color: var(--light); letter-spacing: 0.04em; margin-top: 0.4rem; text-align: center; opacity: 0; transition: opacity 0.45s ease 0.32s, color 0.3s; }
 .loc.on { opacity: 1; }
 
 /* ── ERROR ── */
 .err { background: #EDD5CE; border-radius: 10px; padding: 0.6rem 0.9rem; font-size: 13px; color: var(--danger); margin-bottom: 0.5rem; width: 100%; }
+[data-theme="dark"] .err { background: #3A1508; color: #E07060; }
 
 /* ── BUTTON ── */
-.btn {
-  width: 100%; padding: 13px;
-  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.04em;
-  cursor: pointer; border-radius: 13px; border: none;
-  background: var(--fjord); color: #E8E0D0;
-  transition: background 0.2s, transform 0.1s;
-}
+.btn { width: 100%; padding: 13px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.04em; cursor: pointer; border-radius: 13px; border: none; background: var(--fjord); color: #E8E0D0; transition: background 0.2s, transform 0.1s; }
 .btn:active { transform: scale(0.98); background: var(--fjord2); }
 .btn:disabled { opacity: 0.4; }
 
 /* ── INSTALL ── */
-.install-banner { display: flex; align-items: center; gap: 8px; background: var(--bg2); border-radius: 11px; padding: 0.65rem 0.9rem; margin-bottom: 0.5rem; width: 100%; }
+.install-banner { display: flex; align-items: center; gap: 8px; background: var(--bg2); border-radius: 11px; padding: 0.65rem 0.9rem; margin-bottom: 0.5rem; width: 100%; transition: background 0.3s; }
 .install-banner p { font-size: 12px; color: var(--mid); flex: 1; line-height: 1.3; }
 .install-banner p strong { color: var(--ink); }
 .install-btn { padding: 6px 12px; font-size: 12px; font-weight: 500; background: var(--fjord); color: #E8E0D0; border: none; border-radius: 7px; cursor: pointer; white-space: nowrap; }
@@ -149,8 +210,20 @@ html, body {
 </head>
 <body>
 <div class="shell">
-  <div class="mid">
 
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <span class="topbar-title">Vindmätare</span>
+    <div class="topbar-right">
+      <div class="src-toggle">
+        <button class="src-btn active" id="src-openmeteo" onclick="setSource('openmeteo')">Open-Meteo</button>
+        <button class="src-btn" id="src-smhi" onclick="setSource('smhi')">SMHI</button>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Byt tema">🌙</button>
+    </div>
+  </div>
+
+  <div class="mid">
     <!-- IDLE -->
     <div class="idle-screen" id="idle">
       <svg class="idle-compass" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
@@ -173,7 +246,7 @@ html, body {
         <polygon points="60,98 65,62 60,66 55,62" fill="#7A9AA4" opacity="0.45"/>
         <circle cx="60" cy="60" r="4" fill="#2E5C6E"/>
       </svg>
-      <p class="idle-title">Vindmätare</p>
+      <p class="idle-title">Välj källa och hämta data</p>
       <p class="idle-sub">Tryck nedan för att se vind och temperatur på din plats.</p>
     </div>
 
@@ -182,12 +255,41 @@ html, body {
 
     <!-- HERO -->
     <div class="hero" id="hero" style="display:none">
-      <div class="compass-ring">
-        <svg id="arrow" width="22" height="22" viewBox="0 0 28 28" style="transition:transform 0.8s cubic-bezier(0.4,0,0.2,1)">
-          <polygon points="14,3 18,22 14,19 10,22" fill="#2E5C6E"/>
-          <polygon points="14,25 10,6 14,9 18,6" fill="#7A9AA4" opacity="0.4"/>
+
+      <!-- FANCY COMPASS -->
+      <div class="compass-outer">
+        <svg class="compass-svg" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <!-- outer ring -->
+          <circle cx="40" cy="40" r="37" fill="none" stroke="var(--bg3)" stroke-width="1"/>
+          <!-- tick marks -->
+          <g stroke="var(--bg3)" stroke-width="0.8">
+            <line x1="40" y1="4"  x2="40" y2="10"/>
+            <line x1="40" y1="70" x2="40" y2="76"/>
+            <line x1="4"  y1="40" x2="10" y2="40"/>
+            <line x1="70" y1="40" x2="76" y2="40"/>
+            <line x1="14.5" y1="14.5" x2="18.5" y2="18.5"/>
+            <line x1="61.5" y1="61.5" x2="65.5" y2="65.5"/>
+            <line x1="65.5" y1="14.5" x2="61.5" y2="18.5"/>
+            <line x1="18.5" y1="61.5" x2="14.5" y2="65.5"/>
+          </g>
+          <!-- cardinal labels -->
+          <text x="40" y="3.5" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="500" fill="var(--mid)">N</text>
+          <text x="40" y="79"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="var(--mid)">S</text>
+          <text x="78" y="41.5" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="var(--mid)">O</text>
+          <text x="2"  y="41.5" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="var(--mid)">V</text>
+          <!-- inner circle -->
+          <circle cx="40" cy="40" r="22" fill="var(--bg2)" stroke="var(--bg3)" stroke-width="0.5"/>
+          <!-- needle — rotated by JS. Points TOWARD the wind origin (FROM direction) -->
+          <g class="needle-group" id="needle-group">
+            <!-- north tip (red/fjord) -->
+            <polygon points="40,18 43,38 40,35 37,38" fill="var(--fjord)"/>
+            <!-- south tip (muted) -->
+            <polygon points="40,62 43,42 40,45 37,42" fill="var(--mid)" opacity="0.4"/>
+          </g>
+          <circle cx="40" cy="40" r="3" fill="var(--bg)" stroke="var(--mid)" stroke-width="0.8"/>
         </svg>
       </div>
+
       <div class="speed-row">
         <span class="speed-num" id="speed">–</span>
         <span class="speed-unit">m/s</span>
@@ -216,9 +318,10 @@ html, body {
           <button class="chart-tab active" id="tab-wind" onclick="switchTab('wind')">Vind m/s</button>
           <button class="chart-tab" id="tab-temp" onclick="switchTab('temp')">Temp °C</button>
         </div>
-        <div class="chart-box">
-          <svg class="chart-svg" id="chart-svg" height="60" viewBox="0 0 300 60" preserveAspectRatio="none"></svg>
+        <div class="chart-box" id="chart-box">
+          <svg class="chart-svg" id="chart-svg" height="58" viewBox="0 0 300 58" preserveAspectRatio="none"></svg>
           <div class="chart-label-row" id="chart-labels"></div>
+          <div class="chart-tooltip" id="chart-tooltip"></div>
         </div>
       </div>
 
@@ -228,6 +331,10 @@ html, body {
 
   <!-- FOOTER -->
   <div class="foot">
+    <div class="alert-banner" id="alert-banner" style="display:none">
+      <p><strong>⚠️ Hård vind</strong><br>Beaufort 7 eller mer – var försiktig utomhus.</p>
+      <button class="alert-close" onclick="el('alert-banner').style.display='none'">×</button>
+    </div>
     <div class="install-banner" id="install-banner" style="display:none">
       <p><strong>Installera appen</strong><br>Lägg till på hemskärmen</p>
       <button class="install-btn" id="install-btn">Installera</button>
@@ -239,17 +346,53 @@ html, body {
 </div>
 
 <script>
-// Service Worker
-const SW=`const C='vind-v3';self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))))});self.addEventListener('fetch',e=>{if(e.request.url.includes('open-meteo')||e.request.url.includes('fonts.g')){e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));return;}e.respondWith(caches.match(e.request).then(h=>h||fetch(e.request).then(r=>{caches.open(C).then(c=>c.put(e.request,r.clone()));return r;})))});`;
+// ── Service Worker ─────────────────────────────────
+const SW=`const C='vind-v4';self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))))});self.addEventListener('fetch',e=>{if(e.request.url.includes('open-meteo')||e.request.url.includes('smhi')||e.request.url.includes('fonts.g')){e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));return;}e.respondWith(caches.match(e.request).then(h=>h||fetch(e.request).then(r=>{caches.open(C).then(c=>c.put(e.request,r.clone()));return r;})))});`;
 if('serviceWorker'in navigator)navigator.serviceWorker.register(URL.createObjectURL(new Blob([SW],{type:'application/javascript'}))).catch(()=>{});
 
-// Install
+// ── Install ────────────────────────────────────────
 let dp=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;el('install-banner').style.display='flex';});
 el('install-btn').onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;el('install-banner').style.display='none';};
 el('install-close').onclick=()=>{el('install-banner').style.display='none';};
 window.addEventListener('appinstalled',()=>{el('install-banner').style.display='none';});
 
+// ── Theme ──────────────────────────────────────────
+let dark = localStorage.getItem('theme')==='dark';
+function applyTheme(){
+  document.body.parentElement.setAttribute('data-theme', dark ? 'dark' : '');
+  document.body.setAttribute('data-theme', dark ? 'dark' : '');
+  el('theme-btn').textContent = dark ? '☀️' : '🌙';
+  el('theme-meta').setAttribute('content', dark ? '#1A1F22' : '#D6CEBC');
+}
+function toggleTheme(){ dark=!dark; localStorage.setItem('theme', dark?'dark':'light'); applyTheme(); }
+applyTheme();
+
+// ── Source ─────────────────────────────────────────
+let source = 'openmeteo';
+function setSource(s){
+  source=s;
+  el('src-openmeteo').classList.toggle('active', s==='openmeteo');
+  el('src-smhi').classList.toggle('active', s==='smhi');
+}
+
+// ── Notification permission ────────────────────────
+async function requestNotifPermission(){
+  if('Notification' in window && Notification.permission==='default'){
+    await Notification.requestPermission();
+  }
+}
+
+function sendWindAlert(level){
+  if('Notification' in window && Notification.permission==='granted'){
+    new Notification('⚠️ Hård vind varning', {
+      body: `Beaufort ${level} – hård vind registrerad. Var försiktig utomhus.`,
+      icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%234A1A10' rx='12'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='36'%3E⚠️%3C/text%3E%3C/svg%3E"
+    });
+  }
+}
+
+// ── Beaufort ───────────────────────────────────────
 const bfScale=[
   {max:0.3,  label:"Stiltje",        color:"#2E5C6E"},
   {max:1.5,  label:"Nästan stiltje", color:"#2E5C6E"},
@@ -258,87 +401,175 @@ const bfScale=[
   {max:7.9,  label:"Måttlig bris",   color:"#A07030"},
   {max:10.7, label:"Frisk bris",     color:"#A07030"},
   {max:13.8, label:"Hård bris",      color:"#904020"},
-  {max:17.1, label:"Hård vind",      color:"#904020"},
-  {max:20.7, label:"Stormig vind",   color:"#782020"},
-  {max:24.4, label:"Storm",          color:"#5E1010"},
-  {max:28.4, label:"Svår storm",     color:"#420808"},
-  {max:32.6, label:"Orkanartad",     color:"#2E0404"},
-  {max:Infinity,label:"Orkan",       color:"#2E0404"}
+  {max:17.1, label:"Hård vind",      color:"#C03020"},
+  {max:20.7, label:"Stormig vind",   color:"#A02010"},
+  {max:24.4, label:"Storm",          color:"#7A1010"},
+  {max:28.4, label:"Svår storm",     color:"#560808"},
+  {max:32.6, label:"Orkanartad",     color:"#380404"},
+  {max:Infinity,label:"Orkan",       color:"#380404"}
 ];
 const dirs=["N","NNO","NO","ONO","O","OSO","SO","SSO","S","SSV","SV","VSV","V","VNV","NV","NNV"];
 function el(id){return document.getElementById(id);}
 function getBf(ms){for(let i=0;i<bfScale.length;i++)if(ms<=bfScale[i].max)return{level:i,...bfScale[i]};}
 function degToDir(d){return dirs[Math.round(d/22.5)%16];}
 
-// chart state
+// ── Chart ──────────────────────────────────────────
 let chartWindData=[], chartTempData=[], chartLabels=[], activeTab='wind';
+let chartPoints=[];
 
-function switchTab(tab) {
-  activeTab = tab;
-  el('tab-wind').classList.toggle('active', tab==='wind');
-  el('tab-temp').classList.toggle('active', tab==='temp');
+function switchTab(tab){
+  activeTab=tab;
+  el('tab-wind').classList.toggle('active',tab==='wind');
+  el('tab-temp').classList.toggle('active',tab==='temp');
   drawChart();
 }
 
-function drawChart() {
-  const data = activeTab==='wind' ? chartWindData : chartTempData;
-  const color = activeTab==='wind' ? '#2E5C6E' : '#A07030';
-  const fillColor = activeTab==='wind' ? 'rgba(46,92,110,0.15)' : 'rgba(160,112,48,0.15)';
-  const W=300, H=60, pad=2;
-  if(!data.length) return;
-  const mn=Math.min(...data), mx=Math.max(...data);
-  const range=mx-mn||1;
-  const xs=data.map((_,i)=>pad + i*(W-pad*2)/(data.length-1));
-  const ys=data.map(v=>H-pad-(v-mn)/(range)*(H-pad*2));
-  // area path
-  let area=`M${xs[0]},${H} `;
-  xs.forEach((x,i)=>area+=`L${x},${ys[i]} `);
-  area+=`L${xs[xs.length-1]},${H} Z`;
-  // line path
-  let line=`M${xs[0]},${ys[0]} `;
-  xs.forEach((x,i)=>{ if(i>0) line+=`L${x},${ys[i]} `; });
+function drawChart(){
+  const data=activeTab==='wind'?chartWindData:chartTempData;
+  const color=activeTab==='wind'?'#2E5C6E':'#A07030';
+  const fillColor=activeTab==='wind'?'rgba(46,92,110,0.18)':'rgba(160,112,48,0.18)';
+  const W=300,H=58,pad=4;
+  if(!data.length)return;
+  const mn=Math.min(...data),mx=Math.max(...data),range=mx-mn||1;
+  const xs=data.map((_,i)=>pad+i*(W-pad*2)/(data.length-1));
+  const ys=data.map(v=>H-pad-(v-mn)/range*(H-pad*2));
+  chartPoints=xs.map((x,i)=>({x,y:ys[i],val:data[i],label:chartLabels[i]}));
+
+  // smooth curve via bezier
+  function curve(pts){
+    if(pts.length<2)return`M${pts[0].x},${pts[0].y}`;
+    let d=`M${pts[0].x},${pts[0].y}`;
+    for(let i=0;i<pts.length-1;i++){
+      const cp1x=pts[i].x+(pts[i+1].x-pts[i].x)*0.4;
+      const cp1y=pts[i].y;
+      const cp2x=pts[i].x+(pts[i+1].x-pts[i].x)*0.6;
+      const cp2y=pts[i+1].y;
+      d+=` C${cp1x},${cp1y} ${cp2x},${cp2y} ${pts[i+1].x},${pts[i+1].y}`;
+    }
+    return d;
+  }
+  const ptObjs=xs.map((x,i)=>({x,y:ys[i]}));
+  const linePath=curve(ptObjs);
+  const areaPath=`M${xs[0]},${H} L${xs[0]},${ys[0]} `+linePath.slice(linePath.indexOf(' '))+` L${xs[xs.length-1]},${H} Z`;
+
+  // value labels (first, mid, last)
+  const labelIdxs=new Set([0,Math.floor(data.length/2),data.length-1]);
+  const valLabels=data.map((v,i)=>{
+    if(!labelIdxs.has(i))return'';
+    const lbl=activeTab==='wind'?v.toFixed(1):v.toFixed(0)+'°';
+    const anchor=i===0?'start':i===data.length-1?'end':'middle';
+    return`<text x="${xs[i]}" y="${ys[i]-5}" text-anchor="${anchor}" font-size="7" fill="${color}" font-family="DM Sans,sans-serif" font-weight="500">${lbl}</text>`;
+  }).join('');
+
+  const dots=xs.map((x,i)=>
+    `<circle class="chart-dot" cx="${x}" cy="${ys[i]}" r="3.5" fill="${color}" stroke="var(--bg2)" stroke-width="1.5" data-idx="${i}" style="cursor:pointer"/>`
+  ).join('');
 
   el('chart-svg').innerHTML=`
-    <path d="${area}" fill="${fillColor}"/>
-    <path d="${line}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>
-    ${data.map((v,i)=>`<circle cx="${xs[i]}" cy="${ys[i]}" r="2" fill="${color}"/>`).join('')}
-    ${data.map((v,i)=>{
-      const lbl = activeTab==='wind' ? v.toFixed(1) : v.toFixed(0)+'°';
-      const anchor = i===0 ? 'start' : i===data.length-1 ? 'end' : 'middle';
-      const show = i===0 || i===data.length-1 || i===Math.floor(data.length/2);
-      return show ? `<text x="${xs[i]}" y="${ys[i]-4}" text-anchor="${anchor}" font-size="7" fill="#4A6068" font-family="DM Sans,sans-serif">${lbl}</text>` : '';
-    }).join('')}
+    <path d="${areaPath}" fill="${fillColor}"/>
+    <path d="${linePath}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round"/>
+    ${valLabels}
+    ${dots}
   `;
-  // hour labels
-  const labelEl = el('chart-labels');
+
+  // clickable dots → tooltip
+  el('chart-svg').querySelectorAll('.chart-dot').forEach(dot=>{
+    dot.addEventListener('click',e=>{
+      const idx=parseInt(dot.getAttribute('data-idx'));
+      const pt=chartPoints[idx];
+      const svgRect=el('chart-svg').getBoundingClientRect();
+      const boxRect=el('chart-box').getBoundingClientRect();
+      const tt=el('chart-tooltip');
+      const unit=activeTab==='wind'?' m/s':'°C';
+      const lbl=activeTab==='wind'?pt.val.toFixed(1):pt.val.toFixed(1);
+      tt.textContent=`${pt.label}  ${lbl}${unit}`;
+      // position in chart-box coords
+      const xRatio=(pt.x/300);
+      const xPx=xRatio*(svgRect.width)+svgRect.left-boxRect.left;
+      const yPx=(pt.y/58)*(svgRect.height)+svgRect.top-boxRect.top;
+      tt.style.left=xPx+'px';
+      tt.style.top=yPx+'px';
+      tt.classList.add('show');
+      setTimeout(()=>tt.classList.remove('show'),2000);
+      e.stopPropagation();
+    });
+  });
+
+  // hour axis labels
+  const labelEl=el('chart-labels');
   labelEl.innerHTML='';
-  chartLabels.forEach((lbl,i)=>{
-    if(i===0||i===chartLabels.length-1||i===Math.floor(chartLabels.length/2)){
-      const s=document.createElement('span');
-      s.textContent=lbl;
-      labelEl.appendChild(s);
-    }
+  [0,Math.floor(chartLabels.length/2),chartLabels.length-1].forEach(i=>{
+    const s=document.createElement('span');
+    s.textContent=chartLabels[i]||'';
+    labelEl.appendChild(s);
   });
 }
 
+// ── Fetch SMHI ─────────────────────────────────────
+async function fetchSMHI(lat,lon){
+  // SMHI Point Forecast API
+  const latS=lat.toFixed(6), lonS=lon.toFixed(6);
+  const url=`https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${lonS}/lat/${latS}/data.json`;
+  const r=await fetch(url);
+  if(!r.ok)throw new Error('SMHI svarade ej');
+  const d=await r.json();
+  // current = first time series entry
+  const now=d.timeSeries[0];
+  function param(name){return now.parameters.find(p=>p.name===name)?.values[0];}
+  const ms=param('ws');   // wind speed m/s
+  const deg=param('wd');  // wind direction
+  const temp=param('t');  // temperature
+  const gust=param('gust')??param('ff')??ms;
+
+  // hourly to midnight
+  const midnight=new Date(); midnight.setHours(23,59,59,999);
+  const windArr=[], tempArr=[], labArr=[];
+  d.timeSeries.forEach(ts=>{
+    const t=new Date(ts.validTime);
+    if(t>midnight)return;
+    function p(name){return ts.parameters.find(p=>p.name===name)?.values[0];}
+    windArr.push(p('ws'));
+    tempArr.push(p('t'));
+    labArr.push(`${t.getHours()}:00`);
+  });
+  return{ms,deg,temp,gust,windArr,tempArr,labArr};
+}
+
+// ── Fetch Open-Meteo ───────────────────────────────
+async function fetchOpenMeteo(lat,lon){
+  const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m&hourly=wind_speed_10m,temperature_2m&wind_speed_unit=ms&timezone=auto&forecast_days=1`);
+  const d=await r.json();
+  const c=d.current;
+  const nowH=new Date().getHours();
+  const windArr=[],tempArr=[],labArr=[];
+  d.hourly.time.forEach((t,i)=>{
+    const h=parseInt(t.slice(11,13));
+    if(h>=nowH&&h<=23){windArr.push(d.hourly.wind_speed_10m[i]);tempArr.push(d.hourly.temperature_2m[i]);labArr.push(`${h}:00`);}
+  });
+  return{ms:c.wind_speed_10m,deg:c.wind_direction_10m,temp:c.temperature_2m,gust:c.wind_gusts_10m,windArr,tempArr,labArr};
+}
+
+// ── Main fetch ─────────────────────────────────────
 async function fetchWind(){
   const btn=el('btn');
   el('err').style.display='none';
+  el('alert-banner').style.display='none';
   el('idle').style.display='none';
   el('loading').style.display='';
   el('hero').style.display='none';
   el('loading').textContent='Hämtar din position…';
   btn.disabled=true;
+  await requestNotifPermission();
   if(!navigator.geolocation){showErr('Platsinformation stöds ej.');btn.disabled=false;return;}
   navigator.geolocation.getCurrentPosition(async pos=>{
     const {latitude:lat,longitude:lon}=pos.coords;
-    el('loading').textContent='Hämtar väderdata…';
+    el('loading').textContent=source==='smhi'?'Hämtar från SMHI…':'Hämtar väderdata…';
     try{
-      // Get current + hourly forecast to midnight
-      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m&hourly=wind_speed_10m,temperature_2m&wind_speed_unit=ms&timezone=auto&forecast_days=1`);
-      const d=await r.json();
-      const c=d.current;
-      const ms=c.wind_speed_10m, gust=c.wind_gusts_10m, deg=c.wind_direction_10m, temp=c.temperature_2m;
+      let wd;
+      if(source==='smhi') wd=await fetchSMHI(lat,lon);
+      else wd=await fetchOpenMeteo(lat,lon);
+
+      const {ms,deg,temp,gust,windArr,tempArr,labArr}=wd;
       const b=getBf(ms);
 
       el('speed').textContent=ms.toFixed(1);
@@ -349,25 +580,21 @@ async function fetchWind(){
       el('bf-fill').style.background=b.color;
       el('bf-desc').textContent=b.label;
       el('bf-num').textContent=`Beaufort ${b.level}`;
-      el('arrow').style.transform=`rotate(${deg}deg)`;
-      const now=new Date();
-      el('loc').textContent=`${lat.toFixed(3)}°N · ${lon.toFixed(3)}°E · ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-      // Build hourly data from now → midnight
-      const nowH=now.getHours();
-      const times=d.hourly.time; // "2024-04-28T00:00"
-      const winds=d.hourly.wind_speed_10m;
-      const temps=d.hourly.temperature_2m;
-      chartWindData=[]; chartTempData=[]; chartLabels=[];
-      times.forEach((t,i)=>{
-        const h=parseInt(t.slice(11,13));
-        if(h>=nowH && h<=23){
-          chartWindData.push(winds[i]);
-          chartTempData.push(temps[i]);
-          chartLabels.push(h===0||h===12||h===nowH||h===23 ? `${h}:00` : `${h}`);
-        }
-      });
+      // Compass needle: wind FROM direction = rotate needle so its north tip points toward origin
+      el('needle-group').style.transform=`rotate(${deg}deg)`;
+
+      const now=new Date();
+      el('loc').textContent=`${source==='smhi'?'SMHI':'Open-Meteo'} · ${lat.toFixed(3)}°N · ${lon.toFixed(3)}°E · ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      chartWindData=windArr; chartTempData=tempArr; chartLabels=labArr;
       drawChart();
+
+      // Beaufort 7+ alert
+      if(b.level>=7){
+        el('alert-banner').style.display='flex';
+        sendWindAlert(b.level);
+      }
 
       el('loading').style.display='none';
       el('hero').style.display='';
@@ -379,14 +606,17 @@ async function fetchWind(){
         el('loc').classList.add('on');
       },20);
       btn.textContent='Uppdatera';
-    }catch(e){showErr('Kunde inte hämta väderdata.');}
+    }catch(e){
+      console.error(e);
+      showErr(source==='smhi'?'Kunde inte hämta data från SMHI. Prova Open-Meteo.':'Kunde inte hämta väderdata.');
+    }
     btn.disabled=false;
   },err=>{
     el('loading').style.display='none';
     el('idle').style.display='';
     showErr(err.code===1?'Platsåtkomst nekades. Tillåt platsinformation och försök igen.':'Kunde inte hämta din position.');
     btn.disabled=false;
-  });
+  },{timeout:10000});
 }
 function showErr(msg){el('err').textContent=msg;el('err').style.display='';}
 </script>
