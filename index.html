@@ -58,9 +58,17 @@
   .install-btn { padding: 7px 14px; font-size: 13px; font-weight: 500; background: var(--fjord); color: #E8E0D0; border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; }
   .install-close { background: none; border: none; color: var(--mid); font-size: 20px; cursor: pointer; line-height: 1; padding: 0 2px; }
 
-  .idle-text {
-    font-family: 'DM Serif Display', serif; font-size: clamp(1.2rem, 4vw, 1.6rem);
-    color: var(--mid); text-align: center; margin-bottom: 2rem; line-height: 1.4;
+  .idle-screen {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    margin-bottom: 2rem;
+  }
+  .idle-compass { width: 140px; height: 140px; margin-bottom: 1.5rem; }
+  .idle-title {
+    font-family: 'DM Serif Display', serif; font-size: 1.75rem;
+    color: var(--ink); margin-bottom: 0.5rem; line-height: 1.2;
+  }
+  .idle-sub {
+    font-size: 14px; color: var(--mid); line-height: 1.5; max-width: 280px;
   }
   .hero {
     text-align: center; margin-bottom: 2rem;
@@ -128,7 +136,36 @@
       <button class="install-close" id="install-close" aria-label="Stäng">×</button>
     </div>
 
-    <p id="idle" class="idle-text">Mät vinden<br>där du befinner dig.</p>
+    <div id="idle" class="idle-screen">
+      <svg class="idle-compass" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <!-- outer ring -->
+        <circle cx="60" cy="60" r="54" fill="none" stroke="#C4BAA4" stroke-width="1.5"/>
+        <!-- tick marks -->
+        <g stroke="#B5A98F" stroke-width="1">
+          <line x1="60" y1="8" x2="60" y2="18"/>
+          <line x1="60" y1="102" x2="60" y2="112"/>
+          <line x1="8" y1="60" x2="18" y2="60"/>
+          <line x1="102" y1="60" x2="112" y2="60"/>
+          <line x1="23.5" y1="23.5" x2="30.5" y2="30.5"/>
+          <line x1="89.5" y1="89.5" x2="96.5" y2="96.5"/>
+          <line x1="96.5" y1="23.5" x2="89.5" y2="30.5"/>
+          <line x1="30.5" y1="89.5" x2="23.5" y2="96.5"/>
+        </g>
+        <!-- cardinal labels -->
+        <text x="60" y="6" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#4A6068">N</text>
+        <text x="60" y="119" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#4A6068">S</text>
+        <text x="114" y="64" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#4A6068">O</text>
+        <text x="6" y="64" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#4A6068">V</text>
+        <!-- arrow N -->
+        <polygon points="60,22 65,58 60,54 55,58" fill="#2E5C6E"/>
+        <!-- arrow S -->
+        <polygon points="60,98 65,62 60,66 55,62" fill="#7A9AA4" opacity="0.45"/>
+        <!-- center dot -->
+        <circle cx="60" cy="60" r="4" fill="#2E5C6E"/>
+      </svg>
+      <p class="idle-title">Vindmätare</p>
+      <p class="idle-sub">Tryck nedan för att se aktuell vindstyrka och temperatur på din plats.</p>
+    </div>
     <p id="loading" class="loading-msg" style="display:none"></p>
 
     <div class="hero" id="hero">
@@ -245,6 +282,7 @@ function vis(id){document.getElementById(id).classList.add('visible');}
 async function fetchWind(){
   const btn=document.getElementById('btn');
   hide('err'); hide('idle');
+
   ['hero','bf-wrap','cards'].forEach(id=>document.getElementById(id).classList.remove('visible'));
   document.getElementById('loc').classList.remove('visible');
   show('loading');
