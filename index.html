@@ -8,255 +8,263 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Vind">
 <title>Vind</title>
-
 <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Vindm%C3%A4tare%22,%22short_name%22:%22Vind%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23D6CEBC%22,%22theme_color%22:%22%23D6CEBC%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%23D6CEBC' rx='40'/%3E%3Cpolygon points='96,30 112,150 96,130 80,150' fill='%232E5C6E'/%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
-
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg:    #D6CEBC;
-    --bg2:   #C4BAA4;
-    --ink:   #1A2A2F;
-    --mid:   #4A6068;
-    --light: #7A9AA4;
-    --fjord: #2E5C6E;
-    --fjord2:#1E3E4E;
-    --danger:#7A2010;
-  }
-  html, body {
-    height: 100%; background: var(--bg);
-    font-family: 'DM Sans', sans-serif; color: var(--ink);
-    overflow: hidden; -webkit-tap-highlight-color: transparent; user-select: none;
-  }
-  .app {
-    height: 100vh; height: 100dvh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: max(env(safe-area-inset-top), 2rem) 2rem max(env(safe-area-inset-bottom), 2rem);
-    position: relative;
-  }
-  .app::before {
-    content: ''; position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 0;
-  }
-  .inner {
-    position: relative; z-index: 1; width: 100%; max-width: 500px;
-    display: flex; flex-direction: column; align-items: center;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:    #D6CEBC;
+  --bg2:   #C4BAA4;
+  --ink:   #1A2A2F;
+  --mid:   #4A6068;
+  --light: #7A9AA4;
+  --fjord: #2E5C6E;
+  --fjord2:#1E3E4E;
+  --danger:#7A2010;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
 
-  /* Install banner */
-  .install-banner {
-    width: 100%; background: var(--bg2); border-radius: 12px;
-    padding: 0.9rem 1rem; margin-bottom: 0.75rem;
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  }
-  .install-banner p { font-size: 13px; color: var(--mid); flex: 1; line-height: 1.4; }
-  .install-banner p strong { color: var(--ink); }
-  .install-btn { padding: 7px 14px; font-size: 13px; font-weight: 500; background: var(--fjord); color: #E8E0D0; border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; }
-  .install-close { background: none; border: none; color: var(--mid); font-size: 20px; cursor: pointer; line-height: 1; padding: 0 2px; }
+html {
+  height: 100%;
+  /* Prevent iOS bounce scroll */
+  position: fixed; width: 100%; overflow: hidden;
+}
+body {
+  height: 100%; width: 100%;
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  overflow: hidden;
+}
 
-  .idle-screen {
-    display: flex; flex-direction: column; align-items: center; text-align: center;
-    margin-bottom: 2rem;
-  }
-  .idle-compass { width: 140px; height: 140px; margin-bottom: 1.5rem; }
-  .idle-title {
-    font-family: 'DM Serif Display', serif; font-size: 1.75rem;
-    color: var(--ink); margin-bottom: 0.5rem; line-height: 1.2;
-  }
-  .idle-sub {
-    font-size: 14px; color: var(--mid); line-height: 1.5; max-width: 280px;
-  }
-  .hero {
-    text-align: center; margin-bottom: 2rem;
-    opacity: 0; transform: translateY(12px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-  .hero.visible { opacity: 1; transform: translateY(0); }
-  .compass {
-    width: 52px; height: 52px; border-radius: 50%; background: var(--bg2);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 1rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
-  }
-  .speed-row { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
-  .speed-num { font-family: 'DM Serif Display', serif; font-size: clamp(72px, 18vw, 108px); color: var(--ink); line-height: 1; }
-  .speed-unit { font-size: 20px; color: var(--mid); font-weight: 300; }
-  .dir-label { font-size: 15px; color: var(--mid); margin-top: 6px; letter-spacing: 0.04em; }
+/* ── SHELL: full screen, flex column ── */
+.shell {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bot);
+  background: var(--bg);
+}
 
-  .bf-wrap {
-    width: 100%; margin-bottom: 1.75rem;
-    opacity: 0; transform: translateY(8px);
-    transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
-  }
-  .bf-wrap.visible { opacity: 1; transform: translateY(0); }
-  .bf-track { height: 4px; border-radius: 2px; background: var(--bg2); overflow: hidden; margin-bottom: 8px; }
-  .bf-fill { height: 100%; border-radius: 2px; background: var(--fjord); transition: width 0.9s cubic-bezier(0.4,0,0.2,1); width: 0%; }
-  .bf-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--mid); letter-spacing: 0.03em; }
+/* texture */
+.shell::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
 
-  .cards {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    width: 100%; margin-bottom: 1.75rem;
-    opacity: 0; transform: translateY(8px);
-    transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
-  }
-  .cards.visible { opacity: 1; transform: translateY(0); }
-  .card { background: var(--bg2); border-radius: 14px; padding: 1.1rem 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-  .card-label { font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--mid); margin-bottom: 8px; }
-  .card-val { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--ink); line-height: 1; }
-  .card-unit { font-size: 14px; color: var(--mid); font-family: 'DM Sans', sans-serif; font-weight: 300; margin-left: 2px; }
+/* ── SCROLLABLE middle ── */
+.scroll-area {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 1.5rem 1.5rem 0;
+  position: relative; z-index: 1;
+}
 
-  .loc { font-size: 11px; color: var(--light); letter-spacing: 0.04em; margin-bottom: 2rem; opacity: 0; transition: opacity 0.5s ease 0.3s; }
-  .loc.visible { opacity: 1; }
+/* ── STICKY BOTTOM ── */
+.bottom-bar {
+  flex-shrink: 0;
+  padding: 1rem 1.5rem;
+  position: relative; z-index: 1;
+  background: var(--bg);
+}
 
-  .btn {
-    width: 100%; padding: 14px;
-    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.05em;
-    cursor: pointer; border-radius: 12px; border: none;
-    background: var(--fjord); color: #E8E0D0;
-    transition: background 0.2s, transform 0.1s;
-  }
-  .btn:hover { background: var(--fjord2); }
-  .btn:active { transform: scale(0.98); }
-  .btn:disabled { opacity: 0.4; cursor: default; }
+/* ── Install banner ── */
+.install-banner {
+  width: 100%; max-width: 500px; margin: 0 auto 0.75rem;
+  background: var(--bg2); border-radius: 12px;
+  padding: 0.9rem 1rem;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.install-banner p { font-size: 13px; color: var(--mid); flex: 1; line-height: 1.4; }
+.install-banner p strong { color: var(--ink); }
+.install-btn { padding: 7px 14px; font-size: 13px; font-weight: 500; background: var(--fjord); color: #E8E0D0; border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; }
+.install-close { background: none; border: none; color: var(--mid); font-size: 22px; cursor: pointer; line-height: 1; padding: 0 4px; }
 
-  .err { width: 100%; background: #EDD5CE; border-radius: 10px; padding: 0.75rem 1rem; font-size: 13px; color: var(--danger); margin-bottom: 1rem; }
-  .loading-msg { font-size: 14px; color: var(--mid); text-align: center; margin-bottom: 2rem; }
+/* ── Content wrapper, centred in scroll area ── */
+.content {
+  width: 100%; max-width: 500px;
+  display: flex; flex-direction: column; align-items: center;
+  margin: auto; /* vertical centering when content is short */
+  padding: 1rem 0 1.5rem;
+}
+
+/* ── IDLE ── */
+.idle-screen { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.idle-compass { width: min(140px, 35vw); height: min(140px, 35vw); margin-bottom: 1.25rem; }
+.idle-title { font-family: 'DM Serif Display', serif; font-size: clamp(1.4rem, 5vw, 1.9rem); color: var(--ink); margin-bottom: 0.4rem; }
+.idle-sub { font-size: 14px; color: var(--mid); line-height: 1.5; max-width: 260px; }
+
+/* ── LOADING ── */
+.loading-msg { font-size: 14px; color: var(--mid); text-align: center; }
+
+/* ── HERO ── */
+.hero {
+  text-align: center; margin-bottom: 1.5rem;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.hero.visible { opacity: 1; transform: translateY(0); }
+.compass-ring {
+  width: 50px; height: 50px; border-radius: 50%; background: var(--bg2);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 0.9rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+}
+.speed-row { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+.speed-num { font-family: 'DM Serif Display', serif; font-size: clamp(64px, 16vw, 96px); color: var(--ink); line-height: 1; }
+.speed-unit { font-size: 20px; color: var(--mid); font-weight: 300; }
+.dir-label { font-size: 15px; color: var(--mid); margin-top: 4px; letter-spacing: 0.04em; }
+
+/* ── BEAUFORT ── */
+.bf-wrap {
+  width: 100%; margin-bottom: 1.25rem;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
+}
+.bf-wrap.visible { opacity: 1; transform: translateY(0); }
+.bf-track { height: 4px; border-radius: 2px; background: var(--bg2); overflow: hidden; margin-bottom: 8px; }
+.bf-fill { height: 100%; border-radius: 2px; background: var(--fjord); transition: width 0.9s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+.bf-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--mid); letter-spacing: 0.03em; }
+
+/* ── CARDS ── */
+.cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  width: 100%; margin-bottom: 1rem;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+}
+.cards.visible { opacity: 1; transform: translateY(0); }
+.card { background: var(--bg2); border-radius: 14px; padding: 1rem 1.1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.card-label { font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+.card-val { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--ink); line-height: 1; }
+.card-unit { font-size: 13px; color: var(--mid); font-family: 'DM Sans', sans-serif; font-weight: 300; margin-left: 2px; }
+
+/* ── LOC ── */
+.loc { font-size: 11px; color: var(--light); letter-spacing: 0.04em; opacity: 0; transition: opacity 0.5s ease 0.3s; text-align: center; }
+.loc.visible { opacity: 1; }
+
+/* ── ERROR ── */
+.err { width: 100%; background: #EDD5CE; border-radius: 10px; padding: 0.75rem 1rem; font-size: 13px; color: var(--danger); margin-bottom: 0.75rem; }
+
+/* ── BUTTON ── */
+.btn {
+  width: 100%; max-width: 500px; margin: 0 auto; display: block;
+  padding: 15px;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.05em;
+  cursor: pointer; border-radius: 14px; border: none;
+  background: var(--fjord); color: #E8E0D0;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn:hover { background: var(--fjord2); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.4; cursor: default; }
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="inner">
 
+<div class="shell">
+
+  <!-- SCROLLABLE AREA -->
+  <div class="scroll-area" id="scroll-area">
+    <div class="content" id="content">
+
+      <!-- IDLE -->
+      <div class="idle-screen" id="idle">
+        <svg class="idle-compass" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="#C4BAA4" stroke-width="1.5"/>
+          <g stroke="#B5A98F" stroke-width="1">
+            <line x1="60" y1="8" x2="60" y2="18"/><line x1="60" y1="102" x2="60" y2="112"/>
+            <line x1="8" y1="60" x2="18" y2="60"/><line x1="102" y1="60" x2="112" y2="60"/>
+            <line x1="23.5" y1="23.5" x2="30.5" y2="30.5"/><line x1="89.5" y1="89.5" x2="96.5" y2="96.5"/>
+            <line x1="96.5" y1="23.5" x2="89.5" y2="30.5"/><line x1="30.5" y1="89.5" x2="23.5" y2="96.5"/>
+          </g>
+          <text x="60" y="6"   text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#4A6068">N</text>
+          <text x="60" y="119" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#4A6068">S</text>
+          <text x="114" y="64" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#4A6068">O</text>
+          <text x="6"   y="64" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#4A6068">V</text>
+          <polygon points="60,22 65,58 60,54 55,58" fill="#2E5C6E"/>
+          <polygon points="60,98 65,62 60,66 55,62" fill="#7A9AA4" opacity="0.45"/>
+          <circle cx="60" cy="60" r="4" fill="#2E5C6E"/>
+        </svg>
+        <p class="idle-title">Vindmätare</p>
+        <p class="idle-sub">Tryck nedan för att se aktuell vindstyrka och temperatur på din plats.</p>
+      </div>
+
+      <!-- LOADING -->
+      <p class="loading-msg" id="loading" style="display:none"></p>
+
+      <!-- HERO -->
+      <div class="hero" id="hero">
+        <div class="compass-ring">
+          <svg id="arrow" width="26" height="26" viewBox="0 0 28 28" style="transition:transform 0.8s cubic-bezier(0.4,0,0.2,1)">
+            <polygon points="14,3 18,22 14,19 10,22" fill="#2E5C6E"/>
+            <polygon points="14,25 10,6 14,9 18,6" fill="#7A9AA4" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="speed-row">
+          <span class="speed-num" id="speed">–</span>
+          <span class="speed-unit">m/s</span>
+        </div>
+        <div class="dir-label" id="dir">–</div>
+      </div>
+
+      <!-- BEAUFORT -->
+      <div class="bf-wrap" id="bf-wrap">
+        <div class="bf-track"><div class="bf-fill" id="bf-fill"></div></div>
+        <div class="bf-meta">
+          <span id="bf-desc">–</span>
+          <span id="bf-num">Beaufort –</span>
+        </div>
+      </div>
+
+      <!-- CARDS -->
+      <div class="cards" id="cards">
+        <div class="card">
+          <div class="card-label">Vindbyar</div>
+          <div class="card-val" id="gust">–<span class="card-unit"> m/s</span></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Temperatur</div>
+          <div class="card-val" id="temp">–<span class="card-unit"> °C</span></div>
+        </div>
+      </div>
+
+      <div class="loc" id="loc"></div>
+      <div class="err" id="err" style="display:none"></div>
+
+    </div>
+  </div>
+
+  <!-- STICKY BOTTOM BAR -->
+  <div class="bottom-bar">
     <div class="install-banner" id="install-banner" style="display:none">
       <p><strong>Installera appen</strong><br>Lägg till på hemskärmen</p>
       <button class="install-btn" id="install-btn">Installera</button>
       <button class="install-close" id="install-close" aria-label="Stäng">×</button>
     </div>
-
-    <div id="idle" class="idle-screen">
-      <svg class="idle-compass" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-        <!-- outer ring -->
-        <circle cx="60" cy="60" r="54" fill="none" stroke="#C4BAA4" stroke-width="1.5"/>
-        <!-- tick marks -->
-        <g stroke="#B5A98F" stroke-width="1">
-          <line x1="60" y1="8" x2="60" y2="18"/>
-          <line x1="60" y1="102" x2="60" y2="112"/>
-          <line x1="8" y1="60" x2="18" y2="60"/>
-          <line x1="102" y1="60" x2="112" y2="60"/>
-          <line x1="23.5" y1="23.5" x2="30.5" y2="30.5"/>
-          <line x1="89.5" y1="89.5" x2="96.5" y2="96.5"/>
-          <line x1="96.5" y1="23.5" x2="89.5" y2="30.5"/>
-          <line x1="30.5" y1="89.5" x2="23.5" y2="96.5"/>
-        </g>
-        <!-- cardinal labels -->
-        <text x="60" y="6" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#4A6068">N</text>
-        <text x="60" y="119" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#4A6068">S</text>
-        <text x="114" y="64" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#4A6068">O</text>
-        <text x="6" y="64" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#4A6068">V</text>
-        <!-- arrow N -->
-        <polygon points="60,22 65,58 60,54 55,58" fill="#2E5C6E"/>
-        <!-- arrow S -->
-        <polygon points="60,98 65,62 60,66 55,62" fill="#7A9AA4" opacity="0.45"/>
-        <!-- center dot -->
-        <circle cx="60" cy="60" r="4" fill="#2E5C6E"/>
-      </svg>
-      <p class="idle-title">Vindmätare</p>
-      <p class="idle-sub">Tryck nedan för att se aktuell vindstyrka och temperatur på din plats.</p>
-    </div>
-    <p id="loading" class="loading-msg" style="display:none"></p>
-
-    <div class="hero" id="hero">
-      <div class="compass">
-        <svg id="arrow" width="28" height="28" viewBox="0 0 28 28" style="transition:transform 0.8s cubic-bezier(0.4,0,0.2,1)">
-          <polygon points="14,3 18,22 14,19 10,22" fill="#2E5C6E"/>
-          <polygon points="14,25 10,6 14,9 18,6" fill="#7A9AA4" opacity="0.4"/>
-        </svg>
-      </div>
-      <div class="speed-row">
-        <span class="speed-num" id="speed">–</span>
-        <span class="speed-unit">m/s</span>
-      </div>
-      <div class="dir-label" id="dir">–</div>
-    </div>
-
-    <div class="bf-wrap" id="bf-wrap">
-      <div class="bf-track"><div class="bf-fill" id="bf-fill"></div></div>
-      <div class="bf-meta">
-        <span id="bf-desc">–</span>
-        <span id="bf-num">Beaufort –</span>
-      </div>
-    </div>
-
-    <div class="cards" id="cards">
-      <div class="card">
-        <div class="card-label">Vindbyar</div>
-        <div class="card-val" id="gust">–<span class="card-unit"> m/s</span></div>
-      </div>
-      <div class="card">
-        <div class="card-label">Temperatur</div>
-        <div class="card-val" id="temp">–<span class="card-unit"> °C</span></div>
-      </div>
-    </div>
-
-    <div class="loc" id="loc"></div>
-    <div class="err" id="err" style="display:none"></div>
     <button class="btn" id="btn" onclick="fetchWind()">Hämta vinddata</button>
-
   </div>
+
 </div>
 
 <script>
-// ── Service Worker (inline blob) ─────────────────────
-const SW_SRC = `
-const CACHE = 'vind-v1';
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ));
-});
-self.addEventListener('fetch', e => {
-  if (e.request.url.includes('open-meteo.com') || e.request.url.includes('fonts.g')) {
-    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-    return;
-  }
-  e.respondWith(
-    caches.match(e.request).then(hit => hit || fetch(e.request).then(resp => {
-      caches.open(CACHE).then(c => c.put(e.request, resp.clone()));
-      return resp;
-    }))
-  );
-});
-`;
-if ('serviceWorker' in navigator) {
-  const blob = new Blob([SW_SRC], { type: 'application/javascript' });
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-}
+// ── Service Worker ────────────────────────────────────
+const SW=`const C='vind-v1';self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))))});self.addEventListener('fetch',e=>{if(e.request.url.includes('open-meteo')||e.request.url.includes('fonts.g')){e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));return;}e.respondWith(caches.match(e.request).then(h=>h||fetch(e.request).then(r=>{caches.open(C).then(c=>c.put(e.request,r.clone()));return r;})))});`;
+if('serviceWorker'in navigator){navigator.serviceWorker.register(URL.createObjectURL(new Blob([SW],{type:'application/javascript'}))).catch(()=>{});}
 
-// ── Install prompt ───────────────────────────────────
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault(); deferredPrompt = e;
-  document.getElementById('install-banner').style.display = 'flex';
-});
-document.getElementById('install-btn').addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
-  deferredPrompt = null;
-  document.getElementById('install-banner').style.display = 'none';
-});
-document.getElementById('install-close').addEventListener('click', () => {
-  document.getElementById('install-banner').style.display = 'none';
-});
-window.addEventListener('appinstalled', () => {
-  document.getElementById('install-banner').style.display = 'none';
-});
+// ── Install prompt ────────────────────────────────────
+let dp=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;document.getElementById('install-banner').style.display='flex';});
+document.getElementById('install-btn').addEventListener('click',async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;document.getElementById('install-banner').style.display='none';});
+document.getElementById('install-close').addEventListener('click',()=>{document.getElementById('install-banner').style.display='none';});
+window.addEventListener('appinstalled',()=>{document.getElementById('install-banner').style.display='none';});
 
-// ── Wind data ────────────────────────────────────────
+// ── Wind logic ────────────────────────────────────────
 const bf=[
   {max:0.3,  label:"Stiltje",          color:"#2E5C6E"},
   {max:1.5,  label:"Nästan stiltje",   color:"#2E5C6E"},
@@ -273,41 +281,40 @@ const bf=[
   {max:Infinity,label:"Orkan",         color:"#2E0404"}
 ];
 const dirs=["N","NNO","NO","ONO","O","OSO","SO","SSO","S","SSV","SV","VSV","V","VNV","NV","NNV"];
+const g=id=>document.getElementById(id);
 function getBf(ms){for(let i=0;i<bf.length;i++)if(ms<=bf[i].max)return{level:i,...bf[i]};}
 function degToDir(d){return dirs[Math.round(d/22.5)%16];}
-function show(id){document.getElementById(id).style.display='';}
-function hide(id){document.getElementById(id).style.display='none';}
-function vis(id){document.getElementById(id).classList.add('visible');}
+function show(id){g(id).style.display='';}
+function hide(id){g(id).style.display='none';}
+function vis(id){g(id).classList.add('visible');}
 
 async function fetchWind(){
-  const btn=document.getElementById('btn');
+  const btn=g('btn');
   hide('err'); hide('idle');
-
-  ['hero','bf-wrap','cards'].forEach(id=>document.getElementById(id).classList.remove('visible'));
-  document.getElementById('loc').classList.remove('visible');
-  show('loading');
-  document.getElementById('loading').textContent='Hämtar din position…';
+  ['hero','bf-wrap','cards'].forEach(id=>g(id).classList.remove('visible'));
+  g('loc').classList.remove('visible');
+  show('loading'); g('loading').textContent='Hämtar din position…';
   btn.disabled=true;
   if(!navigator.geolocation){showErr('Platsinformation stöds ej.');btn.disabled=false;return;}
   navigator.geolocation.getCurrentPosition(async pos=>{
     const {latitude:lat,longitude:lon}=pos.coords;
-    document.getElementById('loading').textContent='Hämtar väderdata…';
+    g('loading').textContent='Hämtar väderdata…';
     try{
       const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m&wind_speed_unit=ms&timezone=auto`);
       const d=await r.json(); const c=d.current;
       const ms=c.wind_speed_10m,gust=c.wind_gusts_10m,deg=c.wind_direction_10m,temp=c.temperature_2m;
       const b=getBf(ms);
-      document.getElementById('speed').textContent=ms.toFixed(1);
-      document.getElementById('gust').innerHTML=`${gust.toFixed(1)}<span class="card-unit"> m/s</span>`;
-      document.getElementById('temp').innerHTML=`${temp.toFixed(1)}<span class="card-unit"> °C</span>`;
-      document.getElementById('dir').textContent=`Vind från ${degToDir(deg)}`;
-      document.getElementById('bf-fill').style.width=`${(b.level/12)*100}%`;
-      document.getElementById('bf-fill').style.background=b.color;
-      document.getElementById('bf-desc').textContent=b.label;
-      document.getElementById('bf-num').textContent=`Beaufort ${b.level}`;
-      document.getElementById('arrow').style.transform=`rotate(${deg}deg)`;
+      g('speed').textContent=ms.toFixed(1);
+      g('gust').innerHTML=`${gust.toFixed(1)}<span class="card-unit"> m/s</span>`;
+      g('temp').innerHTML=`${temp.toFixed(1)}<span class="card-unit"> °C</span>`;
+      g('dir').textContent=`Vind från ${degToDir(deg)}`;
+      g('bf-fill').style.width=`${(b.level/12)*100}%`;
+      g('bf-fill').style.background=b.color;
+      g('bf-desc').textContent=b.label;
+      g('bf-num').textContent=`Beaufort ${b.level}`;
+      g('arrow').style.transform=`rotate(${deg}deg)`;
       const now=new Date();
-      document.getElementById('loc').textContent=`${lat.toFixed(3)}°N · ${lon.toFixed(3)}°E · ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+      g('loc').textContent=`${lat.toFixed(3)}°N · ${lon.toFixed(3)}°E · ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
       hide('loading');
       vis('hero'); vis('bf-wrap'); vis('cards'); vis('loc');
       btn.textContent='Uppdatera';
@@ -320,7 +327,7 @@ async function fetchWind(){
     btn.disabled=false;
   });
 }
-function showErr(msg){const e=document.getElementById('err');e.textContent=msg;show('err');}
+function showErr(msg){g('err').textContent=msg;show('err');}
 </script>
 </body>
 </html>
