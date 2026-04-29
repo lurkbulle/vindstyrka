@@ -89,11 +89,10 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 .chart-tooltip{position:absolute;background:var(--bg3);border-radius:5px;padding:3px 8px;font-size:12px;font-weight:600;color:var(--ink);pointer-events:none;white-space:nowrap;transform:translate(-50%,-130%);opacity:0;transition:opacity .15s;top:0;left:0;z-index:10}
 .chart-tooltip.show{opacity:1}
 [data-theme=dark] .chart-tooltip{background:#3A4A52;color:#E8E0D0}
-.sea-meta{display:flex;align-items:center;gap:8px;margin-bottom:.4rem;flex-wrap:wrap}
+.sea-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:.2rem}
 .sea-val{font-family:'DM Serif Display',serif;font-size:28px;color:var(--ink);line-height:1}
 .sea-unit{font-size:11px;color:var(--mid)}
-.sea-station{font-size:12px;font-weight:500;color:var(--mid);margin-left:auto;letter-spacing:.01em}
-[data-theme=dark] .sea-station{color:#8AABB5}
+.sea-station{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:.4rem;letter-spacing:.01em}
 .sea-loading{font-size:11px;color:var(--mid);padding:.5rem 0;text-align:center}
 
 /* LOC */
@@ -225,10 +224,10 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
           </div>
           <!-- sea panel -->
           <div id="panel-sea" style="display:none">
+            <span class="sea-station" id="sea-station-name"></span>
             <div class="sea-meta">
               <span class="sea-val" id="sea-val">–</span>
               <span class="sea-unit">cm (RH2000)</span>
-              <span class="sea-station" id="sea-station-name"></span>
             </div>
             <svg class="chart-svg" id="sea-svg" height="52" viewBox="0 0 300 52" preserveAspectRatio="none"></svg>
             <div class="chart-label-row" id="sea-labels"></div>
