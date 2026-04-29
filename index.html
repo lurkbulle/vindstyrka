@@ -268,6 +268,10 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;el('in
 el('install-btn').onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;el('install-banner').style.display='none';};
 el('install-close').onclick=()=>{el('install-banner').style.display='none';};
 
+// ── Helpers ─────────────────────────────────────────────
+function el(id){return document.getElementById(id);}
+function dist(a,b,c,d){const R=6371,dL=(c-a)*Math.PI/180,dN=(d-b)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+
 // ── Theme ───────────────────────────────────────────────
 let dark=localStorage.getItem('theme')==='dark';
 function applyTheme(){
@@ -276,21 +280,18 @@ function applyTheme(){
   el('theme-btn').textContent=dark?'☀️':'🌙';
   el('theme-meta').content=dark?'#1A1F22':'#D6CEBC';
 }
-function toggleTheme(){dark=!dark;localStorage.setItem('theme',dark?'dark':'light');applyTheme();if(chartWindData.length)drawTab();}
+function toggleTheme(){dark=!dark;localStorage.setItem('theme',dark?'dark':'light');applyTheme();if(dataLoaded)drawTab();}
 applyTheme();
 
 // ── Source ──────────────────────────────────────────────
 let source='smhi';
+let dataLoaded=false;
 function setSource(s){
   source=s;
   el('src-om').classList.toggle('active',s==='om');
   el('src-smhi').classList.toggle('active',s==='smhi');
-  if(el('hero').style.display!=='none'||el('loading').style.display!=='none') fetchWind();
+  if(dataLoaded) fetchWind();
 }
-
-// ── Helpers ─────────────────────────────────────────────
-function el(id){return document.getElementById(id);}
-function dist(a,b,c,d){const R=6371,dL=(c-a)*Math.PI/180,dN=(d-b)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 
 // ── Beaufort ────────────────────────────────────────────
 const BF=[
@@ -522,6 +523,7 @@ async function fetchWind(){
       el('hero').style.display='';
       setTimeout(()=>{el('hero').classList.add('on');el('bf-wrap').classList.add('on');el('cards').classList.add('on');el('data-section').classList.add('on');el('loc').classList.add('on');},20);
       btn.textContent='Uppdatera';
+      dataLoaded=true;
     }catch(e){
       console.error(e);
       el('loading').style.display='none';
