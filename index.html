@@ -281,7 +281,12 @@ applyTheme();
 
 // ── Source ──────────────────────────────────────────────
 let source='smhi';
-function setSource(s){source=s;el('src-om').classList.toggle('active',s==='om');el('src-smhi').classList.toggle('active',s==='smhi');}
+function setSource(s){
+  source=s;
+  el('src-om').classList.toggle('active',s==='om');
+  el('src-smhi').classList.toggle('active',s==='smhi');
+  if(el('hero').style.display!=='none'||el('loading').style.display!=='none') fetchWind();
+}
 
 // ── Helpers ─────────────────────────────────────────────
 function el(id){return document.getElementById(id);}
