@@ -233,7 +233,7 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
       </div>
 
       <!-- SEA LEVEL -->
-      <div class="sea-wrap" id="sea-wrap">
+      <div class="sea-wrap" id="sea-wrap" style="display:none">
         <div class="sea-header">
           <span class="sea-icon">🌊</span>
           <span class="sea-title">Vattenstånd</span>
@@ -458,27 +458,26 @@ async function fetchOpenMeteo(lat,lon){
 }
 
 async function fetchSMHI(lat,lon){
-  // Use corsproxy.io to bypass CORS on SMHI forecast API
+  // SMHI deprecated pmp3g 2026-03-31. New API: snow1g/version/1
   const PROXY='https://corsproxy.io/?';
-  const url=PROXY+encodeURIComponent(`https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${lon.toFixed(6)}/lat/${lat.toFixed(6)}/data.json`);
+  const url=PROXY+encodeURIComponent(`https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/${lon.toFixed(6)}/lat/${lat.toFixed(6)}/data.json`);
   const r=await fetch(url);
   if(!r.ok)throw new Error(`SMHI ${r.status}`);
   const d=await r.json();
-  // parameter name map
-  function param(ts,name){return ts.parameters.find(p=>p.name===name)?.values[0];}
+  // SNOW1gv1: flat data object, key "time" instead of "validTime"
   const now=d.timeSeries[0];
-  const ms=param(now,'ws');
-  const deg=param(now,'wd');
-  const temp=param(now,'t');
-  const gust=param(now,'gust')??param(now,'ff')??ms;
+  const ms=now.data.wind_speed;
+  const deg=now.data.wind_from_direction;
+  const temp=now.data.air_temperature;
+  const gust=now.data.wind_gust??ms;
   // hourly to midnight
   const midnight=new Date(); midnight.setHours(23,59,59,999);
   const windArr=[],tempArr=[],labArr=[];
   d.timeSeries.forEach(ts=>{
-    const t=new Date(ts.validTime);
+    const t=new Date(ts.time);
     if(t>new Date()&&t<=midnight){
-      windArr.push(param(ts,'ws'));
-      tempArr.push(param(ts,'t'));
+      windArr.push(ts.data.wind_speed);
+      tempArr.push(ts.data.air_temperature);
       labArr.push(`${t.getHours()}:00`);
     }
   });
@@ -532,17 +531,17 @@ async function fetchWind(){
 
       // Sea level
       el('loading').textContent='Hämtar vattenstånd…';
+      let seaOk=false;
       try{
         const sea=await fetchSeaLevel(lat,lon);
         if(sea){
           el('sea-val').textContent=sea.current.toFixed(0);
           el('sea-station-name').textContent=sea.name;
-          drawSeaChart(sea.seaData,sea.seaLabels);
           el('sea-wrap').style.display='';
-        } else {
-          el('sea-wrap').style.display='none';
+          drawSeaChart(sea.seaData,sea.seaLabels);
+          seaOk=true;
         }
-      }catch(_){el('sea-wrap').style.display='none';}
+      }catch(_){}
 
       const now=new Date();
       el('loc').textContent=`${source==='smhi'?'SMHI':'Open-Meteo'} · ${lat.toFixed(3)}°N · ${lon.toFixed(3)}°E · ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
@@ -552,7 +551,7 @@ async function fetchWind(){
         el('hero').classList.add('on');
         el('bf-wrap').classList.add('on');
         el('cards').classList.add('on');
-        el('sea-wrap').classList.add('on');
+        if(seaOk) el('sea-wrap').classList.add('on');
         el('chart-wrap').classList.add('on');
         el('loc').classList.add('on');
       },20);
