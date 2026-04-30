@@ -12,70 +12,44 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#D6CEBC;--bg2:#C4BAA4;--bg3:#B8AE98;
-  --ink:#1A2A2F;--mid:#4A6068;--light:#7A9AA4;
-  --fjord:#2E5C6E;--fjord2:#1E3E4E;--danger:#7A2010;
-}
-[data-theme=dark]{
-  --bg:#1A1F22;--bg2:#252C30;--bg3:#2F383D;
-  --ink:#E8E0D0;--mid:#8AABB5;--light:#5A8090;
-  --fjord:#4A8FA6;--fjord2:#3A7A90;--danger:#E07060;
-}
+:root{--bg:#D6CEBC;--bg2:#C4BAA4;--bg3:#B8AE98;--ink:#1A2A2F;--mid:#4A6068;--light:#7A9AA4;--fjord:#2E5C6E;--fjord2:#1E3E4E;--danger:#7A2010}
+[data-theme=dark]{--bg:#1A1F22;--bg2:#252C30;--bg3:#2F383D;--ink:#E8E0D0;--mid:#8AABB5;--light:#5A8090;--fjord:#4A8FA6;--fjord2:#3A7A90;--danger:#E07060}
 html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);-webkit-tap-highlight-color:transparent;user-select:none;transition:background .3s,color .3s}
 .shell{position:fixed;inset:0;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);display:flex;flex-direction:column;align-items:center;background:var(--bg);transition:background .3s}
 .shell::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")}
-
-/* TOPBAR */
 .topbar{position:relative;z-index:2;width:100%;max-width:440px;display:flex;align-items:center;justify-content:space-between;padding:.5rem 1.25rem 0}
 .src-toggle{display:flex;background:var(--bg2);border-radius:20px;padding:2px;transition:background .3s}
 .src-btn{font-size:10px;font-weight:500;padding:4px 9px;border-radius:18px;border:none;cursor:pointer;background:transparent;color:var(--mid);transition:background .15s,color .15s;letter-spacing:.02em}
 .src-btn.active{background:var(--fjord);color:#E8E0D0}
 .theme-btn{width:28px;height:28px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background .2s;flex-shrink:0}
-
-/* MID */
 .mid{flex:1;position:relative;z-index:1;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.3rem 1.25rem 0;overflow:hidden}
 .foot{position:relative;z-index:1;width:100%;max-width:440px;padding:.4rem 1.25rem .8rem}
-
-/* IDLE */
 .idle-screen{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.5rem}
-@keyframes spin-slow{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .idle-compass{width:76px;height:76px}
 .compass-tick{animation:spin-slow 12s linear infinite;transform-origin:60px 60px}
 .idle-title{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--ink);line-height:1.1}
 .idle-sub{font-size:12px;color:var(--mid);line-height:1.5;max-width:220px}
-
-/* LOADING */
 .loading-msg{font-size:13px;color:var(--mid)}
-
-/* HERO */
 .hero{width:100%;text-align:center;opacity:0;transform:translateY(8px);transition:opacity .4s,transform .4s}
 .hero.on{opacity:1;transform:none}
-
-/* COMPASS */
 .needle-group{transition:transform .8s cubic-bezier(.4,0,.2,1);transform-origin:40px 40px}
 .compass-svg{width:76px;height:76px}
 .speed-row{display:flex;align-items:baseline;justify-content:center;gap:5px}
-.speed-num{font-family:'DM Serif Display',serif;font-size:clamp(48px,13vw,70px);color:var(--ink);line-height:1}
+.speed-num{font-family:'DM Serif Display',serif;font-size:70px;color:var(--ink);line-height:1}
 .speed-unit{font-size:15px;color:var(--mid);font-weight:300}
 .dir-label{font-size:12px;color:var(--mid);margin-top:1px;letter-spacing:.04em}
-
-/* BEAUFORT */
 .bf-wrap{width:100%;margin-top:.55rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .08s,transform .4s ease .08s}
 .bf-wrap.on{opacity:1;transform:none}
 .bf-track{height:3px;border-radius:2px;background:var(--bg2);overflow:hidden;margin-bottom:4px}
 .bf-fill{height:100%;border-radius:2px;background:var(--fjord);transition:width .8s cubic-bezier(.4,0,.2,1);width:0}
-.bf-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--mid)}
-
-/* CARDS */
+.bf-meta{display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:var(--ink)}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;margin-top:.5rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .16s,transform .4s ease .16s}
 .cards.on{opacity:1;transform:none}
 .card{background:var(--bg2);border-radius:10px;padding:.55rem .8rem;transition:background .3s}
 .card-label{font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--mid);margin-bottom:2px}
 .card-val{font-family:'DM Serif Display',serif;font-size:22px;color:var(--ink);line-height:1}
 .card-unit{font-size:10px;color:var(--mid);font-family:'DM Sans',sans-serif;font-weight:300;margin-left:1px}
-
-/* DATA TABS (Vind / Vattenstånd / Temp) */
 .data-section{width:100%;margin-top:.5rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .22s,transform .4s ease .22s}
 .data-section.on{opacity:1;transform:none}
 .data-tabs{display:flex;gap:5px;margin-bottom:.4rem;flex-wrap:wrap}
@@ -89,47 +63,34 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 .chart-tooltip{position:absolute;background:var(--bg3);border-radius:5px;padding:3px 8px;font-size:12px;font-weight:600;color:var(--ink);pointer-events:none;white-space:nowrap;transform:translate(-50%,-130%);opacity:0;transition:opacity .15s;top:0;left:0;z-index:10}
 .chart-tooltip.show{opacity:1}
 [data-theme=dark] .chart-tooltip{background:#3A4A52;color:#E8E0D0}
-.sea-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:.2rem}
+.sea-station{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:.2rem;letter-spacing:.01em}
+.sea-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:.4rem}
 .sea-val{font-family:'DM Serif Display',serif;font-size:28px;color:var(--ink);line-height:1}
 .sea-unit{font-size:11px;color:var(--mid)}
-.sea-station{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:.4rem;letter-spacing:.01em}
 .sea-loading{font-size:11px;color:var(--mid);padding:.5rem 0;text-align:center}
-
-/* LOC */
 .loc{font-size:9px;color:var(--light);letter-spacing:.04em;margin-top:.35rem;text-align:center;opacity:0;transition:opacity .4s ease .32s}
 .loc.on{opacity:1}
-
-/* ALERT */
 .alert-banner{display:flex;align-items:center;gap:8px;background:#4A1A10;border-radius:10px;padding:.55rem .85rem;margin-bottom:.4rem;width:100%;border-left:3px solid #E07060}
 [data-theme=dark] .alert-banner{background:#3A1508}
 .alert-banner p{font-size:11px;color:#E8C8C0;flex:1;line-height:1.4}
 .alert-close{background:none;border:none;color:#E07060;font-size:16px;cursor:pointer;line-height:1;padding:0 2px}
-
-/* ERR */
 .err{background:#EDD5CE;border-radius:9px;padding:.55rem .85rem;font-size:12px;color:var(--danger);margin-bottom:.4rem;width:100%}
 [data-theme=dark] .err{background:#3A1508;color:#E07060}
-
-/* BTN */
 .btn{width:100%;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;letter-spacing:.04em;cursor:pointer;border-radius:12px;border:none;background:var(--fjord);color:#E8E0D0;transition:background .2s,transform .1s}
 .btn:active{transform:scale(.98);background:var(--fjord2)}
 .btn:disabled{opacity:.4}
-
-/* INSTALL */
 .install-banner{display:flex;align-items:center;gap:8px;background:var(--bg2);border-radius:10px;padding:.55rem .85rem;margin-bottom:.4rem;width:100%}
 .install-banner p{font-size:11px;color:var(--mid);flex:1;line-height:1.3}
 .install-banner p strong{color:var(--ink)}
 .install-btn{padding:5px 11px;font-size:11px;font-weight:500;background:var(--fjord);color:#E8E0D0;border:none;border-radius:7px;cursor:pointer;white-space:nowrap}
 .install-close{background:none;border:none;color:var(--mid);font-size:18px;cursor:pointer;line-height:1;padding:0 2px}
-
-/* LANDSCAPE */
 @media (orientation:landscape) and (max-height:500px){
-  .topbar{max-width:none;padding:.25rem .8rem 0}
+  .shell{flex-direction:row;flex-wrap:nowrap;align-items:stretch}
+  .topbar{position:absolute;top:env(safe-area-inset-top);left:0;right:0;max-width:none;padding:.25rem .8rem 0}
   .mid{max-width:none;padding:.1rem .6rem 0;padding-top:calc(env(safe-area-inset-top) + 1.8rem)}
   .foot{max-width:200px;flex-shrink:0;display:flex;flex-direction:column;justify-content:flex-end;padding:.3rem .8rem .6rem;border-left:1px solid var(--bg2)}
-  .shell{flex-direction:row;flex-wrap:nowrap;align-items:stretch}
   .hero{display:grid;grid-template-columns:1fr 1fr;column-gap:10px;text-align:left}
-  .compass-svg{margin:0 auto .3rem}
-  .speed-row,.dir-label{justify-content:center;text-align:center}
+  .speed-row{justify-content:center}.dir-label{text-align:center}
   .bf-wrap,.cards,.data-section,.loc{grid-column:1/3}
 }
 </style>
@@ -138,14 +99,13 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 <div class="shell">
   <div class="topbar">
     <div class="src-toggle">
-      <button class="src-btn active" id="src-smhi" onclick="setSource('smhi')">SMHI</button>
-      <button class="src-btn" id="src-om" onclick="setSource('om')">Open-Meteo</button>
+      <button class="src-btn active" id="src-smhi" onclick="onSrcClick('smhi')">SMHI</button>
+      <button class="src-btn" id="src-om" onclick="onSrcClick('om')">Open-Meteo</button>
     </div>
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
   </div>
 
   <div class="mid">
-    <!-- IDLE -->
     <div class="idle-screen" id="idle">
       <svg class="idle-compass" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
         <circle cx="60" cy="60" r="54" fill="none" stroke="#C4BAA4" stroke-width="1.5"/>
@@ -169,27 +129,40 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 
     <p class="loading-msg" id="loading" style="display:none"></p>
 
-    <!-- HERO -->
     <div class="hero" id="hero" style="display:none">
-      <!-- COMPASS -->
-      <svg class="compass-svg" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto .4rem">
-        <circle cx="40" cy="40" r="37" fill="none" stroke="var(--bg3)" stroke-width="1"/>
-        <g stroke="var(--bg3)" stroke-width=".8">
-          <line x1="40" y1="4" x2="40" y2="10"/><line x1="40" y1="70" x2="40" y2="76"/>
-          <line x1="4" y1="40" x2="10" y2="40"/><line x1="70" y1="40" x2="76" y2="40"/>
-          <line x1="14.5" y1="14.5" x2="18.5" y2="18.5"/><line x1="61.5" y1="61.5" x2="65.5" y2="65.5"/>
-          <line x1="65.5" y1="14.5" x2="61.5" y2="18.5"/><line x1="18.5" y1="61.5" x2="14.5" y2="65.5"/>
+      <svg class="compass-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto .5rem;width:100px;height:100px">
+        <!-- outer ring -->
+        <circle cx="50" cy="50" r="46" fill="var(--bg2)" stroke="var(--bg3)" stroke-width="1.5"/>
+        <!-- cardinal tick marks (long) -->
+        <g stroke="var(--mid)" stroke-width="2" stroke-linecap="round">
+          <line x1="50" y1="5"  x2="50" y2="16"/>
+          <line x1="50" y1="84" x2="50" y2="95"/>
+          <line x1="5"  y1="50" x2="16" y2="50"/>
+          <line x1="84" y1="50" x2="95" y2="50"/>
         </g>
-        <text x="40" y="3.5" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="500" fill="var(--mid)">N</text>
-        <text x="40" y="79" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="var(--mid)">S</text>
-        <text x="78" y="41.5" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="var(--mid)">O</text>
-        <text x="2" y="41.5" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="var(--mid)">V</text>
-        <circle cx="40" cy="40" r="22" fill="var(--bg2)" stroke="var(--bg3)" stroke-width=".5"/>
-        <g class="needle-group" id="needle-group">
-          <polygon points="40,18 43,38 40,35 37,38" fill="var(--fjord)"/>
-          <polygon points="40,62 43,42 40,45 37,42" fill="var(--mid)" opacity=".4"/>
+        <!-- intercardinal tick marks (short) -->
+        <g stroke="var(--bg3)" stroke-width="1.2" stroke-linecap="round">
+          <line x1="18.5" y1="18.5" x2="24.5" y2="24.5"/>
+          <line x1="75.5" y1="75.5" x2="81.5" y2="81.5"/>
+          <line x1="81.5" y1="18.5" x2="75.5" y2="24.5"/>
+          <line x1="24.5" y1="75.5" x2="18.5" y2="81.5"/>
         </g>
-        <circle cx="40" cy="40" r="2.5" fill="var(--bg)" stroke="var(--mid)" stroke-width=".8"/>
+        <!-- cardinal labels -->
+        <text x="50"  y="4"   text-anchor="middle" dominant-baseline="hanging" font-family="DM Sans,sans-serif" font-size="8" font-weight="700" fill="var(--fjord)">N</text>
+        <text x="50"  y="97"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="500" fill="var(--mid)">S</text>
+        <text x="97"  y="53"  text-anchor="end"    font-family="DM Sans,sans-serif" font-size="7" font-weight="500" fill="var(--mid)">O</text>
+        <text x="3"   y="53"  text-anchor="start"  font-family="DM Sans,sans-serif" font-size="7" font-weight="500" fill="var(--mid)">V</text>
+        <!-- inner disc -->
+        <circle cx="50" cy="50" r="28" fill="var(--bg)" stroke="var(--bg3)" stroke-width="1"/>
+        <!-- needle -->
+        <g id="needle-group" style="transform-origin:50px 50px;transition:transform .8s cubic-bezier(.4,0,.2,1)">
+          <!-- north (fjord) -->
+          <polygon points="50,22 54,48 50,44 46,48" fill="var(--fjord)"/>
+          <!-- south (muted) -->
+          <polygon points="50,78 54,52 50,56 46,52" fill="var(--mid)" opacity=".35"/>
+        </g>
+        <!-- center dot -->
+        <circle cx="50" cy="50" r="3.5" fill="var(--bg)" stroke="var(--mid)" stroke-width="1.2"/>
       </svg>
 
       <div class="speed-row">
@@ -208,21 +181,18 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
         <div class="card"><div class="card-label">Temperatur</div><div class="card-val" id="temp">–<span class="card-unit"> °C</span></div></div>
       </div>
 
-      <!-- UNIFIED DATA TABS -->
       <div class="data-section" id="data-section">
         <div class="data-tabs">
-          <button class="data-tab active" onclick="switchTab('wind')">💨 Vind m/s</button>
-          <button class="data-tab" onclick="switchTab('temp')">🌡 Temp °C</button>
-          <button class="data-tab" id="sea-tab" onclick="switchTab('sea')">🌊 Vattenstånd</button>
+          <button class="data-tab active" id="dtab-wind" onclick="switchTab('wind')">💨 Vind m/s</button>
+          <button class="data-tab" id="dtab-temp" onclick="switchTab('temp')">🌡 Temp °C</button>
+          <button class="data-tab" id="dtab-sea" onclick="switchTab('sea')">🌊 Vattenstånd</button>
         </div>
-        <div class="chart-box" id="chart-box">
-          <!-- wind/temp panel -->
+        <div class="chart-box">
           <div id="panel-wind">
             <svg class="chart-svg" id="chart-svg" height="60" viewBox="0 0 300 60" preserveAspectRatio="none"></svg>
             <div class="chart-label-row" id="chart-labels"></div>
             <div class="chart-tooltip" id="chart-tooltip"></div>
           </div>
-          <!-- sea panel -->
           <div id="panel-sea" style="display:none">
             <span class="sea-station" id="sea-station-name"></span>
             <div class="sea-meta">
@@ -241,16 +211,15 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
     </div>
   </div>
 
-  <!-- FOOTER -->
   <div class="foot">
     <div class="alert-banner" id="alert-banner" style="display:none">
-      <p><strong>⚠️ Hård vind</strong> – Beaufort 7 eller mer. Var försiktig utomhus.</p>
-      <button class="alert-close" onclick="el('alert-banner').style.display='none'">×</button>
+      <p><strong>&#9888; Hård vind</strong> – Beaufort 7 eller mer. Var försiktig utomhus.</p>
+      <button class="alert-close" onclick="g('alert-banner').style.display='none'">&#215;</button>
     </div>
     <div class="install-banner" id="install-banner" style="display:none">
       <p><strong>Installera appen</strong> – Lägg till på hemskärmen</p>
       <button class="install-btn" id="install-btn">Installera</button>
-      <button class="install-close" id="install-close">×</button>
+      <button class="install-close" id="install-close">&#215;</button>
     </div>
     <div class="err" id="err" style="display:none"></div>
     <button class="btn" id="btn" onclick="fetchWind()">Hämta vinddata</button>
@@ -258,286 +227,351 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 </div>
 
 <script>
-// ── SW ──────────────────────────────────────────────────
-const SW=`const C='vind-v6';self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))))});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)||new Response('',{status:503})))});`;
-if('serviceWorker'in navigator)navigator.serviceWorker.register(URL.createObjectURL(new Blob([SW],{type:'application/javascript'}))).catch(()=>{});
+// All helpers defined first so they're available everywhere on Safari
 
-// ── Install ─────────────────────────────────────────────
-let dp=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;el('install-banner').style.display='flex';});
-el('install-btn').onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;el('install-banner').style.display='none';};
-el('install-close').onclick=()=>{el('install-banner').style.display='none';};
+function g(id) { return document.getElementById(id); }
 
-// ── Helpers ─────────────────────────────────────────────
-function el(id){return document.getElementById(id);}
-function dist(a,b,c,d){const R=6371,dL=(c-a)*Math.PI/180,dN=(d-b)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function show(id) { g(id).style.display = ''; }
+function hide(id) { g(id).style.display = 'none'; }
+function on(id)  { g(id).classList.add('on'); }
+function off(id) { g(id).classList.remove('on'); }
 
-// ── Theme ───────────────────────────────────────────────
-let dark=localStorage.getItem('theme')==='dark';
-function applyTheme(){
-  document.documentElement.setAttribute('data-theme',dark?'dark':'');
-  document.body.setAttribute('data-theme',dark?'dark':'');
-  el('theme-btn').textContent=dark?'☀️':'🌙';
-  el('theme-meta').content=dark?'#1A1F22':'#D6CEBC';
+// ── State ────────────────────────────────────────────────
+var source = 'smhi';
+var dataLoaded = false;
+var userLat = null;
+var userLon = null;
+var seaLoaded = false;
+var chartWindData = [];
+var chartTempData = [];
+var chartLabels   = [];
+var activeTab = 'wind';
+var dark = localStorage.getItem('theme') === 'dark';
+
+// ── Theme ────────────────────────────────────────────────
+function applyTheme() {
+  var t = dark ? 'dark' : '';
+  document.documentElement.setAttribute('data-theme', t);
+  document.body.setAttribute('data-theme', t);
+  g('theme-btn').textContent = dark ? '\u2600\uFE0F' : '\uD83C\uDF19';
+  g('theme-meta').content = dark ? '#1A1F22' : '#D6CEBC';
 }
-function toggleTheme(){dark=!dark;localStorage.setItem('theme',dark?'dark':'light');applyTheme();if(dataLoaded)drawTab();}
+function toggleTheme() {
+  dark = !dark;
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+  applyTheme();
+  if (dataLoaded) drawTab();
+}
 applyTheme();
 
-// ── Source ──────────────────────────────────────────────
-let source='smhi';
-let dataLoaded=false;
-function setSource(s){
-  source=s;
-  el('src-om').classList.toggle('active',s==='om');
-  el('src-smhi').classList.toggle('active',s==='smhi');
-  if(dataLoaded) fetchWind();
+// ── Source switch ────────────────────────────────────────
+function onSrcClick(s) {
+  source = s;
+  g('src-smhi').className = 'src-btn' + (s === 'smhi' ? ' active' : '');
+  g('src-om').className   = 'src-btn' + (s === 'om'   ? ' active' : '');
+  if (dataLoaded) fetchWind();
 }
 
-// ── Beaufort ────────────────────────────────────────────
-const BF=[
-  {max:.3,label:"Stiltje",color:"#2E5C6E"},{max:1.5,label:"Nästan stiltje",color:"#2E5C6E"},
-  {max:3.4,label:"Lätt bris",color:"#3A8A6E"},{max:5.4,label:"Svag bris",color:"#3A8A6E"},
-  {max:7.9,label:"Måttlig bris",color:"#A07030"},{max:10.7,label:"Frisk bris",color:"#A07030"},
-  {max:13.8,label:"Hård bris",color:"#904020"},{max:17.1,label:"Hård vind",color:"#C03020"},
-  {max:20.7,label:"Stormig vind",color:"#A02010"},{max:24.4,label:"Storm",color:"#7A1010"},
-  {max:28.4,label:"Svår storm",color:"#560808"},{max:32.6,label:"Orkanartad",color:"#380404"},
-  {max:Infinity,label:"Orkan",color:"#380404"}
+// ── Install ──────────────────────────────────────────────
+var dp = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault(); dp = e; show('install-banner');
+});
+g('install-btn').addEventListener('click', function() {
+  if (!dp) return;
+  dp.prompt();
+  dp.userChoice.then(function() { dp = null; hide('install-banner'); });
+});
+g('install-close').addEventListener('click', function() { hide('install-banner'); });
+
+// ── Beaufort ─────────────────────────────────────────────
+var BF = [
+  {max:0.3,  label:'Stiltje',         color:'#2E5C6E'},
+  {max:1.5,  label:'Nästan stiltje',  color:'#2E5C6E'},
+  {max:3.4,  label:'Lätt bris',       color:'#3A8A6E'},
+  {max:5.4,  label:'Svag bris',       color:'#3A8A6E'},
+  {max:7.9,  label:'Måttlig bris',    color:'#A07030'},
+  {max:10.7, label:'Frisk bris',      color:'#A07030'},
+  {max:13.8, label:'Hård bris',       color:'#904020'},
+  {max:17.1, label:'Hård vind',       color:'#C03020'},
+  {max:20.7, label:'Stormig vind',    color:'#A02010'},
+  {max:24.4, label:'Storm',           color:'#7A1010'},
+  {max:28.4, label:'Svår storm',      color:'#560808'},
+  {max:32.6, label:'Orkanartad',      color:'#380404'},
+  {max:1e9,  label:'Orkan',           color:'#380404'}
 ];
-const DIRS=["N","NNO","NO","ONO","O","OSO","SO","SSO","S","SSV","SV","VSV","V","VNV","NV","NNV"];
-function getBf(ms){for(let i=0;i<BF.length;i++)if(ms<=BF[i].max)return{level:i,...BF[i]};}
-function deg2dir(d){return DIRS[Math.round(d/22.5)%16];}
+var DIRS = ['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSV','SV','VSV','V','VNV','NV','NNV'];
+function getBf(ms) { for (var i=0;i<BF.length;i++) if (ms<=BF[i].max) return {level:i, label:BF[i].label, color:BF[i].color}; return {level:12, label:'Orkan', color:'#380404'}; }
+function deg2dir(d) { return DIRS[Math.round(d/22.5)%16]; }
 
-// ── Chart ───────────────────────────────────────────────
-let chartWindData=[],chartTempData=[],chartLabels=[],activeTab='wind';
-let seaLoaded=false;
+// ── Distance ─────────────────────────────────────────────
+function dist(a,b,c,d) {
+  var R=6371, dL=(c-a)*Math.PI/180, dN=(d-b)*Math.PI/180;
+  var x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)*Math.sin(dN/2);
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
 
-const PROXIES=['https://corsproxy.io/?','https://api.allorigins.win/raw?url='];
-async function proxyFetch(url){
-  for(const p of PROXIES){
-    try{const r=await fetch(p+encodeURIComponent(url),{signal:AbortSignal.timeout(8000)});if(r.ok)return r;}
-    catch(e){continue;}
+// ── Proxy fetch ───────────────────────────────────────────
+var PROXIES = ['https://corsproxy.io/?','https://api.allorigins.win/raw?url='];
+function proxyFetch(url) {
+  var idx = 0;
+  function tryNext() {
+    if (idx >= PROXIES.length) return Promise.reject(new Error('Alla proxies misslyckades'));
+    var p = PROXIES[idx++];
+    return fetch(p + encodeURIComponent(url)).then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r;
+    }).catch(function() { return tryNext(); });
   }
-  throw new Error('Alla proxies misslyckades');
+  return tryNext();
 }
 
-function switchTab(tab){
-  activeTab=tab;
-  document.querySelectorAll('.data-tab').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  el('panel-wind').style.display=tab==='sea'?'none':'';
-  el('panel-sea').style.display=tab==='sea'?'':'none';
-  if(tab!=='sea')drawTab();
-  else if(!seaLoaded)loadSeaLevel();
+// ── Chart ─────────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  g('dtab-wind').className = 'data-tab' + (tab === 'wind' ? ' active' : '');
+  g('dtab-temp').className = 'data-tab' + (tab === 'temp' ? ' active' : '');
+  g('dtab-sea').className  = 'data-tab' + (tab === 'sea'  ? ' active' : '');
+  g('panel-wind').style.display = tab === 'sea' ? 'none' : '';
+  g('panel-sea').style.display  = tab === 'sea' ? ''     : 'none';
+  if (tab !== 'sea') drawTab();
+  else if (!seaLoaded) loadSeaLevel();
 }
 
-function drawTab(){
-  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
-  const data=activeTab==='wind'?chartWindData:chartTempData;
-  const color=activeTab==='wind'?(isDark?'#6ABDD4':'#2E5C6E'):(isDark?'#D4A060':'#A07030');
-  const fill=activeTab==='wind'?(isDark?'rgba(106,189,212,.28)':'rgba(46,92,110,.18)'):(isDark?'rgba(212,160,96,.28)':'rgba(160,112,48,.18)');
-  drawChart('chart-svg','chart-tooltip','chart-labels',data,chartLabels,color,fill,60);
-}
-
-function drawChart(svgId,tipId,lblId,data,labels,color,fill,H){
-  const W=300,pad=6;
-  if(!data||!data.length)return;
-  const mn=Math.min(...data),mx=Math.max(...data),range=mx-mn||1;
-  const xs=data.map((_,i)=>pad+i*(W-pad*2)/(data.length-1));
-  const ys=data.map(v=>H-pad-(v-mn)/range*(H-pad*2-10));
-
-  function curve(pts){
-    if(pts.length<2)return`M${pts[0].x},${pts[0].y}`;
-    let d=`M${pts[0].x},${pts[0].y}`;
-    for(let i=0;i<pts.length-1;i++){
-      d+=` C${pts[i].x+(pts[i+1].x-pts[i].x)*.4},${pts[i].y} ${pts[i].x+(pts[i+1].x-pts[i].x)*.6},${pts[i+1].y} ${pts[i+1].x},${pts[i+1].y}`;
-    }
-    return d;
+function drawTab() {
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  var data, color, fill;
+  if (activeTab === 'wind') {
+    data  = chartWindData;
+    color = isDark ? '#6ABDD4' : '#2E5C6E';
+    fill  = isDark ? 'rgba(106,189,212,.28)' : 'rgba(46,92,110,.18)';
+  } else {
+    data  = chartTempData;
+    color = isDark ? '#D4A060' : '#A07030';
+    fill  = isDark ? 'rgba(212,160,96,.28)' : 'rgba(160,112,48,.18)';
   }
-  const pts=xs.map((x,i)=>({x,y:ys[i]}));
-  const line=curve(pts);
-  const area=`M${xs[0]},${H} L${xs[0]},${ys[0]} `+line.slice(line.indexOf(' '))+` L${xs[xs.length-1]},${H} Z`;
+  drawChart('chart-svg','chart-tooltip','chart-labels', data, chartLabels, color, fill, 60);
+}
 
-  const idxs=new Set([0,Math.floor(data.length/2),data.length-1]);
-  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
-  const lblColor=isDark?'#C0D8E0':color;
-  const valLbls=data.map((v,i)=>{
-    if(!idxs.has(i))return'';
-    const anc=i===0?'start':i===data.length-1?'end':'middle';
-    return`<text x="${xs[i]}" y="${ys[i]-6}" text-anchor="${anc}" font-size="10" font-weight="600" fill="${lblColor}" font-family="DM Sans,sans-serif">${v.toFixed(1)}</text>`;
-  }).join('');
+function drawChart(svgId, tipId, lblId, data, labels, color, fill, H) {
+  var W=300, pad=6, i;
+  if (!data || !data.length) return;
+  var mn=data[0], mx=data[0];
+  for (i=1;i<data.length;i++) { if(data[i]<mn) mn=data[i]; if(data[i]>mx) mx=data[i]; }
+  var range = mx - mn || 1;
+  var xs=[], ys=[];
+  for (i=0;i<data.length;i++) {
+    xs.push(pad + i*(W-pad*2)/(data.length-1));
+    ys.push(H - pad - (data[i]-mn)/range*(H-pad*2-10));
+  }
+  var line = 'M'+xs[0]+','+ys[0];
+  for (i=1;i<xs.length;i++) {
+    var cpx1=xs[i-1]+(xs[i]-xs[i-1])*0.4, cpy1=ys[i-1];
+    var cpx2=xs[i-1]+(xs[i]-xs[i-1])*0.6, cpy2=ys[i];
+    line += ' C'+cpx1+','+cpy1+' '+cpx2+','+cpy2+' '+xs[i]+','+ys[i];
+  }
+  var area = 'M'+xs[0]+','+H+' L'+xs[0]+','+ys[0]+' '+line.slice(line.indexOf(' '))+' L'+xs[xs.length-1]+','+H+' Z';
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  var lblColor = isDark ? '#C0D8E0' : color;
+  var idxs = [0, Math.floor(data.length/2), data.length-1];
+  var valLbls = '';
+  for (i=0;i<idxs.length;i++) {
+    var idx=idxs[i];
+    var anc = idx===0 ? 'start' : idx===data.length-1 ? 'end' : 'middle';
+    valLbls += '<text x="'+xs[idx]+'" y="'+(ys[idx]-6)+'" text-anchor="'+anc+'" font-size="10" font-weight="600" fill="'+lblColor+'" font-family="DM Sans,sans-serif">'+data[idx].toFixed(1)+'</text>';
+  }
+  var dots = '';
+  for (i=0;i<xs.length;i++) dots += '<circle class="cdot" cx="'+xs[i]+'" cy="'+ys[i]+'" r="4" fill="'+color+'" stroke="var(--bg2)" stroke-width="1.5" data-i="'+i+'" style="cursor:pointer"/>';
 
-  const dots=xs.map((x,i)=>`<circle class="cdot" cx="${x}" cy="${ys[i]}" r="4" fill="${color}" stroke="var(--bg2)" stroke-width="1.5" data-i="${i}" style="cursor:pointer"/>`).join('');
+  var svg = g(svgId);
+  svg.innerHTML = '<path d="'+area+'" fill="'+fill+'"/><path d="'+line+'" fill="none" stroke="'+color+'" stroke-width="1.8" stroke-linejoin="round"/>'+valLbls+dots;
 
-  const svg=el(svgId);
-  svg.innerHTML=`<path d="${area}" fill="${fill}"/><path d="${line}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round"/>${valLbls}${dots}`;
+  var dots2 = svg.querySelectorAll('.cdot');
+  for (i=0;i<dots2.length;i++) {
+    (function(dot, xi, yi, di) {
+      dot.addEventListener('click', function(e) {
+        var sr=svg.getBoundingClientRect(), br=svg.parentElement.getBoundingClientRect();
+        var tt=g(tipId);
+        tt.textContent = labels[di]+'  '+data[di].toFixed(1);
+        tt.style.left = ((xi/W)*sr.width+sr.left-br.left)+'px';
+        tt.style.top  = ((yi/H)*sr.height+sr.top-br.top)+'px';
+        tt.className = 'chart-tooltip show';
+        setTimeout(function(){ tt.className='chart-tooltip'; }, 2200);
+        e.stopPropagation();
+      });
+    })(dots2[i], xs[i], ys[i], i);
+  }
 
-  svg.querySelectorAll('.cdot').forEach(dot=>{
-    dot.addEventListener('click',e=>{
-      const i=+dot.getAttribute('data-i');
-      const sr=svg.getBoundingClientRect(),br=svg.parentElement.getBoundingClientRect();
-      const tt=el(tipId);
-      tt.textContent=`${labels[i]}  ${data[i].toFixed(1)}`;
-      tt.style.left=(xs[i]/W)*sr.width+sr.left-br.left+'px';
-      tt.style.top=(ys[i]/H)*sr.height+sr.top-br.top+'px';
-      tt.classList.add('show');
-      setTimeout(()=>tt.classList.remove('show'),2200);
-      e.stopPropagation();
+  var le = g(lblId); le.innerHTML = '';
+  var li = [0, Math.floor(labels.length/2), labels.length-1];
+  for (i=0;i<li.length;i++) {
+    var s = document.createElement('span');
+    s.textContent = labels[li[i]] || '';
+    le.appendChild(s);
+  }
+}
+
+// ── Sea level ─────────────────────────────────────────────
+function loadSeaLevel() {
+  show('sea-loading');
+  g('sea-val').textContent = '–';
+  g('sea-station-name').textContent = '';
+  proxyFetch('https://opendata-download-metobs.smhi.se/api/version/latest/parameter/39.json')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var stations = (d.station || []).filter(function(s) { return s.active !== false; });
+      var best=null, bd=1e9;
+      stations.forEach(function(s) {
+        var dd=dist(userLat,userLon,s.latitude,s.longitude);
+        if (dd<bd) { bd=dd; best=s; }
+      });
+      if (!best || bd>400) throw new Error('Ingen station inom 400 km');
+      return proxyFetch('https://opendata-download-metobs.smhi.se/api/version/latest/parameter/39/station/'+best.id+'/period/latest-day/data.json')
+        .then(function(r2) { return r2.json(); })
+        .then(function(d2) {
+          var vals = (d2.value || []).filter(function(v) { return v.value !== null && v.value !== undefined; }).slice(-24);
+          if (!vals.length) throw new Error('Ingen data');
+          var seaData = vals.map(function(v) { return parseFloat(v.value); });
+          var seaLabels = vals.map(function(v) { var t=new Date(v.date); return t.getHours()+':00'; });
+          var current = seaData[seaData.length-1];
+          g('sea-val').textContent = current.toFixed(0);
+          // Shorten station name: take only text before comma or parenthesis
+          var shortName = best.name.split('(')[0].split(',')[0].trim();
+          g('sea-station-name').textContent = shortName;
+          var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          var sc = isDark ? '#6ABDD4' : '#4A8FA6';
+          drawChart('sea-svg','sea-tooltip','sea-labels', seaData, seaLabels, sc, isDark?'rgba(74,143,166,.28)':'rgba(74,143,166,.18)', 52);
+          seaLoaded = true;
+        });
+    })
+    .catch(function(e) {
+      g('sea-val').textContent = '–';
+      g('sea-station-name').textContent = e.message;
+    })
+    .then(function() { hide('sea-loading'); });
+}
+
+// ── Fetch weather ─────────────────────────────────────────
+function fetchOpenMeteo(lat, lon) {
+  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m&hourly=wind_speed_10m,temperature_2m&wind_speed_unit=ms&timezone=auto&forecast_days=1')
+    .then(function(r) { if(!r.ok) throw new Error('Open-Meteo '+r.status); return r.json(); })
+    .then(function(d) {
+      var c=d.current, nowH=new Date().getHours(), wA=[], tA=[], lA=[];
+      for (var i=0;i<d.hourly.time.length;i++) {
+        var h=parseInt(d.hourly.time[i].slice(11,13));
+        if (h>=nowH && h<=23) { wA.push(d.hourly.wind_speed_10m[i]); tA.push(d.hourly.temperature_2m[i]); lA.push(h+':00'); }
+      }
+      return {ms:c.wind_speed_10m, deg:c.wind_direction_10m, temp:c.temperature_2m, gust:c.wind_gusts_10m, wA:wA, tA:tA, lA:lA};
     });
-  });
-
-  const le=el(lblId);le.innerHTML='';
-  [0,Math.floor(labels.length/2),labels.length-1].forEach(i=>{
-    const s=document.createElement('span');s.textContent=labels[i]||'';le.appendChild(s);
-  });
 }
 
-// ── Sea level ───────────────────────────────────────────
-let userLat,userLon;
-async function loadSeaLevel(){
-  el('sea-loading').style.display='';
-  el('sea-val').textContent='–';
-  el('sea-station-name').textContent='';
-  try{
-    const r=await proxyFetch('https://opendata-download-metobs.smhi.se/api/version/latest/parameter/39.json');
-    const d=await r.json();
-    const stations=(d.station||[]).filter(s=>s.active!==false);
-    let best=null,bd=Infinity;
-    stations.forEach(s=>{
-      const dd=dist(userLat,userLon,s.latitude,s.longitude);
-      if(dd<bd){bd=dd;best=s;}
+function fetchSMHI(lat, lon) {
+  var url = 'https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/'+lon.toFixed(4)+'/lat/'+lat.toFixed(4)+'/data.json';
+  return proxyFetch(url)
+    .then(function(r) { return r.text(); })
+    .then(function(txt) {
+      var d;
+      try { d = JSON.parse(txt); } catch(e) { throw new Error('SMHI svarade ej med JSON'); }
+      if (!d.timeSeries || !d.timeSeries.length) throw new Error('Tom SMHI-respons');
+      function val(ts, key) {
+        if (!ts.data) return null;
+        var v = ts.data[key];
+        if (v === undefined || v === null || v === 9999) return null;
+        return v;
+      }
+      var now = d.timeSeries[0];
+      var ms   = val(now,'wind_speed');
+      var deg  = val(now,'wind_from_direction');
+      var temp = val(now,'air_temperature');
+      // SMHI SNOW1gv1: gust can be under several names
+      var gust = val(now,'wind_gust_speed');
+      if (gust === null) gust = val(now,'wind_gust_10m');
+      if (gust === null) gust = val(now,'wind_gust');
+      if (gust === null) gust = val(now,'ff_gust');
+      if (gust === null || gust <= ms) gust = ms * 1.4; // reasonable estimate if missing
+      if (ms===null||deg===null||temp===null) throw new Error('Saknar vinddata');
+      var midnight=new Date(); midnight.setHours(23,59,59,999);
+      var wA=[],tA=[],lA=[], now2=new Date();
+      d.timeSeries.forEach(function(ts) {
+        var t=new Date(ts.time);
+        if (t>now2 && t<=midnight) {
+          var w=val(ts,'wind_speed'), tmp=val(ts,'air_temperature');
+          if (w!==null && tmp!==null) { wA.push(w); tA.push(tmp); lA.push(t.getHours()+':00'); }
+        }
+      });
+      return {ms:ms, deg:deg, temp:temp, gust:gust, wA:wA, tA:tA, lA:lA};
     });
-    if(!best||bd>400)throw new Error('Ingen station inom 400 km');
-    const r2=await proxyFetch(`https://opendata-download-metobs.smhi.se/api/version/latest/parameter/39/station/${best.id}/period/latest-day/data.json`);
-    const d2=await r2.json();
-    const vals=(d2.value||[]).filter(v=>v.value!==null&&v.value!==undefined).slice(-24);
-    if(!vals.length)throw new Error('Ingen data');
-    const seaData=vals.map(v=>parseFloat(v.value));
-    const seaLabels=vals.map(v=>{const t=new Date(v.date);return`${t.getHours()}:00`;});
-    const current=seaData[seaData.length-1];
-    el('sea-val').textContent=current.toFixed(0);
-    el('sea-station-name').textContent=best.name;
-    const isDark=document.documentElement.getAttribute('data-theme')==='dark';
-    const sc=isDark?'#6ABDD4':'#4A8FA6';
-    drawChart('sea-svg','sea-tooltip','sea-labels',seaData,seaLabels,sc,`rgba(74,143,166,${isDark?.28:.18})`,52);
-    seaLoaded=true;
-  }catch(e){
-    el('sea-val').textContent='–';
-    el('sea-station-name').textContent=e.message;
-  }
-  el('sea-loading').style.display='none';
 }
 
-// ── Fetch weather ───────────────────────────────────────
-async function fetchOpenMeteo(lat,lon){
-  const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m&hourly=wind_speed_10m,temperature_2m&wind_speed_unit=ms&timezone=auto&forecast_days=1`);
-  if(!r.ok)throw new Error('Open-Meteo '+r.status);
-  const d=await r.json();
-  const c=d.current,nowH=new Date().getHours();
-  const wA=[],tA=[],lA=[];
-  d.hourly.time.forEach((t,i)=>{const h=parseInt(t.slice(11,13));if(h>=nowH&&h<=23){wA.push(d.hourly.wind_speed_10m[i]);tA.push(d.hourly.temperature_2m[i]);lA.push(`${h}:00`);}});
-  return{ms:c.wind_speed_10m,deg:c.wind_direction_10m,temp:c.temperature_2m,gust:c.wind_gusts_10m,wA,tA,lA};
+// ── Notification ──────────────────────────────────────────
+function requestNotif() {
+  try { if ('Notification' in window && Notification.permission==='default') Notification.requestPermission(); } catch(e) {}
+}
+function sendAlert(level) {
+  show('alert-banner');
+  try { if ('Notification' in window && Notification.permission==='granted') new Notification('Hård vind', {body:'Beaufort '+level+' – var försiktig utomhus.'}); } catch(e) {}
 }
 
-async function fetchSMHI(lat,lon){
-  // New SNOW1gv1 API (pmp3g deprecated 2026-03-31)
-  const url=`https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/${lon.toFixed(4)}/lat/${lat.toFixed(4)}/data.json`;
-  const r=await proxyFetch(url);
-  const txt=await r.text();
-  let d;
-  try{d=JSON.parse(txt);}catch(e){throw new Error('SMHI svarade ej med JSON');}
-  if(!d.timeSeries||!d.timeSeries.length)throw new Error('Tom SMHI-respons');
-
-  // SNOW1gv1: each entry has a .data object with named fields
-  // Sentinel 9999 = missing
-  function val(ts,key){const v=ts.data?.[key];return(v===undefined||v===9999)?null:v;}
-
-  const now=d.timeSeries[0];
-  const ms=val(now,'wind_speed');
-  const deg=val(now,'wind_from_direction');
-  const temp=val(now,'air_temperature');
-  const gust=val(now,'wind_gust')??ms;
-  if(ms===null||deg===null||temp===null)throw new Error('Saknar vinddata i SMHI-svar');
-
-  const midnight=new Date();midnight.setHours(23,59,59,999);
-  const wA=[],tA=[],lA=[];
-  d.timeSeries.forEach(ts=>{
-    const t=new Date(ts.time);
-    if(t>new Date()&&t<=midnight){
-      const w=val(ts,'wind_speed'),tmp=val(ts,'air_temperature');
-      if(w!==null&&tmp!==null){wA.push(w);tA.push(tmp);lA.push(`${t.getHours()}:00`);}
-    }
-  });
-  return{ms,deg,temp,gust,wA,tA,lA};
+// ── Main fetch ────────────────────────────────────────────
+function fetchWind() {
+  var btn = g('btn');
+  hide('err'); hide('alert-banner');
+  hide('idle'); show('loading');
+  g('hero').style.display = 'none';
+  off('hero'); off('bf-wrap'); off('cards'); off('data-section'); off('loc');
+  seaLoaded = false;
+  g('loading').textContent = 'Hämtar din position…';
+  btn.disabled = true;
+  requestNotif();
+  if (!navigator.geolocation) { showErr('Platsinformation stöds ej.'); btn.disabled=false; return; }
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      userLat = pos.coords.latitude;
+      userLon = pos.coords.longitude;
+      g('loading').textContent = source==='smhi' ? 'Hämtar från SMHI…' : 'Hämtar väderdata…';
+      var promise = source==='smhi' ? fetchSMHI(userLat,userLon) : fetchOpenMeteo(userLat,userLon);
+      promise.then(function(wd) {
+        var b = getBf(wd.ms);
+        g('speed').textContent = wd.ms.toFixed(1);
+        g('gust').innerHTML    = wd.gust.toFixed(1)+'<span class="card-unit"> m/s</span>';
+        g('temp').innerHTML    = wd.temp.toFixed(1)+'<span class="card-unit"> \u00b0C</span>';
+        g('dir').textContent   = 'Vind från '+deg2dir(wd.deg);
+        g('bf-fill').style.width      = ((b.level/12)*100)+'%';
+        g('bf-fill').style.background = b.color;
+        g('bf-desc').textContent = b.label;
+        g('bf-num').textContent  = 'Beaufort '+b.level;
+        g('needle-group').style.transform = 'rotate('+wd.deg+'deg)';
+        g('needle-group').style.transformOrigin = '50px 50px';
+        chartWindData = wd.wA; chartTempData = wd.tA; chartLabels = wd.lA;
+        activeTab = 'wind';
+        g('dtab-wind').className = 'data-tab active';
+        g('dtab-temp').className = 'data-tab';
+        g('dtab-sea').className  = 'data-tab';
+        show('panel-wind'); hide('panel-sea');
+        drawTab();
+        if (b.level >= 7) sendAlert(b.level);
+        var now = new Date();
+        g('loc').textContent = (source==='smhi'?'SMHI':'Open-Meteo')+' · '+userLat.toFixed(3)+'°N · '+userLon.toFixed(3)+'°E · '+now.getHours()+':'+('0'+now.getMinutes()).slice(-2);
+        hide('loading');
+        g('hero').style.display = '';
+        setTimeout(function() { on('hero'); on('bf-wrap'); on('cards'); on('data-section'); on('loc'); }, 20);
+        btn.textContent = 'Uppdatera';
+        dataLoaded = true;
+      }).catch(function(e) {
+        hide('loading'); show('idle');
+        showErr(source==='smhi' ? 'SMHI: '+e.message+'. Prova Open-Meteo.' : 'Fel: '+e.message);
+      }).then(function() { btn.disabled = false; });
+    },
+    function(err) {
+      hide('loading'); show('idle');
+      showErr(err.code===1 ? 'Platsåtkomst nekades.' : 'Kunde inte hämta position.');
+      btn.disabled = false;
+    },
+    {timeout:12000}
+  );
 }
 
-// ── Notification ────────────────────────────────────────
-async function requestNotif(){if('Notification'in window&&Notification.permission==='default')await Notification.requestPermission().catch(()=>{});}
-function sendAlert(level){el('alert-banner').style.display='flex';if('Notification'in window&&Notification.permission==='granted')new Notification('⚠️ Hård vind',{body:`Beaufort ${level} – var försiktig utomhus.`});}
-
-// ── Main ────────────────────────────────────────────────
-async function fetchWind(){
-  const btn=el('btn');
-  el('err').style.display='none';
-  el('alert-banner').style.display='none';
-  el('idle').style.display='none';
-  el('loading').style.display='';
-  el('hero').style.display='none';
-  el('hero').classList.remove('on');
-  el('bf-wrap').classList.remove('on');
-  el('cards').classList.remove('on');
-  el('data-section').classList.remove('on');
-  el('loc').classList.remove('on');
-  seaLoaded=false;
-  el('loading').textContent='Hämtar din position…';
-  btn.disabled=true;
-  await requestNotif();
-  if(!navigator.geolocation){showErr('Platsinformation stöds ej.');btn.disabled=false;return;}
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    userLat=pos.coords.latitude;userLon=pos.coords.longitude;
-    el('loading').textContent=source==='smhi'?'Hämtar från SMHI…':'Hämtar väderdata…';
-    try{
-      let wd;
-      if(source==='smhi')wd=await fetchSMHI(userLat,userLon);
-      else wd=await fetchOpenMeteo(userLat,userLon);
-      const{ms,deg,temp,gust,wA,tA,lA}=wd;
-      const b=getBf(ms);
-      el('speed').textContent=ms.toFixed(1);
-      el('gust').innerHTML=`${gust.toFixed(1)}<span class="card-unit"> m/s</span>`;
-      el('temp').innerHTML=`${temp.toFixed(1)}<span class="card-unit"> °C</span>`;
-      el('dir').textContent=`Vind från ${deg2dir(deg)}`;
-      el('bf-fill').style.width=`${(b.level/12)*100}%`;
-      el('bf-fill').style.background=b.color;
-      el('bf-desc').textContent=b.label;
-      el('bf-num').textContent=`Beaufort ${b.level}`;
-      el('needle-group').style.transform=`rotate(${deg}deg)`;
-      chartWindData=wA;chartTempData=tA;chartLabels=lA;
-      // reset to wind tab
-      activeTab='wind';
-      document.querySelectorAll('.data-tab').forEach((b,i)=>b.classList.toggle('active',i===0));
-      el('panel-wind').style.display='';el('panel-sea').style.display='none';
-      drawTab();
-      if(b.level>=7)sendAlert(b.level);
-      const now=new Date();
-      el('loc').textContent=`${source==='smhi'?'SMHI':'Open-Meteo'} · ${userLat.toFixed(3)}°N · ${userLon.toFixed(3)}°E · ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-      el('loading').style.display='none';
-      el('hero').style.display='';
-      setTimeout(()=>{el('hero').classList.add('on');el('bf-wrap').classList.add('on');el('cards').classList.add('on');el('data-section').classList.add('on');el('loc').classList.add('on');},20);
-      btn.textContent='Uppdatera';
-      dataLoaded=true;
-    }catch(e){
-      console.error(e);
-      el('loading').style.display='none';
-      el('idle').style.display='';
-      showErr(source==='smhi'?`SMHI: ${e.message}. Prova Open-Meteo.`:`Fel: ${e.message}`);
-    }
-    btn.disabled=false;
-  },err=>{
-    el('loading').style.display='none';el('idle').style.display='';
-    showErr(err.code===1?'Platsåtkomst nekades.':'Kunde inte hämta position.');
-    btn.disabled=false;
-  },{timeout:12000});
-}
-function showErr(msg){el('err').textContent=msg;el('err').style.display='';}
+function showErr(msg) { g('err').textContent=msg; show('err'); }
 </script>
 </body>
 </html>
