@@ -395,12 +395,13 @@ function drawChart(svgId, tipId, lblId, data, labels, color, fill, H) {
   var area = 'M'+xs[0]+','+H+' L'+xs[0]+','+ys[0]+' '+line.slice(line.indexOf(' '))+' L'+xs[xs.length-1]+','+H+' Z';
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   var lblColor = isDark ? '#C0D8E0' : color;
+  var unit = tipId === 'chart-tooltip' ? (activeTab === 'wind' ? ' m/s' : '°') : (tipId === 'sea-tooltip' ? ' cm' : '');
   var idxs = [0, Math.floor(data.length/2), data.length-1];
   var valLbls = '';
   for (i=0;i<idxs.length;i++) {
     var idx=idxs[i];
     var anc = idx===0 ? 'start' : idx===data.length-1 ? 'end' : 'middle';
-    valLbls += '<text x="'+xs[idx]+'" y="'+(ys[idx]-6)+'" text-anchor="'+anc+'" font-size="10" font-weight="600" fill="'+lblColor+'" font-family="DM Sans,sans-serif">'+data[idx].toFixed(1)+'</text>';
+    valLbls += '<text x="'+xs[idx]+'" y="'+(ys[idx]-6)+'" text-anchor="'+anc+'" font-size="10" font-weight="600" fill="'+lblColor+'" font-family="DM Sans,sans-serif">'+data[idx].toFixed(1)+unit+'</text>';
   }
   var dots = '';
   for (i=0;i<xs.length;i++) dots += '<circle class="cdot" cx="'+xs[i]+'" cy="'+ys[i]+'" r="4" fill="'+color+'" stroke="var(--bg2)" stroke-width="1.5" data-i="'+i+'" style="cursor:pointer"/>';
@@ -414,7 +415,7 @@ function drawChart(svgId, tipId, lblId, data, labels, color, fill, H) {
       dot.addEventListener('click', function(e) {
         var sr=svg.getBoundingClientRect(), br=svg.parentElement.getBoundingClientRect();
         var tt=g(tipId);
-        tt.textContent = labels[di]+'  '+data[di].toFixed(1);
+        tt.textContent = labels[di]+'  '+data[di].toFixed(1)+unit;
         tt.style.left = ((xi/W)*sr.width+sr.left-br.left)+'px';
         tt.style.top  = ((yi/H)*sr.height+sr.top-br.top)+'px';
         tt.className = 'chart-tooltip show';
