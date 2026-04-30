@@ -435,8 +435,17 @@ function loadSeaLevel() {
           var seaLabels = vals.map(function(v) { var t=new Date(v.date); return t.getHours()+':00'; });
           var current = seaData[seaData.length-1];
           g('sea-val').textContent = current.toFixed(0);
-          // Shorten station name: take only text before comma or parenthesis
-          var shortName = best.name.split('(')[0].split(',')[0].trim();
+          var rawName = best.name || '';
+          // Try parenthesis split first, then comma, then first word
+          var shortName;
+          if (rawName.indexOf('(') > -1) {
+            shortName = rawName.split('(')[0].trim();
+          } else if (rawName.indexOf(',') > -1) {
+            shortName = rawName.split(',')[0].trim();
+          } else {
+            // Take only first word (e.g. "Stockholm Observatoriekullen A" → "Stockholm")
+            shortName = rawName.split(' ')[0];
+          }
           g('sea-station-name').textContent = shortName;
           var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
           var sc = isDark ? '#6ABDD4' : '#4A8FA6';
