@@ -356,7 +356,7 @@ function switchTab(tab) {
   g('dtab-sea').className  = 'data-tab' + (tab === 'sea'  ? ' active' : '');
   g('panel-wind').style.display = tab === 'sea' ? 'none' : '';
   g('panel-sea').style.display  = tab === 'sea' ? ''     : 'none';
-  if (tab !== 'sea') drawTab();
+  if (tab !== 'sea') { drawTab(); renderForecast5(); }
   else if (!seaLoaded) loadSeaLevel();
 }
 
@@ -518,6 +518,7 @@ function loadSeaLevel() {
 
 // ── 5-day forecast ───────────────────────────────────────
 var DAY_NAMES = ['Sön','Mån','Tis','Ons','Tor','Fre','Lör'];
+var forecast5data = [];
 
 function bfIcon(ms) {
   if (ms < 0.3)  return '🌫';
@@ -528,29 +529,58 @@ function bfIcon(ms) {
   return '🌀';
 }
 
+function tempIcon(tmax) {
+  if (tmax >= 25) return '☀️';
+  if (tmax >= 15) return '🌤';
+  if (tmax >= 5)  return '🌥';
+  if (tmax >= 0)  return '🌨';
+  return '❄️';
+}
+
+function renderForecast5() {
+  if (!forecast5data.length) return;
+  var showTemp = (activeTab === 'temp');
+  var cards = '';
+  for (var i = 0; i < forecast5data.length; i++) {
+    var day  = forecast5data[i];
+    var icon = showTemp ? tempIcon(day.tmax) : bfIcon(day.wind);
+    var main = showTemp
+      ? day.tmax.toFixed(0)+'°<span class="fday-unit"> max</span>'
+      : day.wind.toFixed(1)+'<span class="fday-unit"> m/s</span>';
+    var sub  = showTemp
+      ? day.tmin.toFixed(0)+'° min'
+      : day.tmax.toFixed(0)+'° / '+day.tmin.toFixed(0)+'°';
+    var desc = showTemp ? '' : day.label;
+    cards += '<div class="fday">'
+      + '<div class="fday-name">'+day.name+'</div>'
+      + '<div class="fday-icon">'+icon+'</div>'
+      + '<div class="fday-wind">'+main+'</div>'
+      + '<div class="fday-temp">'+sub+'</div>'
+      + (desc ? '<div class="fday-desc">'+desc+'</div>' : '')
+      + '</div>';
+  }
+  g('forecast-scroll').innerHTML = cards;
+}
+
 function fetchForecast5(lat, lon) {
-  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,temperature_2m_max,temperature_2m_min,wind_direction_10m_dominant&wind_speed_unit=ms&timezone=auto&forecast_days=6')
+  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=auto&forecast_days=6')
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var days = d.daily;
-      var cards = '';
-      // skip today (index 0), show next 5
+      forecast5data = [];
       for (var i = 1; i <= 5; i++) {
-        var date  = new Date(days.time[i]);
-        var name  = DAY_NAMES[date.getDay()];
-        var wind  = days.wind_speed_10m_max[i];
-        var tmax  = days.temperature_2m_max[i];
-        var tmin  = days.temperature_2m_min[i];
-        var b     = getBf(wind);
-        cards += '<div class="fday">'
-          + '<div class="fday-name">'+name+'</div>'
-          + '<div class="fday-icon">'+bfIcon(wind)+'</div>'
-          + '<div class="fday-wind">'+wind.toFixed(1)+'<span class="fday-unit"> m/s</span></div>'
-          + '<div class="fday-temp">'+tmax.toFixed(0)+'° / '+tmin.toFixed(0)+'°</div>'
-          + '<div class="fday-desc">'+b.label+'</div>'
-          + '</div>';
+        var date = new Date(days.time[i]);
+        var wind = days.wind_speed_10m_max[i];
+        var b    = getBf(wind);
+        forecast5data.push({
+          name:  DAY_NAMES[date.getDay()],
+          wind:  wind,
+          tmax:  days.temperature_2m_max[i],
+          tmin:  days.temperature_2m_min[i],
+          label: b.label
+        });
       }
-      g('forecast-scroll').innerHTML = cards;
+      renderForecast5();
     })
     .catch(function() {
       g('forecast-scroll').innerHTML = '<span style="font-size:11px;color:var(--mid)">Prognos ej tillgänglig</span>';
