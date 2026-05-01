@@ -68,6 +68,14 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 .fday-unit{font-size:9px;color:var(--mid);font-family:'DM Sans',sans-serif}
 .fday-temp{font-size:11px;font-weight:500;color:var(--ink);margin-top:.2rem}
 .fday-desc{font-size:10px;font-weight:600;color:var(--ink);margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:76px}
+/* expanded card */
+.fday.expanded{min-width:150px;background:var(--fjord);cursor:pointer}
+.fday.expanded .fday-name,.fday.expanded .fday-unit{color:rgba(232,224,208,.7)}
+.fday.expanded .fday-wind,.fday.expanded .fday-desc{color:#E8E0D0}
+.fday.expanded .fday-temp{color:rgba(232,224,208,.85)}
+.fday.expanded .fday-icon{font-size:26px}
+.fday-extra{font-size:10px;color:rgba(232,224,208,.75);margin-top:.3rem;line-height:1.5}
+.fday{cursor:pointer;transition:min-width .2s,background .2s}
 .data-tabs{display:flex;gap:5px;margin-bottom:.4rem;flex-wrap:wrap}
 .data-tab{font-size:12px;font-weight:500;padding:6px 13px;border-radius:20px;border:none;cursor:pointer;background:var(--bg2);color:var(--mid);letter-spacing:.03em;transition:background .15s,color .15s;white-space:nowrap}
 .data-tab.active{background:var(--fjord);color:#E8E0D0}
@@ -603,29 +611,64 @@ function tempIcon(tmax) {
   return '❄️';
 }
 
+var expandedIdx = -1;
+
 function renderForecast5(tab) {
   if (!forecast5data.length) return;
   var showTemp = (tab === 'temp');
   var cards = '';
   for (var i = 0; i < forecast5data.length; i++) {
     var day  = forecast5data[i];
+    var isExp = (i === expandedIdx);
     var icon = showTemp ? tempIcon(day.tmax) : bfIcon(day.wind);
     var main = showTemp
       ? day.tmax.toFixed(0)+'°<span class="fday-unit"> max</span>'
       : day.wind.toFixed(1)+'<span class="fday-unit"> m/s</span>';
-    var sub  = showTemp
+    var sub = showTemp
       ? day.tmin.toFixed(0)+'° min'
       : day.gust.toFixed(1)+' m/s by';
     var desc = showTemp ? '' : day.label;
-    cards += '<div class="fday">'
+    var extra = '';
+    if (isExp) {
+      if (showTemp) {
+        extra = '<div class="fday-extra">'
+          + '🌡 Max: '+day.tmax.toFixed(0)+'°<br>'
+          + '🌡 Min: '+day.tmin.toFixed(0)+'°</div>';
+      } else {
+        extra = '<div class="fday-extra">'
+          + '💨 Vind: '+day.wind.toFixed(1)+' m/s<br>'
+          + '💥 By: '+day.gust.toFixed(1)+' m/s<br>'
+          + '🌡 '+day.tmax.toFixed(0)+'° / '+day.tmin.toFixed(0)+'°</div>';
+      }
+    }
+    cards += '<div class="fday'+(isExp?' expanded':'')+'" data-i="'+i+'">'
       + '<div class="fday-name">'+day.name+'</div>'
       + '<div class="fday-icon">'+icon+'</div>'
       + '<div class="fday-wind">'+main+'</div>'
       + '<div class="fday-temp">'+sub+'</div>'
       + (desc ? '<div class="fday-desc">'+desc+'</div>' : '')
+      + extra
       + '</div>';
   }
   g('forecast-scroll').innerHTML = cards;
+  // click handler via delegation
+  g('forecast-scroll').onclick = function(e) {
+    var card = e.target;
+    while (card && card !== g('forecast-scroll') && !card.getAttribute('data-i')) {
+      card = card.parentElement;
+    }
+    if (!card || !card.getAttribute('data-i') && card.getAttribute('data-i') !== '0') return;
+    var idx = parseInt(card.getAttribute('data-i'));
+    expandedIdx = (expandedIdx === idx) ? -1 : idx;
+    renderForecast5(activeTab);
+    // scroll expanded card into view
+    if (expandedIdx !== -1) {
+      setTimeout(function() {
+        var cards2 = g('forecast-scroll').querySelectorAll('.fday');
+        if (cards2[expandedIdx]) cards2[expandedIdx].scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+      }, 50);
+    }
+  };
 }
 
 function fetchForecast5(lat, lon) {
