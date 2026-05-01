@@ -441,6 +441,36 @@ function loadSeaLevel() {
   show('sea-loading');
   g('sea-val').textContent = '–';
   g('sea-station-name').textContent = '';
+
+  // Stockholm Frihamnen (35233) uses oceanographic API (ocobs), not metobs
+  var isStockholm = dist(userLat, userLon, 59.3463, 18.1271) < 50;
+
+  if (isStockholm) {
+    // Directly fetch Frihamnen from ocobs API
+    proxyFetch('https://opendata-download-ocobs.smhi.se/api/version/1.0/parameter/13/station/35233/period/latest-day/data.json')
+      .then(function(r) { return r.json(); })
+      .then(function(d2) {
+        var vals = (d2.value || []).filter(function(v) { return v.value !== null && v.value !== undefined; }).slice(-24);
+        if (!vals.length) throw new Error('Ingen data');
+        var seaData   = vals.map(function(v) { return parseFloat(v.value); });
+        var seaLabels = vals.map(function(v) { var t=new Date(v.date); return t.getHours()+':00'; });
+        var current   = seaData[seaData.length-1];
+        g('sea-val').textContent          = current.toFixed(0);
+        g('sea-station-name').textContent = 'Stockholm';
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var sc = isDark ? '#6ABDD4' : '#4A8FA6';
+        drawChart('sea-svg','sea-tooltip','sea-labels', seaData, seaLabels, sc, isDark?'rgba(74,143,166,.28)':'rgba(74,143,166,.18)', 52, ' cm');
+        seaLoaded = true;
+      })
+      .catch(function(e) {
+        g('sea-val').textContent          = '–';
+        g('sea-station-name').textContent = e.message;
+      })
+      .then(function() { hide('sea-loading'); });
+    return;
+  }
+
+  // For other locations — use metobs parameter 39
   proxyFetch('https://opendata-download-metobs.smhi.se/api/version/latest/parameter/39.json')
     .then(function(r) { return r.json(); })
     .then(function(d) {
