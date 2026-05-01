@@ -67,7 +67,7 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 .fday-wind{font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink);line-height:1}
 .fday-unit{font-size:9px;color:var(--mid);font-family:'DM Sans',sans-serif}
 .fday-temp{font-size:10px;color:var(--mid);margin-top:.2rem}
-.fday-desc{font-size:9px;color:var(--light);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72px}
+.fday-desc{font-size:10px;font-weight:600;color:var(--ink);margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:76px}
 .data-tabs{display:flex;gap:5px;margin-bottom:.4rem;flex-wrap:wrap}
 .data-tab{font-size:12px;font-weight:500;padding:6px 13px;border-radius:20px;border:none;cursor:pointer;background:var(--bg2);color:var(--mid);letter-spacing:.03em;transition:background .15s,color .15s;white-space:nowrap}
 .data-tab.active{background:var(--fjord);color:#E8E0D0}
@@ -199,7 +199,7 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 
       <!-- 5-DYGN HORISONTELL SCROLL -->
       <div class="forecast-wrap" id="forecast-wrap">
-        <div class="forecast-label">5 dygn</div>
+        <div class="forecast-label">10 dygn</div>
         <div class="forecast-scroll" id="forecast-scroll"></div>
       </div>
 
@@ -356,26 +356,29 @@ function switchTab(tab) {
   g('dtab-sea').className  = 'data-tab' + (tab === 'sea'  ? ' active' : '');
   g('panel-wind').style.display = tab === 'sea' ? 'none' : '';
   g('panel-sea').style.display  = tab === 'sea' ? ''     : 'none';
-  if (tab !== 'sea') { drawTab(); renderForecast5(); }
+  if (tab !== 'sea') { drawTab(); renderForecast5(tab); }
   else if (!seaLoaded) loadSeaLevel();
 }
 
 function drawTab() {
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  var data, color, fill;
+  var data, color, fill, unit;
   if (activeTab === 'wind') {
     data  = chartWindData;
     color = isDark ? '#6ABDD4' : '#2E5C6E';
     fill  = isDark ? 'rgba(106,189,212,.28)' : 'rgba(46,92,110,.18)';
+    unit  = ' m/s';
   } else {
     data  = chartTempData;
     color = isDark ? '#D4A060' : '#A07030';
     fill  = isDark ? 'rgba(212,160,96,.28)' : 'rgba(160,112,48,.18)';
+    unit  = '°';
   }
-  drawChart('chart-svg','chart-tooltip','chart-labels', data, chartLabels, color, fill, 60);
+  drawChart('chart-svg','chart-tooltip','chart-labels', data, chartLabels, color, fill, 60, unit);
 }
 
-function drawChart(svgId, tipId, lblId, data, labels, color, fill, H) {
+function drawChart(svgId, tipId, lblId, data, labels, color, fill, H, unit) {
+  unit = unit || '';
   var W=300, pad=6, i;
   if (!data || data.length < 2) return;
   var mn=data[0], mx=data[0];
@@ -395,7 +398,6 @@ function drawChart(svgId, tipId, lblId, data, labels, color, fill, H) {
   var area = 'M'+xs[0]+','+H+' L'+xs[0]+','+ys[0]+' '+line.slice(line.indexOf(' '))+' L'+xs[xs.length-1]+','+H+' Z';
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   var lblColor = isDark ? '#C0D8E0' : color;
-  var unit = tipId === 'chart-tooltip' ? (activeTab === 'wind' ? ' m/s' : '°') : (tipId === 'sea-tooltip' ? ' cm' : '');
   var idxs = [0, Math.floor(data.length/2), data.length-1];
   var valLbls = '';
   for (i=0;i<idxs.length;i++) {
@@ -443,11 +445,30 @@ function loadSeaLevel() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var stations = (d.station || []).filter(function(s) { return s.active !== false; });
+
+      // Priority stations — prefer these over nearest-calculation
+      var PRIORITY = {
+        35233: 'Stockholm Frihamnen'  // Stockholm Frihamnen (havsvattenstånd)
+      };
+
+      // Check if any priority station is within 50 km
       var best=null, bd=1e9;
       stations.forEach(function(s) {
         var dd=dist(userLat,userLon,s.latitude,s.longitude);
-        if (dd<bd) { bd=dd; best=s; }
+        if (PRIORITY[s.id] && dd < 50) {
+          // Always prefer this station if close enough
+          if (!best || PRIORITY[best.id]) {
+            best = s; bd = dd;
+          }
+        }
       });
+      // Fall back to nearest if no priority station found
+      if (!best) {
+        stations.forEach(function(s) {
+          var dd=dist(userLat,userLon,s.latitude,s.longitude);
+          if (dd<bd) { bd=dd; best=s; }
+        });
+      }
       if (!best || bd>400) throw new Error('Ingen station inom 400 km');
       return proxyFetch('https://opendata-download-metobs.smhi.se/api/version/latest/parameter/39/station/'+best.id+'/period/latest-day/data.json')
         .then(function(r2) { return r2.json(); })
@@ -461,6 +482,7 @@ function loadSeaLevel() {
           var rawName = best.name || '';
           // Map of known SMHI station subnames to city names
           var cityMap = {
+            'frihamnen': 'Stockholm',
             'observatoriekullen': 'Stockholm',
             'landsort': 'Landsort',
             'goteborg': 'Göteborg',
@@ -505,7 +527,7 @@ function loadSeaLevel() {
           g('sea-station-name').textContent = shortName;
           var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
           var sc = isDark ? '#6ABDD4' : '#4A8FA6';
-          drawChart('sea-svg','sea-tooltip','sea-labels', seaData, seaLabels, sc, isDark?'rgba(74,143,166,.28)':'rgba(74,143,166,.18)', 52);
+          drawChart('sea-svg','sea-tooltip','sea-labels', seaData, seaLabels, sc, isDark?'rgba(74,143,166,.28)':'rgba(74,143,166,.18)', 52, ' cm');
           seaLoaded = true;
         });
     })
@@ -537,9 +559,9 @@ function tempIcon(tmax) {
   return '❄️';
 }
 
-function renderForecast5() {
+function renderForecast5(tab) {
   if (!forecast5data.length) return;
-  var showTemp = (activeTab === 'temp');
+  var showTemp = (tab === 'temp');
   var cards = '';
   for (var i = 0; i < forecast5data.length; i++) {
     var day  = forecast5data[i];
@@ -549,7 +571,7 @@ function renderForecast5() {
       : day.wind.toFixed(1)+'<span class="fday-unit"> m/s</span>';
     var sub  = showTemp
       ? day.tmin.toFixed(0)+'° min'
-      : day.tmax.toFixed(0)+'° / '+day.tmin.toFixed(0)+'°';
+      : day.gust.toFixed(1)+' m/s by';
     var desc = showTemp ? '' : day.label;
     cards += '<div class="fday">'
       + '<div class="fday-name">'+day.name+'</div>'
@@ -563,24 +585,25 @@ function renderForecast5() {
 }
 
 function fetchForecast5(lat, lon) {
-  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=auto&forecast_days=6')
+  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=auto&forecast_days=11')
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var days = d.daily;
       forecast5data = [];
-      for (var i = 1; i <= 5; i++) {
+      for (var i = 1; i <= 10; i++) {
         var date = new Date(days.time[i]);
         var wind = days.wind_speed_10m_max[i];
         var b    = getBf(wind);
         forecast5data.push({
           name:  DAY_NAMES[date.getDay()],
           wind:  wind,
+          gust:  days.wind_gusts_10m_max[i],
           tmax:  days.temperature_2m_max[i],
           tmin:  days.temperature_2m_min[i],
           label: b.label
         });
       }
-      renderForecast5();
+      renderForecast5(activeTab);
     })
     .catch(function() {
       g('forecast-scroll').innerHTML = '<span style="font-size:11px;color:var(--mid)">Prognos ej tillgänglig</span>';
