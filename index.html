@@ -446,12 +446,22 @@ function loadSeaLevel() {
   var isStockholm = dist(userLat, userLon, 59.3463, 18.1271) < 50;
 
   if (isStockholm) {
-    // Directly fetch Frihamnen from ocobs API
+    // Directly fetch Frihamnen from ocobs API (parameter 13 = havsvattenstånd RH2000)
     proxyFetch('https://opendata-download-ocobs.smhi.se/api/version/1.0/parameter/13/station/35233/period/latest-day/data.json')
-      .then(function(r) { return r.json(); })
-      .then(function(d2) {
-        var vals = (d2.value || []).filter(function(v) { return v.value !== null && v.value !== undefined; }).slice(-24);
-        if (!vals.length) throw new Error('Ingen data');
+      .then(function(r) { return r.text(); })
+      .then(function(txt) {
+        var d2;
+        try { d2 = JSON.parse(txt); } catch(e) { throw new Error('Ogiltigt JSON från Frihamnen'); }
+        // Try different response structures
+        var vals = [];
+        if (d2.value && d2.value.length) {
+          vals = d2.value.filter(function(v) { return v.value !== null && v.value !== undefined && !isNaN(parseFloat(v.value)); }).slice(-24);
+        } else if (d2.data && d2.data.length) {
+          vals = d2.data.filter(function(v) { return v.value !== null; }).slice(-24).map(function(v) {
+            return { value: v.value, date: v.time || v.date };
+          });
+        }
+        if (!vals.length) throw new Error('Ingen data från Frihamnen');
         var seaData   = vals.map(function(v) { return parseFloat(v.value); });
         var seaLabels = vals.map(function(v) { var t=new Date(v.date); return t.getHours()+':00'; });
         var current   = seaData[seaData.length-1];
