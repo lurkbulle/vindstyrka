@@ -24,7 +24,7 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 .src-btn{font-size:10px;font-weight:500;padding:4px 9px;border-radius:18px;border:none;cursor:pointer;background:transparent;color:var(--mid);transition:background .15s,color .15s;letter-spacing:.02em}
 .src-btn.active{background:var(--fjord);color:#E8E0D0}
 .theme-btn{width:28px;height:28px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background .2s;flex-shrink:0}
-.mid{flex:1;position:relative;z-index:1;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:.3rem 1.25rem 0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.mid{flex:1;position:relative;z-index:1;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:.15rem 1.25rem 0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .foot{position:relative;z-index:1;width:100%;max-width:440px;padding:.4rem 1.25rem .8rem}
 .idle-screen{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.5rem;margin:auto}
 @keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
@@ -41,33 +41,33 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 .speed-num{font-family:'DM Serif Display',serif;font-size:70px;color:var(--ink);line-height:1}
 .speed-unit{font-size:15px;color:var(--mid);font-weight:300}
 .dir-label{font-size:12px;color:var(--mid);margin-top:1px;letter-spacing:.04em}
-.bf-wrap{width:100%;margin-top:.55rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .08s,transform .4s ease .08s}
+.bf-wrap{width:100%;margin-top:.35rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .08s,transform .4s ease .08s}
 .bf-wrap.on{opacity:1;transform:none}
-.bf-track{height:3px;border-radius:2px;background:var(--bg2);overflow:hidden;margin-bottom:4px}
+.bf-track{height:3px;border-radius:2px;background:var(--bg2);overflow:hidden;margin-bottom:3px}
 .bf-fill{height:100%;border-radius:2px;background:var(--fjord);transition:width .8s cubic-bezier(.4,0,.2,1);width:0}
 .bf-meta{display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:var(--ink)}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;margin-top:.5rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .16s,transform .4s ease .16s}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;margin-top:.35rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .16s,transform .4s ease .16s}
 .cards.on{opacity:1;transform:none}
-.card{background:var(--bg2);border-radius:10px;padding:.55rem .8rem;transition:background .3s}
+.card{background:var(--bg2);border-radius:10px;padding:.4rem .8rem;transition:background .3s}
 .card-label{font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--mid);margin-bottom:2px}
 .card-val{font-family:'DM Serif Display',serif;font-size:22px;color:var(--ink);line-height:1}
 .card-unit{font-size:10px;color:var(--mid);font-family:'DM Sans',sans-serif;font-weight:300;margin-left:1px}
-.data-section{width:100%;margin-top:.5rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .22s,transform .4s ease .22s}
+.data-section{width:100%;margin-top:.35rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .22s,transform .4s ease .22s}
 .data-section.on{opacity:1;transform:none}
 
 /* 5-DYGN */
-.forecast-wrap{width:100%;margin-top:.5rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .19s,transform .4s ease .19s}
+.forecast-wrap{width:100%;margin-top:.35rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .19s,transform .4s ease .19s}
 .forecast-wrap.on{opacity:1;transform:none}
-.forecast-label{font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--mid);margin-bottom:.3rem}
+.forecast-label{font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--mid);margin-bottom:.25rem}
 .forecast-scroll{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .forecast-scroll::-webkit-scrollbar{display:none}
-.fday{flex-shrink:0;background:var(--bg2);border-radius:10px;padding:.55rem .7rem;min-width:80px;text-align:center;transition:background .3s}
-.fday-name{font-size:10px;font-weight:600;color:var(--mid);letter-spacing:.04em;margin-bottom:.3rem;text-transform:uppercase}
-.fday-icon{font-size:18px;margin-bottom:.25rem;line-height:1}
+.fday{flex-shrink:0;background:var(--bg2);border-radius:10px;padding:.4rem .7rem;min-width:80px;text-align:center;transition:background .3s}
+.fday-name{font-size:10px;font-weight:600;color:var(--mid);letter-spacing:.04em;margin-bottom:.2rem;text-transform:uppercase}
+.fday-icon{font-size:18px;margin-bottom:.15rem;line-height:1}
 .fday-wind{font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink);line-height:1}
 .fday-unit{font-size:9px;color:var(--mid);font-family:'DM Sans',sans-serif}
-.fday-temp{font-size:11px;font-weight:500;color:var(--ink);margin-top:.2rem}
-.fday-desc{font-size:10px;font-weight:600;color:var(--ink);margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:76px}
+.fday-temp{font-size:11px;font-weight:500;color:var(--ink);margin-top:.15rem}
+.fday-desc{font-size:10px;font-weight:600;color:var(--ink);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:76px}
 /* expanded card */
 .fday.expanded{min-width:150px;background:var(--fjord);cursor:pointer}
 .fday.expanded .fday-name,.fday.expanded .fday-unit{color:rgba(232,224,208,.7)}
@@ -92,7 +92,7 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 .sea-val{font-family:'DM Serif Display',serif;font-size:28px;color:var(--ink);line-height:1}
 .sea-unit{font-size:11px;color:var(--mid)}
 .sea-loading{font-size:11px;color:var(--mid);padding:.5rem 0;text-align:center}
-.loc{font-size:9px;color:var(--light);letter-spacing:.04em;margin-top:.35rem;text-align:center;opacity:0;transition:opacity .4s ease .32s}
+.loc{font-size:9px;color:var(--light);letter-spacing:.04em;margin-top:.2rem;text-align:center;opacity:0;transition:opacity .4s ease .32s}
 .loc.on{opacity:1}
 .alert-banner{display:flex;align-items:center;gap:8px;background:#4A1A10;border-radius:10px;padding:.55rem .85rem;margin-bottom:.4rem;width:100%;border-left:3px solid #E07060}
 [data-theme=dark] .alert-banner{background:#3A1508}
@@ -154,7 +154,7 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
     <p class="loading-msg" id="loading" style="display:none"></p>
 
     <div class="hero" id="hero" style="display:none">
-      <svg class="compass-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto .5rem;width:100px;height:100px">
+      <svg class="compass-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto .3rem;width:86px;height:86px">
         <!-- outer ring -->
         <circle cx="50" cy="50" r="46" fill="var(--bg2)" stroke="var(--bg3)" stroke-width="1.5"/>
         <!-- cardinal tick marks (long) -->
