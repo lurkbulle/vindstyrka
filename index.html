@@ -448,18 +448,15 @@ function loadSeaLevel() {
 
       // Priority stations — prefer these over nearest-calculation
       var PRIORITY = {
-        35233: 'Stockholm Frihamnen'  // Stockholm Frihamnen (havsvattenstånd)
+        '35233': 'Stockholm Frihamnen'
       };
 
       // Check if any priority station is within 50 km
       var best=null, bd=1e9;
       stations.forEach(function(s) {
         var dd=dist(userLat,userLon,s.latitude,s.longitude);
-        if (PRIORITY[s.id] && dd < 50) {
-          // Always prefer this station if close enough
-          if (!best || PRIORITY[best.id]) {
-            best = s; bd = dd;
-          }
+        if (PRIORITY[String(s.id)] && dd < 50) {
+          best = s; bd = dd;
         }
       });
       // Fall back to nearest if no priority station found
@@ -470,7 +467,14 @@ function loadSeaLevel() {
         });
       }
       if (!best || bd>400) throw new Error('Ingen station inom 400 km');
-      return proxyFetch('https://opendata-download-metobs.smhi.se/api/version/latest/parameter/39/station/'+best.id+'/period/latest-day/data.json')
+      // Override: if within 50km of Stockholm, always use Frihamnen (35233)
+      var stationId = best.id;
+      var stationName = best.name;
+      if (dist(userLat, userLon, 59.3463, 18.1271) < 50) {
+        stationId = 35233;
+        stationName = 'Stockholm Frihamnen';
+      }
+      return proxyFetch('https://opendata-download-metobs.smhi.se/api/version/latest/parameter/39/station/'+stationId+'/period/latest-day/data.json')
         .then(function(r2) { return r2.json(); })
         .then(function(d2) {
           var vals = (d2.value || []).filter(function(v) { return v.value !== null && v.value !== undefined; }).slice(-24);
@@ -479,7 +483,7 @@ function loadSeaLevel() {
           var seaLabels = vals.map(function(v) { var t=new Date(v.date); return t.getHours()+':00'; });
           var current = seaData[seaData.length-1];
           g('sea-val').textContent = current.toFixed(0);
-          var rawName = best.name || '';
+          var rawName = stationName || '';
           // Map of known SMHI station subnames to city names
           var cityMap = {
             'frihamnen': 'Stockholm',
