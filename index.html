@@ -635,9 +635,15 @@ function renderForecast5(tab) {
           + '🌡 Max: '+day.tmax.toFixed(0)+'°<br>'
           + '🌡 Min: '+day.tmin.toFixed(0)+'°</div>';
       } else {
+        var dirLabel = deg2dir(day.dir);
+        var arrowSvg = '<svg width="14" height="14" viewBox="0 0 28 28" style="display:inline-block;vertical-align:middle;transform:rotate('+day.dir+'deg)">'
+          + '<polygon points="14,2 18,20 14,17 10,20" fill="rgba(232,224,208,.9)"/>'
+          + '<polygon points="14,26 18,8 14,11 10,8" fill="rgba(232,224,208,.35)"/>'
+          + '</svg>';
         extra = '<div class="fday-extra">'
           + '💨 Vind: '+day.wind.toFixed(1)+' m/s<br>'
           + '💥 By: '+day.gust.toFixed(1)+' m/s<br>'
+          + arrowSvg+' '+dirLabel+'<br>'
           + '🌡 '+day.tmax.toFixed(0)+'° / '+day.tmin.toFixed(0)+'°</div>';
       }
     }
@@ -672,7 +678,7 @@ function renderForecast5(tab) {
 }
 
 function fetchForecast5(lat, lon) {
-  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=auto&forecast_days=11')
+  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=auto&forecast_days=11')
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var days = d.daily;
@@ -685,6 +691,7 @@ function fetchForecast5(lat, lon) {
           name:  DAY_NAMES[date.getDay()],
           wind:  wind,
           gust:  days.wind_gusts_10m_max[i],
+          dir:   days.wind_direction_10m_dominant[i],
           tmax:  days.temperature_2m_max[i],
           tmin:  days.temperature_2m_min[i],
           label: b.label
