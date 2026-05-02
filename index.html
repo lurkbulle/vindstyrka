@@ -46,6 +46,7 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 .bf-track{height:3px;border-radius:2px;background:var(--bg2);overflow:hidden;margin-bottom:3px}
 .bf-fill{height:100%;border-radius:2px;background:var(--fjord);transition:width .8s cubic-bezier(.4,0,.2,1);width:0}
 .bf-meta{display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:var(--ink)}
+.bf-popup{background:var(--bg2);border-radius:9px;padding:.6rem .8rem;margin-top:.4rem;font-size:12px;color:var(--ink);line-height:1.5;transition:background .3s}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;margin-top:.35rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .16s,transform .4s ease .16s}
 .cards.on{opacity:1;transform:none}
 .card{background:var(--bg2);border-radius:10px;padding:.4rem .8rem;transition:background .3s}
@@ -63,6 +64,8 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 .forecast-scroll::-webkit-scrollbar{display:none}
 .fday{flex-shrink:0;background:var(--bg2);border-radius:10px;padding:.4rem .7rem;min-width:80px;text-align:center;transition:background .3s}
 .fday-name{font-size:10px;font-weight:600;color:var(--mid);letter-spacing:.04em;margin-bottom:.2rem;text-transform:uppercase}
+.fday.today .fday-name{color:var(--fjord)}
+.fday.today{border:1.5px solid var(--fjord)}
 .fday-icon{font-size:18px;margin-bottom:.15rem;line-height:1}
 .fday-wind{font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink);line-height:1}
 .fday-unit{font-size:9px;color:var(--mid);font-family:'DM Sans',sans-serif}
@@ -197,7 +200,8 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 
       <div class="bf-wrap" id="bf-wrap">
         <div class="bf-track"><div class="bf-fill" id="bf-fill"></div></div>
-        <div class="bf-meta"><span id="bf-desc">–</span><span id="bf-num">–</span></div>
+        <div class="bf-meta"><span id="bf-desc">–</span><span id="bf-num" onclick="toggleBfPopup()" style="cursor:pointer;text-decoration:underline dotted">–</span></div>
+        <div class="bf-popup" id="bf-popup" style="display:none"></div>
       </div>
 
       <div class="cards" id="cards">
@@ -207,7 +211,7 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 
       <!-- 5-DYGN HORISONTELL SCROLL -->
       <div class="forecast-wrap" id="forecast-wrap">
-        <div class="forecast-label">10 dygn</div>
+        <div class="forecast-label">Idag + 10 dygn</div>
         <div class="forecast-scroll" id="forecast-scroll"></div>
       </div>
 
@@ -316,23 +320,34 @@ g('install-close').addEventListener('click', function() { hide('install-banner')
 
 // ── Beaufort ─────────────────────────────────────────────
 var BF = [
-  {max:0.3,  label:'Stiltje',         color:'#2E5C6E'},
-  {max:1.5,  label:'Nästan stiltje',  color:'#2E5C6E'},
-  {max:3.4,  label:'Lätt bris',       color:'#3A8A6E'},
-  {max:5.4,  label:'Svag bris',       color:'#3A8A6E'},
-  {max:7.9,  label:'Måttlig bris',    color:'#A07030'},
-  {max:10.7, label:'Frisk bris',      color:'#A07030'},
-  {max:13.8, label:'Hård bris',       color:'#904020'},
-  {max:17.1, label:'Hård vind',       color:'#C03020'},
-  {max:20.7, label:'Stormig vind',    color:'#A02010'},
-  {max:24.4, label:'Storm',           color:'#7A1010'},
-  {max:28.4, label:'Svår storm',      color:'#560808'},
-  {max:32.6, label:'Orkanartad',      color:'#380404'},
-  {max:1e9,  label:'Orkan',           color:'#380404'}
+  {max:0.2,  label:'Stiltje',         color:'#2E5C6E', desc:'Röken stiger lodrätt. Vindflöjeln rör sig inte.'},
+  {max:1.5,  label:'Nästan stiltje',  color:'#2E5C6E', desc:'Röken visar vindens riktning, men inte vindflöjeln.'},
+  {max:3.3,  label:'Lätt bris',       color:'#3A8A6E', desc:'En vindflöjel (i gott skick) visar vindens riktning.'},
+  {max:5.4,  label:'Svag bris',       color:'#3A8A6E', desc:'Vinden sträcker en vimpel, sätter blad och tunna kvistar i oavbruten rörelse.'},
+  {max:7.9,  label:'Måttlig bris',    color:'#A07030', desc:'Kvistar och tunna grenar rör sig. Damm och lössnö virvlar upp.'},
+  {max:10.7, label:'Frisk bris',      color:'#A07030', desc:'Mindre lövträd börjar svaja. Vågor med utpräglade kammar på större insjöar.'},
+  {max:13.8, label:'Hård bris',       color:'#904020', desc:'Stora trädgrenar sätts i rörelse. Det viner i trådar och ledningar.'},
+  {max:17.1, label:'Hård vind',       color:'#C03020', desc:'Hela träd börjar svaja. Man går ej obehindrat mot vinden.'},
+  {max:20.7, label:'Stormig vind',    color:'#A02010', desc:'Kvistar bryts från träden och det börjar bli besvärligt att gå i det fria.'},
+  {max:24.4, label:'Storm',           color:'#7A1010', desc:'Mindre skador på hus. Rökhuvar och taktegel blåser ner.'},
+  {max:28.4, label:'Svår storm',      color:'#560808', desc:'Sällsynt i inlandet. Träd ryckas upp med roten, betydande skador på hus.'},
+  {max:32.6, label:'Orkanartad',      color:'#380404', desc:'Mycket sällsynt. Medför mycket utbredda förödelser.'},
+  {max:1e9,  label:'Orkan',           color:'#380404', desc:'Orkan. Extremt sällsynt och med katastrofala skador.'}
 ];
 var DIRS = ['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSV','SV','VSV','V','VNV','NV','NNV'];
-function getBf(ms) { for (var i=0;i<BF.length;i++) if (ms<=BF[i].max) return {level:i, label:BF[i].label, color:BF[i].color}; return {level:12, label:'Orkan', color:'#380404'}; }
+function getBf(ms) { for (var i=0;i<BF.length;i++) if (ms<=BF[i].max) return {level:i, label:BF[i].label, color:BF[i].color, desc:BF[i].desc}; return {level:12, label:'Orkan', color:'#380404', desc:BF[12].desc}; }
 function deg2dir(d) { return DIRS[Math.round(d/22.5)%16]; }
+
+var currentBfLevel = 0;
+function toggleBfPopup() {
+  var popup = g('bf-popup');
+  if (popup.style.display !== 'none') {
+    popup.style.display = 'none';
+    return;
+  }
+  popup.innerHTML = '<strong>Beaufort '+currentBfLevel+'</strong> — '+BF[currentBfLevel].desc;
+  popup.style.display = '';
+}
 
 // ── Distance ─────────────────────────────────────────────
 function dist(a,b,c,d) {
@@ -636,18 +651,18 @@ function renderForecast5(tab) {
           + '🌡 Min: '+day.tmin.toFixed(0)+'°</div>';
       } else {
         var dirLabel = deg2dir(day.dir);
-        var arrowSvg = '<svg width="14" height="14" viewBox="0 0 28 28" style="display:inline-block;vertical-align:middle;transform:rotate('+day.dir+'deg)">'
+        var arrowSvg = '<svg width="22" height="22" viewBox="0 0 28 28" style="display:inline-block;vertical-align:middle;transform:rotate('+day.dir+'deg)">'
           + '<polygon points="14,2 18,20 14,17 10,20" fill="rgba(232,224,208,.9)"/>'
           + '<polygon points="14,26 18,8 14,11 10,8" fill="rgba(232,224,208,.35)"/>'
           + '</svg>';
         extra = '<div class="fday-extra">'
-          + '💨 Vind: '+day.wind.toFixed(1)+' m/s<br>'
-          + '💥 By: '+day.gust.toFixed(1)+' m/s<br>'
-          + arrowSvg+' '+dirLabel+'<br>'
-          + '🌡 '+day.tmax.toFixed(0)+'° / '+day.tmin.toFixed(0)+'°</div>';
+          + '💨 '+day.wind.toFixed(1)+' m/s<br>'
+          + '💥 '+day.gust.toFixed(1)+' m/s by<br>'
+          + '<span style="font-size:13px;font-weight:600;letter-spacing:.03em">'+arrowSvg+' '+dirLabel+'</span>'
+          + '</div>';
       }
     }
-    cards += '<div class="fday'+(isExp?' expanded':'')+'" data-i="'+i+'">'
+    cards += '<div class="fday'+(isExp?' expanded':'')+(i===0?' today':'')+'" data-i="'+i+'">'
       + '<div class="fday-name">'+day.name+'</div>'
       + '<div class="fday-icon">'+icon+'</div>'
       + '<div class="fday-wind">'+main+'</div>'
@@ -683,12 +698,12 @@ function fetchForecast5(lat, lon) {
     .then(function(d) {
       var days = d.daily;
       forecast5data = [];
-      for (var i = 1; i <= 10; i++) {
+      for (var i = 0; i <= 10; i++) {
         var date = new Date(days.time[i]);
         var wind = days.wind_speed_10m_max[i];
         var b    = getBf(wind);
         forecast5data.push({
-          name:  DAY_NAMES[date.getDay()],
+          name:  i === 0 ? 'Idag' : DAY_NAMES[date.getDay()],
           wind:  wind,
           gust:  days.wind_gusts_10m_max[i],
           dir:   days.wind_direction_10m_dominant[i],
@@ -802,6 +817,8 @@ function fetchWind() {
         g('bf-fill').style.background = b.color;
         g('bf-desc').textContent = b.label;
         g('bf-num').textContent  = 'Beaufort '+b.level;
+        currentBfLevel = b.level;
+        g('bf-popup').style.display = 'none';
         g('needle-group').style.transform = 'rotate('+wd.deg+'deg)';
         g('needle-group').style.transformOrigin = '50px 50px';
         chartWindData = wd.wA; chartTempData = wd.tA; chartLabels = wd.lA;
