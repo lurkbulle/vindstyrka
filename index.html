@@ -193,7 +193,7 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
           <li>📈 Diagram för vind, temp eller vattenstånd</li>
           <li>🌊 Vattenstånd 24h — visar närmaste SMHI-station. Ingen data utanför 400 km.</li>
           <li>📅 10-dygnsprognos — svep och tryck för detaljer</li>
-          <li>🌙 Mörkt/ljust tema</li>
+          <li>🌙 Tema växlar automatiskt vid soluppgång och solnedgång — eller välj manuellt</li>
           <li>🔔 Varning vid Beaufort 7 eller mer</li>
           <li>📡 Källor: SMHI och Open-Meteo</li>
         </ul>
@@ -370,9 +370,67 @@ var chartWindData = [];
 var chartTempData = [];
 var chartLabels   = [];
 var activeTab = 'wind';
-var dark = localStorage.getItem('theme') === 'dark';
+// If user has never set theme manually, use auto mode
+var themeStorage = localStorage.getItem('theme');
+var dark = themeStorage === 'dark' ? true : themeStorage === 'light' ? false : null;
+var autoTheme = (dark === null); // auto if never manually set
+
+// ── Sunrise/sunset calculator (Duffett-Smith algorithm) ──
+function getSunTimes(lat, lon, date) {
+  var rad = Math.PI / 180;
+  var deg = 180 / Math.PI;
+  var N = Math.floor(275*date.getMonth()/9) - Math.floor((date.getMonth()+9)/12)*
+          (1+Math.floor((date.getFullYear()-4*Math.floor(date.getFullYear()/4)+2)/3)) +
+          date.getDate() - 30;
+  var lngHour = lon / 15;
+  function calcTime(isSunrise) {
+    var t = N + ((isSunrise ? 6 : 18) - lngHour) / 24;
+    var M = (0.9856 * t) - 3.289;
+    var L = M + (1.916 * Math.sin(M*rad)) + (0.020 * Math.sin(2*M*rad)) + 282.634;
+    L = ((L % 360) + 360) % 360;
+    var RA = Math.atan(0.91764 * Math.tan(L*rad)) * deg;
+    RA = ((RA % 360) + 360) % 360;
+    var Lquad = Math.floor(L/90)*90;
+    var RAquad = Math.floor(RA/90)*90;
+    RA = (RA + Lquad - RAquad) / 15;
+    var sinDec = 0.39782 * Math.sin(L*rad);
+    var cosDec = Math.cos(Math.asin(sinDec));
+    var cosH = (Math.cos(90.833*rad) - sinDec*Math.sin(lat*rad)) / (cosDec*Math.cos(lat*rad));
+    if (cosH > 1 || cosH < -1) return null;
+    var H = (isSunrise ? 360 - Math.acos(cosH)*deg : Math.acos(cosH)*deg) / 15;
+    var T = H + RA - (0.06571*t) - 6.622;
+    var UT = T - lngHour;
+    UT = ((UT % 24) + 24) % 24;
+    return UT; // hours UTC
+  }
+  var riseUTC = calcTime(true);
+  var setUTC  = calcTime(false);
+  if (riseUTC === null || setUTC === null) return null;
+  // Convert UTC hours to local Date
+  var now = new Date();
+  var tzOff = now.getTimezoneOffset() / 60;
+  return {
+    sunrise: ((riseUTC - tzOff) + 24) % 24,
+    sunset:  ((setUTC  - tzOff) + 24) % 24
+  };
+}
+
+function checkAutoTheme() {
+  if (!autoTheme || userLat === null) return;
+  var now = new Date();
+  var sun = getSunTimes(userLat, userLon, now);
+  if (!sun) return;
+  var h = now.getHours() + now.getMinutes()/60;
+  var shouldBeDark = (h < sun.sunrise || h >= sun.sunset);
+  if (shouldBeDark !== dark) {
+    dark = shouldBeDark;
+    applyTheme();
+    if (dataLoaded) drawTab();
+  }
+}
 
 // ── Theme ────────────────────────────────────────────────
+if (dark === null) dark = false; // default light before position known
 function applyTheme() {
   var t = dark ? 'dark' : '';
   document.documentElement.setAttribute('data-theme', t);
@@ -381,12 +439,16 @@ function applyTheme() {
   g('theme-meta').content = dark ? '#1A1F22' : '#D6CEBC';
 }
 function toggleTheme() {
+  autoTheme = false; // manual override disables auto
   dark = !dark;
   localStorage.setItem('theme', dark ? 'dark' : 'light');
   applyTheme();
   if (dataLoaded) drawTab();
 }
 applyTheme();
+
+// Check auto theme every minute
+setInterval(checkAutoTheme, 60000);
 
 // ── Source switch ────────────────────────────────────────
 function onSrcClick(s) {
@@ -948,6 +1010,7 @@ function fetchWind() {
     function(pos) {
       userLat = pos.coords.latitude;
       userLon = pos.coords.longitude;
+      checkAutoTheme(); // apply sunrise/sunset theme now that we have position
       g('loading').textContent = source==='smhi' ? 'Hämtar från SMHI…' : 'Hämtar väderdata…';
       var promise = source==='smhi' ? fetchSMHI(userLat,userLon) : fetchOpenMeteo(userLat,userLon);
       promise.then(function(wd) {
