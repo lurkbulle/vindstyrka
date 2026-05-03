@@ -692,7 +692,7 @@ function renderForecast5(tab) {
   };
 }
 
-function fetchForecast5(lat, lon) {
+function fetchForecast5(lat, lon, currentMs, currentGust, currentTemp, currentDeg) {
   return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=auto&forecast_days=11')
     .then(function(r) { return r.json(); })
     .then(function(d) {
@@ -700,15 +700,19 @@ function fetchForecast5(lat, lon) {
       forecast5data = [];
       for (var i = 0; i <= 10; i++) {
         var date = new Date(days.time[i]);
-        var wind = days.wind_speed_10m_max[i];
+        var wind = (i === 0 && currentMs !== undefined) ? currentMs : days.wind_speed_10m_max[i];
+        var gust = (i === 0 && currentGust !== undefined) ? currentGust : days.wind_gusts_10m_max[i];
+        var dir  = (i === 0 && currentDeg !== undefined) ? currentDeg : days.wind_direction_10m_dominant[i];
+        var tmax = (i === 0 && currentTemp !== undefined) ? currentTemp : days.temperature_2m_max[i];
+        var tmin = (i === 0 && currentTemp !== undefined) ? currentTemp : days.temperature_2m_min[i];
         var b    = getBf(wind);
         forecast5data.push({
           name:  i === 0 ? 'Idag' : DAY_NAMES[date.getDay()],
           wind:  wind,
-          gust:  days.wind_gusts_10m_max[i],
-          dir:   days.wind_direction_10m_dominant[i],
-          tmax:  days.temperature_2m_max[i],
-          tmin:  days.temperature_2m_min[i],
+          gust:  gust,
+          dir:   dir,
+          tmax:  tmax,
+          tmin:  tmin,
           label: b.label
         });
       }
@@ -829,8 +833,8 @@ function fetchWind() {
         show('panel-wind'); hide('panel-sea');
         drawTab();
         if (b.level >= 7) sendAlert(b.level);
-        // 5-day forecast (always from Open-Meteo)
-        fetchForecast5(userLat, userLon);
+        // 10-day forecast — pass current values for today card
+        fetchForecast5(userLat, userLon, wd.ms, wd.gust, wd.temp, wd.deg);
         var now = new Date();
         g('loc').textContent = (source==='smhi'?'SMHI':'Open-Meteo')+' · '+userLat.toFixed(3)+'°N · '+userLon.toFixed(3)+'°E · '+now.getHours()+':'+('0'+now.getMinutes()).slice(-2);
         hide('loading');
