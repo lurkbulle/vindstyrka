@@ -123,12 +123,12 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
 /* INFO FLIP CARD */
 .info-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:1.5rem}
 .info-overlay.show{display:flex}
-.flip-card{width:100%;max-width:360px;height:480px;perspective:1000px;cursor:pointer;position:relative}
-.flip-front,.flip-back{position:absolute;inset:0;border-radius:16px;padding:1.5rem;-webkit-backface-visibility:hidden;backface-visibility:hidden;transition:transform .6s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
-.flip-front{background:var(--bg);align-items:center;justify-content:center;text-align:center;transform:rotateY(0deg)}
-.flip-back{background:var(--bg);transform:rotateY(180deg);overflow-y:auto}
-.flip-card.flipped .flip-front{transform:rotateY(-180deg)}
-.flip-card.flipped .flip-back{transform:rotateY(0deg)}
+.flip-card{width:100%;max-width:360px;height:480px;-webkit-perspective:1200px;perspective:1200px;cursor:pointer;position:relative}
+.flip-inner{width:100%;height:100%;position:relative;-webkit-transform-style:preserve-3d;transform-style:preserve-3d;-webkit-transition:-webkit-transform .6s cubic-bezier(.4,0,.2,1);transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.flip-card.flipped .flip-inner{-webkit-transform:rotateY(180deg);transform:rotateY(180deg)}
+.flip-front,.flip-back{position:absolute;inset:0;border-radius:16px;padding:1.5rem;-webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;flex-direction:column}
+.flip-front{background:var(--bg);align-items:center;justify-content:center;text-align:center}
+.flip-back{background:var(--bg);-webkit-transform:rotateY(180deg);transform:rotateY(180deg);overflow-y:auto}
 .flip-icon{font-size:48px;margin-bottom:1rem}
 .flip-title{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--ink);margin-bottom:.4rem}
 .flip-sub{font-size:13px;color:var(--mid)}
@@ -167,7 +167,7 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
   <!-- INFO FLIP CARD OVERLAY -->
   <div class="info-overlay" id="info-overlay" onclick="toggleInfo()">
     <div class="flip-card" id="flip-card" onclick="flipCard(event)">
-      <div class="flip-front">
+      <div class="flip-inner">
         <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="90" height="90" style="margin-bottom:1rem">
           <circle cx="60" cy="60" r="54" fill="none" stroke="var(--bg3)" stroke-width="2"/>
           <g stroke="var(--mid)" stroke-width="3" stroke-linecap="round">
@@ -202,12 +202,9 @@ html,body{position:fixed;inset:0;overflow:hidden;background:var(--bg);font-famil
         </ul>
         <div class="flip-close">Tryck var som helst för att stänga</div>
       </div>
-    </div>
-  </div>
-        <div class="flip-close">Tryck var som helst för att stänga</div>
-      </div>
-    </div>
-  </div>
+      </div><!-- flip-inner -->
+    </div><!-- flip-card -->
+  </div><!-- info-overlay -->
 
   <div class="mid">
     <div class="idle-screen" id="idle">
