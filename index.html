@@ -145,23 +145,17 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
     </div>
     <div style="display:flex;gap:6px;align-items:center">
       <button class="theme-btn" id="info-btn" onclick="toggleInfo()" style="width:34px;height:34px;background:transparent;border:none;padding:0">
-        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
-          <circle cx="60" cy="60" r="56" fill="#2E5C6E"/>
-          <!-- torn -->
-          <rect x="47" y="38" width="26" height="52" rx="3" fill="#E8E0D0"/>
-          <!-- trapets-topp -->
-          <polygon points="40,38 80,38 74,24 46,24" fill="#E8E0D0"/>
-          <!-- lyskupa -->
-          <rect x="48" y="12" width="24" height="14" rx="2" fill="#E8E0D0"/>
-          <!-- ljuspunkt -->
-          <circle cx="60" cy="19" r="4" fill="#D6CEBC" opacity=".8"/>
-          <!-- bas -->
-          <rect x="36" y="90" width="48" height="11" rx="2" fill="#E8E0D0"/>
-          <!-- vågor -->
-          <path d="M28,108 Q38,102 50,108 Q62,114 74,108 Q86,102 96,108" fill="none" stroke="#E8E0D0" stroke-width="2" stroke-linecap="round" opacity=".6"/>
-          <!-- i i tornet -->
-          <circle cx="60" cy="48" r="3" fill="#2E5C6E"/>
-          <rect x="58" y="55" width="4" height="16" rx="2" fill="#2E5C6E"/>
+        <svg viewBox="0 0 120 178" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
+          <rect x="0" y="0" width="120" height="178" rx="16" fill="#2E5C6E"/>
+          <rect x="40" y="70" width="40" height="82" rx="0" fill="#E8E0D0"/>
+          <rect x="40" y="97" width="40" height="26" fill="#1A2A2F"/>
+          <rect x="46" y="52" width="28" height="20" rx="0" fill="#E8E0D0"/>
+          <rect x="48" y="34" width="24" height="20" rx="3" fill="#1A2A2F"/>
+          <circle cx="60" cy="30" r="7" fill="#E8B830"/>
+          <rect x="28" y="152" width="64" height="8" rx="0" fill="#C4BAA4" opacity=".5"/>
+          <path d="M18,166 Q31,160 46,166 Q61,172 74,166 Q89,160 104,166" fill="none" stroke="#E8E0D0" stroke-width="1.8" stroke-linecap="round" opacity=".5"/>
+          <circle cx="60" cy="102" r="3" fill="#E8E0D0"/>
+          <rect x="58" y="109" width="4" height="10" rx="2" fill="#E8E0D0"/>
         </svg>
       </button>
       <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
@@ -173,16 +167,17 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
     <div class="flip-card" id="flip-card" onclick="flipCard(event)">
       <div class="flip-front" id="flip-front">
         <button class="flip-x-btn" onclick="toggleInfo(event)">&#215;</button>
-        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="100" height="100" style="margin-bottom:1rem">
-          <circle cx="60" cy="60" r="56" fill="#2E5C6E"/>
-          <rect x="47" y="38" width="26" height="52" rx="3" fill="#E8E0D0"/>
-          <polygon points="40,38 80,38 74,24 46,24" fill="#E8E0D0"/>
-          <rect x="48" y="12" width="24" height="14" rx="2" fill="#E8E0D0"/>
-          <circle cx="60" cy="19" r="4" fill="#D6CEBC" opacity=".8"/>
-          <rect x="36" y="90" width="48" height="11" rx="2" fill="#E8E0D0"/>
-          <path d="M28,108 Q38,102 50,108 Q62,114 74,108 Q86,102 96,108" fill="none" stroke="#E8E0D0" stroke-width="2" stroke-linecap="round" opacity=".6"/>
-          <circle cx="60" cy="48" r="3" fill="#2E5C6E"/>
-          <rect x="58" y="55" width="4" height="16" rx="2" fill="#2E5C6E"/>
+        <svg viewBox="0 0 120 178" xmlns="http://www.w3.org/2000/svg" width="110" height="110" style="margin-bottom:1rem">
+          <rect x="0" y="0" width="120" height="178" rx="16" fill="#2E5C6E"/>
+          <rect x="40" y="70" width="40" height="82" rx="0" fill="#E8E0D0"/>
+          <rect x="40" y="97" width="40" height="26" fill="#1A2A2F"/>
+          <rect x="46" y="52" width="28" height="20" rx="0" fill="#E8E0D0"/>
+          <rect x="48" y="34" width="24" height="20" rx="3" fill="#1A2A2F"/>
+          <circle cx="60" cy="30" r="7" fill="#E8B830"/>
+          <rect x="28" y="152" width="64" height="8" rx="0" fill="#C4BAA4" opacity=".5"/>
+          <path d="M18,166 Q31,160 46,166 Q61,172 74,166 Q89,160 104,166" fill="none" stroke="#E8E0D0" stroke-width="1.8" stroke-linecap="round" opacity=".5"/>
+          <circle cx="60" cy="102" r="3" fill="#E8E0D0"/>
+          <rect x="58" y="109" width="4" height="10" rx="2" fill="#E8E0D0"/>
         </svg>
         <div class="flip-title">Kuling</div>
         <div class="flip-sub">Tryck för att se funktioner</div>
