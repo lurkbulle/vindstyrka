@@ -144,18 +144,24 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
       <button class="src-btn" id="src-om" onclick="onSrcClick('om')">Open-Meteo</button>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
-      <button class="theme-btn" id="info-btn" onclick="toggleInfo()" style="width:34px;height:34px;background:var(--fjord);border:2px solid var(--fjord2)">
-        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-          <circle cx="40" cy="40" r="37" fill="none" stroke="rgba(232,224,208,.7)" stroke-width="2.5"/>
-          <g stroke="rgba(232,224,208,.7)" stroke-width="2" stroke-linecap="round">
-            <line x1="40" y1="5" x2="40" y2="13"/><line x1="40" y1="67" x2="40" y2="75"/>
-            <line x1="5" y1="40" x2="13" y2="40"/><line x1="67" y1="40" x2="75" y2="40"/>
-          </g>
-          <text x="40" y="4" text-anchor="middle" dominant-baseline="hanging" font-family="DM Sans,sans-serif" font-size="10" font-weight="700" fill="#E8E0D0">N</text>
-          <circle cx="40" cy="40" r="17" fill="rgba(232,224,208,.15)"/>
-          <polygon points="40,23 44,39 40,36 36,39" fill="#E8E0D0"/>
-          <polygon points="40,57 44,41 40,44 36,41" fill="rgba(232,224,208,.35)"/>
-          <circle cx="40" cy="40" r="3.5" fill="var(--fjord)" stroke="rgba(232,224,208,.8)" stroke-width="1.2"/>
+      <button class="theme-btn" id="info-btn" onclick="toggleInfo()" style="width:34px;height:34px;background:transparent;border:none;padding:0">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
+          <circle cx="60" cy="60" r="56" fill="#2E5C6E"/>
+          <!-- torn -->
+          <rect x="47" y="38" width="26" height="52" rx="3" fill="#E8E0D0"/>
+          <!-- trapets-topp -->
+          <polygon points="40,38 80,38 74,24 46,24" fill="#E8E0D0"/>
+          <!-- lyskupa -->
+          <rect x="48" y="12" width="24" height="14" rx="2" fill="#E8E0D0"/>
+          <!-- ljuspunkt -->
+          <circle cx="60" cy="19" r="4" fill="#D6CEBC" opacity=".8"/>
+          <!-- bas -->
+          <rect x="36" y="90" width="48" height="11" rx="2" fill="#E8E0D0"/>
+          <!-- vågor -->
+          <path d="M28,108 Q38,102 50,108 Q62,114 74,108 Q86,102 96,108" fill="none" stroke="#E8E0D0" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+          <!-- i i tornet -->
+          <circle cx="60" cy="48" r="3" fill="#2E5C6E"/>
+          <rect x="58" y="55" width="4" height="16" rx="2" fill="#2E5C6E"/>
         </svg>
       </button>
       <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
@@ -167,20 +173,16 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
     <div class="flip-card" id="flip-card" onclick="flipCard(event)">
       <div class="flip-front" id="flip-front">
         <button class="flip-x-btn" onclick="toggleInfo(event)">&#215;</button>
-        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="90" height="90" style="margin-bottom:1rem">
-          <circle cx="60" cy="60" r="54" fill="none" stroke="var(--bg3)" stroke-width="2"/>
-          <g stroke="var(--mid)" stroke-width="3" stroke-linecap="round">
-            <line x1="60" y1="8" x2="60" y2="20"/><line x1="60" y1="100" x2="60" y2="112"/>
-            <line x1="8" y1="60" x2="20" y2="60"/><line x1="100" y1="60" x2="112" y2="60"/>
-          </g>
-          <text x="60" y="7" text-anchor="middle" dominant-baseline="hanging" font-family="DM Sans,sans-serif" font-size="12" font-weight="700" fill="var(--fjord)">N</text>
-          <text x="60" y="114" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="var(--mid)">S</text>
-          <text x="114" y="64" text-anchor="start" font-family="DM Sans,sans-serif" font-size="10" fill="var(--mid)">O</text>
-          <text x="6" y="64" text-anchor="end" font-family="DM Sans,sans-serif" font-size="10" fill="var(--mid)">V</text>
-          <circle cx="60" cy="60" r="32" fill="var(--bg2)" stroke="var(--bg3)" stroke-width="1"/>
-          <polygon points="60,28 65,58 60,53 55,58" fill="var(--fjord)"/>
-          <polygon points="60,92 65,62 60,67 55,62" fill="var(--mid)" opacity=".4"/>
-          <circle cx="60" cy="60" r="5" fill="var(--bg)" stroke="var(--mid)" stroke-width="1.5"/>
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="100" height="100" style="margin-bottom:1rem">
+          <circle cx="60" cy="60" r="56" fill="#2E5C6E"/>
+          <rect x="47" y="38" width="26" height="52" rx="3" fill="#E8E0D0"/>
+          <polygon points="40,38 80,38 74,24 46,24" fill="#E8E0D0"/>
+          <rect x="48" y="12" width="24" height="14" rx="2" fill="#E8E0D0"/>
+          <circle cx="60" cy="19" r="4" fill="#D6CEBC" opacity=".8"/>
+          <rect x="36" y="90" width="48" height="11" rx="2" fill="#E8E0D0"/>
+          <path d="M28,108 Q38,102 50,108 Q62,114 74,108 Q86,102 96,108" fill="none" stroke="#E8E0D0" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+          <circle cx="60" cy="48" r="3" fill="#2E5C6E"/>
+          <rect x="58" y="55" width="4" height="16" rx="2" fill="#2E5C6E"/>
         </svg>
         <div class="flip-title">Kuling</div>
         <div class="flip-sub">Tryck för att se funktioner</div>
