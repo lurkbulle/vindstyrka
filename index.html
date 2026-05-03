@@ -678,10 +678,34 @@ function renderForecast5(tab) {
     while (card && card !== g('forecast-scroll') && !card.getAttribute('data-i')) {
       card = card.parentElement;
     }
-    if (!card || !card.getAttribute('data-i') && card.getAttribute('data-i') !== '0') return;
+    if (!card || (!card.getAttribute('data-i') && card.getAttribute('data-i') !== '0')) return;
     var idx = parseInt(card.getAttribute('data-i'));
     expandedIdx = (expandedIdx === idx) ? -1 : idx;
     renderForecast5(activeTab);
+
+    // Update chart with hourly data for selected day
+    if (hourlyByDay.length > idx) {
+      var hd = hourlyByDay[idx];
+      if (idx === 0) {
+        // today: use original chart data (from SMHI or Open-Meteo)
+        drawTab();
+      } else if (hd.wA.length >= 2) {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var color, fill, unit;
+        if (activeTab === 'wind') {
+          color = isDark ? '#6ABDD4' : '#2E5C6E';
+          fill  = isDark ? 'rgba(106,189,212,.28)' : 'rgba(46,92,110,.18)';
+          unit  = ' m/s';
+          drawChart('chart-svg','chart-tooltip','chart-labels', hd.wA, hd.lA, color, fill, 60, unit);
+        } else {
+          color = isDark ? '#D4A060' : '#A07030';
+          fill  = isDark ? 'rgba(212,160,96,.28)' : 'rgba(160,112,48,.18)';
+          unit  = '°';
+          drawChart('chart-svg','chart-tooltip','chart-labels', hd.tA, hd.lA, color, fill, 60, unit);
+        }
+      }
+    }
+
     // scroll expanded card into view
     if (expandedIdx !== -1) {
       setTimeout(function() {
@@ -692,12 +716,31 @@ function renderForecast5(tab) {
   };
 }
 
+// hourly forecast data per day: array of 11 arrays
+var hourlyByDay = [];
+
 function fetchForecast5(lat, lon, currentMs, currentGust, currentTemp, currentDeg) {
-  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,temperature_2m_max,temperature_2m_min&wind_speed_unit=ms&timezone=auto&forecast_days=11')
+  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,temperature_2m_max,temperature_2m_min&hourly=wind_speed_10m,temperature_2m&wind_speed_unit=ms&timezone=auto&forecast_days=11')
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var days = d.daily;
       forecast5data = [];
+      hourlyByDay = [];
+
+      // Build hourly lookup per day
+      for (var di = 0; di <= 10; di++) {
+        var dayStr = days.time[di]; // "2025-05-03"
+        var wA=[], tA=[], lA=[];
+        for (var hi = 0; hi < d.hourly.time.length; hi++) {
+          if (d.hourly.time[hi].slice(0,10) === dayStr) {
+            wA.push(d.hourly.wind_speed_10m[hi]);
+            tA.push(d.hourly.temperature_2m[hi]);
+            lA.push(parseInt(d.hourly.time[hi].slice(11,13))+':00');
+          }
+        }
+        hourlyByDay.push({wA:wA, tA:tA, lA:lA});
+      }
+
       for (var i = 0; i <= 10; i++) {
         var date = new Date(days.time[i]);
         var wind = (i === 0 && currentMs !== undefined) ? currentMs : days.wind_speed_10m_max[i];
