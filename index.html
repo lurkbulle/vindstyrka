@@ -894,22 +894,29 @@ function wmoIcon(code) {
 }
 
 function fetchForecast5(lat, lon, currentMs, currentGust, currentTmax, currentDeg, currentTmin) {
-  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,temperature_2m_max,temperature_2m_min,weather_code&hourly=wind_speed_10m,temperature_2m&wind_speed_unit=ms&timezone=auto&forecast_days=11')
+  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,temperature_2m_max,temperature_2m_min,weather_code&hourly=wind_speed_10m,temperature_2m,weather_code&wind_speed_unit=ms&timezone=auto&forecast_days=11')
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var days = d.daily;
       forecast5data = [];
       hourlyByDay = [];
 
+      var nowHour = new Date().getHours();
+      var currentWcode = null;
+
       // Build hourly lookup per day
       for (var di = 0; di <= 10; di++) {
-        var dayStr = days.time[di]; // "2025-05-03"
+        var dayStr = days.time[di];
         var wA=[], tA=[], lA=[];
         for (var hi = 0; hi < d.hourly.time.length; hi++) {
           if (d.hourly.time[hi].slice(0,10) === dayStr) {
             wA.push(d.hourly.wind_speed_10m[hi]);
             tA.push(d.hourly.temperature_2m[hi]);
             lA.push(parseInt(d.hourly.time[hi].slice(11,13))+':00');
+            // grab current hour weather code for today
+            if (di === 0 && parseInt(d.hourly.time[hi].slice(11,13)) === nowHour) {
+              currentWcode = d.hourly.weather_code ? d.hourly.weather_code[hi] : null;
+            }
           }
         }
         hourlyByDay.push({wA:wA, tA:tA, lA:lA});
@@ -922,7 +929,7 @@ function fetchForecast5(lat, lon, currentMs, currentGust, currentTmax, currentDe
         var dir  = (i === 0 && currentDeg  !== undefined) ? currentDeg  : days.wind_direction_10m_dominant[i];
         var tmax = (i === 0 && currentTmax !== undefined) ? currentTmax : days.temperature_2m_max[i];
         var tmin = (i === 0 && currentTmin !== undefined) ? currentTmin : days.temperature_2m_min[i];
-        var wcode = days.weather_code ? days.weather_code[i] : null;
+        var wcode = (i === 0) ? currentWcode : (days.weather_code ? days.weather_code[i] : null);
         var b    = getBf(wind);
         forecast5data.push({
           name:  i === 0 ? 'Idag' : DAY_NAMES[date.getDay()],
