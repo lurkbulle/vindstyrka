@@ -793,7 +793,9 @@ function renderForecast5(tab) {
   for (var i = 0; i < forecast5data.length; i++) {
     var day  = forecast5data[i];
     var isExp = (i === expandedIdx);
-    var icon = showTemp ? tempIcon(day.tmax) : bfIcon(day.wind);
+    var icon = showTemp
+      ? (day.wcode !== null && day.wcode !== undefined ? wmoIcon(day.wcode) : tempIcon(day.tmax))
+      : bfIcon(day.wind);
     var main = showTemp
       ? day.tmax.toFixed(0)+'°<span class="fday-unit"> max</span>'
       : day.wind.toFixed(1)+'<span class="fday-unit"> m/s</span>';
@@ -877,8 +879,22 @@ function renderForecast5(tab) {
 // hourly forecast data per day: array of 11 arrays
 var hourlyByDay = [];
 
-function fetchForecast5(lat, lon, currentMs, currentGust, currentTemp, currentDeg) {
-  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,temperature_2m_max,temperature_2m_min&hourly=wind_speed_10m,temperature_2m&wind_speed_unit=ms&timezone=auto&forecast_days=11')
+function wmoIcon(code) {
+  if (code === 0)                          return '☀️';
+  if (code <= 2)                           return '🌤';
+  if (code <= 3)                           return '☁️';
+  if (code <= 49)                          return '🌫';
+  if (code <= 57)                          return '🌧';
+  if (code <= 67)                          return '🌧';
+  if (code <= 77)                          return '❄️';
+  if (code <= 82)                          return '🌦';
+  if (code <= 86)                          return '🌨';
+  if (code <= 99)                          return '⛈️';
+  return '🌥';
+}
+
+function fetchForecast5(lat, lon, currentMs, currentGust, currentTmax, currentDeg, currentTmin) {
+  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&daily=wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,temperature_2m_max,temperature_2m_min,weather_code&hourly=wind_speed_10m,temperature_2m&wind_speed_unit=ms&timezone=auto&forecast_days=11')
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var days = d.daily;
@@ -901,11 +917,12 @@ function fetchForecast5(lat, lon, currentMs, currentGust, currentTemp, currentDe
 
       for (var i = 0; i <= 10; i++) {
         var date = new Date(days.time[i]);
-        var wind = (i === 0 && currentMs !== undefined) ? currentMs : days.wind_speed_10m_max[i];
+        var wind = (i === 0 && currentMs   !== undefined) ? currentMs   : days.wind_speed_10m_max[i];
         var gust = (i === 0 && currentGust !== undefined) ? currentGust : days.wind_gusts_10m_max[i];
-        var dir  = (i === 0 && currentDeg !== undefined) ? currentDeg : days.wind_direction_10m_dominant[i];
-        var tmax = (i === 0 && currentTemp !== undefined) ? currentTemp : days.temperature_2m_max[i];
-        var tmin = (i === 0 && currentTemp !== undefined) ? currentTemp : days.temperature_2m_min[i];
+        var dir  = (i === 0 && currentDeg  !== undefined) ? currentDeg  : days.wind_direction_10m_dominant[i];
+        var tmax = (i === 0 && currentTmax !== undefined) ? currentTmax : days.temperature_2m_max[i];
+        var tmin = (i === 0 && currentTmin !== undefined) ? currentTmin : days.temperature_2m_min[i];
+        var wcode = days.weather_code ? days.weather_code[i] : null;
         var b    = getBf(wind);
         forecast5data.push({
           name:  i === 0 ? 'Idag' : DAY_NAMES[date.getDay()],
@@ -914,6 +931,7 @@ function fetchForecast5(lat, lon, currentMs, currentGust, currentTemp, currentDe
           dir:   dir,
           tmax:  tmax,
           tmin:  tmin,
+          wcode: wcode,
           label: b.label
         });
       }
@@ -1035,8 +1053,13 @@ function fetchWind() {
         show('panel-wind'); hide('panel-sea');
         drawTab();
         if (b.level >= 7) sendAlert(b.level);
-        // 10-day forecast — pass current values for today card
-        fetchForecast5(userLat, userLon, wd.ms, wd.gust, wd.temp, wd.deg);
+        // Calculate today's max/min from hourly data for the forecast card
+        var todayTmax = wd.tA.length ? Math.max.apply(null, wd.tA) : wd.temp;
+        var todayTmin = wd.tA.length ? Math.min.apply(null, wd.tA) : wd.temp;
+        var todayWmax = wd.wA.length ? Math.max.apply(null, wd.wA) : wd.ms;
+        var todayGmax = wd.wA.length ? Math.max.apply(null, wd.wA) * 1.3 : wd.gust;
+        // 10-day forecast
+        fetchForecast5(userLat, userLon, todayWmax, todayGmax, todayTmax, wd.deg, todayTmin);
         var now = new Date();
         g('loc').textContent = (source==='smhi'?'SMHI':'Open-Meteo')+' · '+userLat.toFixed(3)+'°N · '+userLon.toFixed(3)+'°E · '+now.getHours()+':'+('0'+now.getMinutes()).slice(-2);
         hide('loading');
