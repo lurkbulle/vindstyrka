@@ -134,6 +134,8 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
 .flip-x-btn{position:absolute;top:.75rem;right:.75rem;width:30px;height:30px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;font-size:20px;color:var(--mid);display:flex;align-items:center;justify-content:center;line-height:1;z-index:10}
 .flip-x-btn:hover{background:var(--bg3)}
 .flip-close{font-size:11px;color:var(--light);text-align:center;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--bg2)}
+.sun-row{display:flex;justify-content:center;gap:1.5rem;font-size:12px;color:var(--mid);margin-bottom:.4rem;letter-spacing:.02em}
+.sun-row span{display:flex;align-items:center;gap:4px}
 </style>
 </head>
 <body>
@@ -326,6 +328,10 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
       <button class="install-close" id="install-close">&#215;</button>
     </div>
     <div class="err" id="err" style="display:none"></div>
+    <div class="sun-row" id="sun-row" style="display:none">
+      <span>🌅 <span id="sun-rise">–</span></span>
+      <span>🌇 <span id="sun-set">–</span></span>
+    </div>
     <button class="btn" id="btn" onclick="fetchWind()">Hämta vinddata</button>
   </div>
 </div>
@@ -1035,7 +1041,20 @@ function fetchWind() {
     function(pos) {
       userLat = pos.coords.latitude;
       userLon = pos.coords.longitude;
-      checkAutoTheme(); // apply sunrise/sunset theme now that we have position
+      checkAutoTheme();
+      // Show sunrise/sunset
+      var sun = getSunTimes(userLat, userLon, new Date());
+      if (sun) {
+        function fmt(h) {
+          var hh = Math.floor(h);
+          var mm = Math.round((h - hh) * 60);
+          if (mm === 60) { hh++; mm = 0; }
+          return hh + ':' + (mm < 10 ? '0' : '') + mm;
+        }
+        g('sun-rise').textContent = fmt(sun.sunrise);
+        g('sun-set').textContent  = fmt(sun.sunset);
+        g('sun-row').style.display = 'flex';
+      }
       g('loading').textContent = source==='smhi' ? 'Hämtar från SMHI…' : 'Hämtar väderdata…';
       var promise = source==='smhi' ? fetchSMHI(userLat,userLon) : fetchOpenMeteo(userLat,userLon);
       promise.then(function(wd) {
