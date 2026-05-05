@@ -1073,12 +1073,12 @@ function updateBarometer(hpa) {
   console.log('updateBarometer: drawing', hpa, 'canvas size:', canvas.width, canvas.height);
   var ctx = canvas.getContext('2d');
   var W = canvas.width, H = canvas.height;
-  var cx = W/2, cy = H - 8;
-  var R = H - 12;
+  var cx = W/2, cy = H - 6;
+  var R = H - 10;
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   var colBg   = isDark ? '#252C30' : '#D6CEBC';
   var colRing = isDark ? '#2F383D' : '#C4BAA4';
-  var colTick = isDark ? '#8AABB5' : '#4A6068';
+  var colTick = isDark ? '#8AABB5' : '#2E3A3F';
   var colNdle = isDark ? '#4A8FA6' : '#2E5C6E';
 
   ctx.clearRect(0, 0, W, H);
@@ -1096,9 +1096,10 @@ function updateBarometer(hpa) {
   ctx.fillStyle = colBg;
   ctx.fill();
 
-  // tick marks — 950 to 1050, 180 degrees
+  // tick marks — 950 to 1050 hPa maps to angle PI (left) → 0 (right)
   for (var p = 950; p <= 1050; p += 5) {
-    var angle = Math.PI + ((p - 950) / 100) * Math.PI;
+    // angle: 950=PI (left), 1050=0 (right), linear
+    var angle = Math.PI - ((p - 950) / 100) * Math.PI;
     var isBig = (p % 10 === 0);
     var r1 = R - 1;
     var r2 = isBig ? R - 9 : R - 6;
@@ -1110,40 +1111,43 @@ function updateBarometer(hpa) {
     ctx.stroke();
   }
 
-  // labels 950, 1000, 1050
-  ctx.font = '8px DM Sans, sans-serif';
+  // labels — clearer font and color
+  ctx.font = 'bold 9px DM Sans, sans-serif';
   ctx.fillStyle = colTick;
+  ctx.textAlign = 'left';
+  ctx.fillText('950', 2, cy - 2);
   ctx.textAlign = 'center';
-  ctx.fillText('950',  cx - R + 8, cy - 2);
-  ctx.fillText('1000', cx,          cy - R + 10);
-  ctx.fillText('1050', cx + R - 8, cy - 2);
+  ctx.fillText('1000', cx, cy - R + 10);
+  ctx.textAlign = 'right';
+  ctx.fillText('1050', W - 2, cy - 2);
 
-  // needle
-  var needleAngle = Math.PI + ((hpa - 950) / 100) * Math.PI;
+  // needle — angle from PI (950) to 0 (1050)
+  var needleAngle = Math.PI - ((hpa - 950) / 100) * Math.PI;
+  needleAngle = Math.max(0, Math.min(Math.PI, needleAngle));
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(needleAngle);
-  // arrow tip
+  // arrow tip pointing at 12 o'clock before rotation
   ctx.beginPath();
-  ctx.moveTo(0, -(R - 14));
-  ctx.lineTo(-3, -(R - 30));
-  ctx.lineTo(0, -(R - 24));
-  ctx.lineTo(3, -(R - 30));
+  ctx.moveTo(0, -(R - 13));
+  ctx.lineTo(-3, -(R - 28));
+  ctx.lineTo(0, -(R - 22));
+  ctx.lineTo(3, -(R - 28));
   ctx.closePath();
   ctx.fillStyle = colNdle;
   ctx.fill();
   // shaft
   ctx.beginPath();
-  ctx.moveTo(0, -(R - 24));
-  ctx.lineTo(0, 8);
+  ctx.moveTo(0, -(R - 22));
+  ctx.lineTo(0, 6);
   ctx.strokeStyle = colNdle;
   ctx.lineWidth = 1.5;
   ctx.stroke();
   // counterweight
   ctx.beginPath();
-  ctx.moveTo(-4, 8);
-  ctx.lineTo(4, 8);
-  ctx.lineTo(0, 14);
+  ctx.moveTo(-4, 6);
+  ctx.lineTo(4, 6);
+  ctx.lineTo(0, 13);
   ctx.closePath();
   ctx.fillStyle = colNdle;
   ctx.globalAlpha = 0.4;
@@ -1159,8 +1163,8 @@ function updateBarometer(hpa) {
 
   // horizon line
   ctx.beginPath();
-  ctx.moveTo(cx - R, cy);
-  ctx.lineTo(cx + R, cy);
+  ctx.moveTo(4, cy);
+  ctx.lineTo(W - 4, cy);
   ctx.strokeStyle = isDark ? '#3A4A52' : '#B8AE98';
   ctx.lineWidth = 1;
   ctx.stroke();
