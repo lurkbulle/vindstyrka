@@ -316,7 +316,8 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
       </div>
 
       <div class="baro-wrap" id="baro-wrap">
-        <svg id="baro-svg" viewBox="0 0 340 115" xmlns="http://www.w3.org/2000/svg" style="width:70%;max-width:260px;display:block;margin:0 auto">
+        <div style="width:200px;margin:0 auto">
+        <svg id="baro-svg" viewBox="0 0 340 115" xmlns="http://www.w3.org/2000/svg" style="width:200px;height:68px;display:block">
           <!-- outer arc -->
           <path d="M10 100 A160 160 0 0 1 330 100" fill="#C4BAA4" stroke="#B8AE98" stroke-width="2"/>
           <path d="M28 100 A142 142 0 0 1 312 100" fill="#D6CEBC" stroke="#B8AE98" stroke-width="1"/>
@@ -379,6 +380,7 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
           <text id="baro-val" x="170" y="110" text-anchor="middle" font-family="DM Serif Display,serif" font-size="13" fill="#1A2A2F">–</text>
         </svg>
         <div style="text-align:center;font-size:9px;color:var(--mid);margin-top:1px;letter-spacing:.05em">hPa</div>
+        </div>
       </div>
 
       <div class="loc" id="loc"></div>
