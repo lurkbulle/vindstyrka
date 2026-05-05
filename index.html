@@ -1066,106 +1066,110 @@ function fetchSMHI(lat, lon) {
 var lastPressure = null;
 
 function updateBarometer(hpa) {
-  if (hpa === null || hpa === undefined) { console.log('updateBarometer: hpa is null/undefined'); return; }
+  if (hpa === null || hpa === undefined) return;
   lastPressure = hpa;
   var canvas = g('baro-canvas');
-  if (!canvas) { console.log('updateBarometer: canvas not found'); return; }
-  console.log('updateBarometer: drawing', hpa, 'canvas size:', canvas.width, canvas.height);
+  if (!canvas) return;
+
+  // Retina fix — scale canvas for device pixel ratio
+  var dpr = window.devicePixelRatio || 1;
+  var displayW = 220, displayH = 75;
+  canvas.width  = displayW * dpr;
+  canvas.height = displayH * dpr;
+  canvas.style.width  = displayW + 'px';
+  canvas.style.height = displayH + 'px';
+
   var ctx = canvas.getContext('2d');
-  var W = canvas.width, H = canvas.height;
-  var cx = W/2, cy = H - 6;
-  var R = H - 10;
+  ctx.scale(dpr, dpr);
+
+  var W = displayW, H = displayH;
+  var cx = W/2, cy = H - 4;
+  var R = H - 6;
+
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   var colBg   = isDark ? '#252C30' : '#D6CEBC';
   var colRing = isDark ? '#2F383D' : '#C4BAA4';
-  var colTick = isDark ? '#8AABB5' : '#2E3A3F';
+  var colTick = isDark ? '#C0D4DA' : '#1A2A2F';
+  var colMid  = isDark ? '#5A8090' : '#B8AE98';
   var colNdle = isDark ? '#4A8FA6' : '#2E5C6E';
 
   ctx.clearRect(0, 0, W, H);
 
-  // outer arc fill
+  // outer arc
   ctx.beginPath();
   ctx.arc(cx, cy, R, Math.PI, 0);
-  ctx.lineTo(cx + R, cy);
   ctx.fillStyle = colRing;
   ctx.fill();
 
-  // inner arc fill
+  // inner arc
   ctx.beginPath();
-  ctx.arc(cx, cy, R - 10, Math.PI, 0);
+  ctx.arc(cx, cy, R - 9, Math.PI, 0);
   ctx.fillStyle = colBg;
   ctx.fill();
 
-  // tick marks — 950 to 1050 hPa maps to angle PI (left) → 0 (right)
+  // tick marks: 950=left(PI) → 1050=right(0)
   for (var p = 950; p <= 1050; p += 5) {
-    // angle: 950=PI (left), 1050=0 (right), linear
-    var angle = Math.PI - ((p - 950) / 100) * Math.PI;
+    var a = Math.PI * (1 - (p - 950) / 100);
     var isBig = (p % 10 === 0);
-    var r1 = R - 1;
-    var r2 = isBig ? R - 9 : R - 6;
+    var r1 = R - 1, r2 = isBig ? R - 8 : R - 5;
     ctx.beginPath();
-    ctx.moveTo(cx + r1 * Math.cos(angle), cy + r1 * Math.sin(angle));
-    ctx.lineTo(cx + r2 * Math.cos(angle), cy + r2 * Math.sin(angle));
-    ctx.strokeStyle = isBig ? colTick : (isDark ? '#3A4A52' : '#B8AE98');
-    ctx.lineWidth = isBig ? 1.5 : 1;
+    ctx.moveTo(cx + r1*Math.cos(a), cy + r1*Math.sin(a));
+    ctx.lineTo(cx + r2*Math.cos(a), cy + r2*Math.sin(a));
+    ctx.strokeStyle = isBig ? colTick : colMid;
+    ctx.lineWidth = isBig ? 1.5 : 0.8;
     ctx.stroke();
   }
 
-  // labels — clearer font and color
-  ctx.font = 'bold 9px DM Sans, sans-serif';
+  // labels — crisp
+  ctx.font = '500 9px DM Sans, system-ui, sans-serif';
   ctx.fillStyle = colTick;
-  ctx.textAlign = 'left';
-  ctx.fillText('950', 2, cy - 2);
-  ctx.textAlign = 'center';
-  ctx.fillText('1000', cx, cy - R + 10);
-  ctx.textAlign = 'right';
-  ctx.fillText('1050', W - 2, cy - 2);
+  ctx.textAlign = 'left';   ctx.fillText('950',  3, cy - 2);
+  ctx.textAlign = 'center'; ctx.fillText('1000', cx, cy - R + 9);
+  ctx.textAlign = 'right';  ctx.fillText('1050', W - 3, cy - 2);
 
-  // needle — angle from PI (950) to 0 (1050)
-  var needleAngle = Math.PI - ((hpa - 950) / 100) * Math.PI;
-  needleAngle = Math.max(0, Math.min(Math.PI, needleAngle));
+  // needle: 950=PI, 1050=0, so angle = PI*(1-(hpa-950)/100)
+  var na = Math.PI * (1 - (hpa - 950) / 100);
+  na = Math.max(0, Math.min(Math.PI, na));
+
   ctx.save();
   ctx.translate(cx, cy);
-  ctx.rotate(needleAngle);
-  // arrow tip pointing at 12 o'clock before rotation
+  ctx.rotate(na);
+  // tip
   ctx.beginPath();
-  ctx.moveTo(0, -(R - 13));
-  ctx.lineTo(-3, -(R - 28));
-  ctx.lineTo(0, -(R - 22));
-  ctx.lineTo(3, -(R - 28));
+  ctx.moveTo(0, -(R-12));
+  ctx.lineTo(-3, -(R-26));
+  ctx.lineTo(0, -(R-21));
+  ctx.lineTo(3, -(R-26));
   ctx.closePath();
   ctx.fillStyle = colNdle;
   ctx.fill();
   // shaft
   ctx.beginPath();
-  ctx.moveTo(0, -(R - 22));
-  ctx.lineTo(0, 6);
+  ctx.moveTo(0, -(R-21));
+  ctx.lineTo(0, 5);
   ctx.strokeStyle = colNdle;
   ctx.lineWidth = 1.5;
   ctx.stroke();
   // counterweight
   ctx.beginPath();
-  ctx.moveTo(-4, 6);
-  ctx.lineTo(4, 6);
-  ctx.lineTo(0, 13);
+  ctx.moveTo(-4, 5); ctx.lineTo(4, 5); ctx.lineTo(0, 12);
   ctx.closePath();
   ctx.fillStyle = colNdle;
   ctx.globalAlpha = 0.4;
   ctx.fill();
+  ctx.globalAlpha = 1;
   ctx.restore();
 
-  // center knob
+  // knob
   ctx.beginPath();
-  ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+  ctx.arc(cx, cy, 4, 0, Math.PI*2);
   ctx.fillStyle = colNdle;
-  ctx.globalAlpha = 1;
   ctx.fill();
 
-  // horizon line
+  // baseline
   ctx.beginPath();
-  ctx.moveTo(4, cy);
-  ctx.lineTo(W - 4, cy);
-  ctx.strokeStyle = isDark ? '#3A4A52' : '#B8AE98';
+  ctx.moveTo(4, cy); ctx.lineTo(W-4, cy);
+  ctx.strokeStyle = colMid;
   ctx.lineWidth = 1;
   ctx.stroke();
 
