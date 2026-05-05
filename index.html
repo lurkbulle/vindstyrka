@@ -1230,7 +1230,7 @@ function fetchWind() {
         show('panel-wind'); hide('panel-sea');
         drawTab();
         if (b.level >= 7) sendAlert(b.level);
-        updateBarometer(wd.pressure);
+        var pressureVal = wd.pressure;
         // Calculate today's max/min from hourly data for the forecast card
         var todayTmax = wd.tA.length ? Math.max.apply(null, wd.tA) : wd.temp;
         var todayTmin = wd.tA.length ? Math.min.apply(null, wd.tA) : wd.temp;
@@ -1242,7 +1242,10 @@ function fetchWind() {
         g('loc').textContent = (source==='smhi'?'SMHI':'Open-Meteo')+' · '+userLat.toFixed(3)+'°N · '+userLon.toFixed(3)+'°E · '+now.getHours()+':'+('0'+now.getMinutes()).slice(-2);
         hide('loading');
         g('hero').style.display = '';
-        setTimeout(function() { on('hero'); on('bf-wrap'); on('cards'); on('forecast-wrap'); on('baro-wrap'); on('data-section'); on('loc'); }, 20);
+        setTimeout(function() {
+        on('hero'); on('bf-wrap'); on('cards'); on('forecast-wrap'); on('baro-wrap'); on('data-section'); on('loc');
+        if (pressureVal) updateBarometer(pressureVal);
+      }, 20);
         btn.textContent = 'Uppdatera';
         dataLoaded = true;
       }).catch(function(e) {
