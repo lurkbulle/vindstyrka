@@ -1066,7 +1066,7 @@ function fetchSMHI(lat, lon) {
 var lastPressure = null;
 
 function updateBarometer(hpa) {
-  if (!hpa) { console.log('updateBarometer: hpa is falsy:', hpa); return; }
+  if (hpa === null || hpa === undefined) { console.log('updateBarometer: hpa is null/undefined'); return; }
   lastPressure = hpa;
   var canvas = g('baro-canvas');
   if (!canvas) { console.log('updateBarometer: canvas not found'); return; }
@@ -1232,7 +1232,17 @@ function fetchWind() {
         drawTab();
         if (b.level >= 7) sendAlert(b.level);
         var pressureVal = wd.pressure;
-        console.log('Pressure received:', pressureVal, 'wd keys:', Object.keys(wd).join(','));
+        console.log('Pressure received:', pressureVal, 'source:', source);
+        // If pressure missing (SMHI often lacks it), fetch from Open-Meteo
+        if (pressureVal === null || pressureVal === undefined) {
+          fetch('https://api.open-meteo.com/v1/forecast?latitude='+userLat.toFixed(4)+'&longitude='+userLon.toFixed(4)+'&current=surface_pressure')
+            .then(function(r){return r.json();})
+            .then(function(d){
+              if (d.current && d.current.surface_pressure) {
+                updateBarometer(d.current.surface_pressure);
+              }
+            }).catch(function(){});
+        }
         // Calculate today's max/min from hourly data for the forecast card
         var todayTmax = wd.tA.length ? Math.max.apply(null, wd.tA) : wd.temp;
         var todayTmin = wd.tA.length ? Math.min.apply(null, wd.tA) : wd.temp;
@@ -1246,7 +1256,7 @@ function fetchWind() {
         g('hero').style.display = '';
         setTimeout(function() {
         on('hero'); on('bf-wrap'); on('cards'); on('forecast-wrap'); on('baro-wrap'); on('data-section'); on('loc');
-        if (pressureVal) updateBarometer(pressureVal);
+        if (pressureVal !== null && pressureVal !== undefined) updateBarometer(pressureVal);
       }, 20);
         btn.textContent = 'Uppdatera';
         dataLoaded = true;
