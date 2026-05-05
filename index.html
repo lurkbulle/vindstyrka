@@ -1127,14 +1127,17 @@ function updateBarometer(hpa) {
   ctx.textAlign = 'center'; ctx.fillText('1000', cx, cy - R + 9);
   ctx.textAlign = 'right';  ctx.fillText('1050', W - 3, cy - 2);
 
-  // needle: 950=PI, 1050=0, so angle = PI*(1-(hpa-950)/100)
-  var na = Math.PI * (1 - (hpa - 950) / 100);
-  na = Math.max(0, Math.min(Math.PI, na));
+  // needle: 950=left(PI), 1000=up(PI/2), 1050=right(0)
+  // canvas rotate: 0=right, PI/2=down, PI=left, -PI/2=up
+  // so we need to subtract PI/2 from our angle
+  var baroAngle = Math.PI * (1 - (hpa - 950) / 100);
+  baroAngle = Math.max(0, Math.min(Math.PI, baroAngle));
+  // convert from math coords (0=right, PI=left) to canvas coords
+  var na = baroAngle - Math.PI/2;
 
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(na);
-  // tip
   ctx.beginPath();
   ctx.moveTo(0, -(R-12));
   ctx.lineTo(-3, -(R-26));
