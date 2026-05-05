@@ -134,7 +134,7 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
 .flip-x-btn{position:absolute;top:.75rem;right:.75rem;width:30px;height:30px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;font-size:20px;color:var(--mid);display:flex;align-items:center;justify-content:center;line-height:1;z-index:10}
 .flip-x-btn:hover{background:var(--bg3)}
 .flip-close{font-size:11px;color:var(--light);text-align:center;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--bg2)}
-.baro-wrap{width:100%;margin-top:.35rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .28s,transform .4s ease .28s}
+.baro-wrap{width:100%;margin-top:.25rem;opacity:0;transform:translateY(6px);transition:opacity .4s ease .28s,transform .4s ease .28s}
 .baro-wrap.on{opacity:1;transform:none}
 .sun-row{display:flex;justify-content:center;gap:1.5rem;font-size:12px;color:var(--mid);margin-bottom:.4rem;letter-spacing:.02em}
 .sun-row span{display:flex;align-items:center;gap:4px}
@@ -316,7 +316,7 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
       </div>
 
       <div class="baro-wrap" id="baro-wrap">
-        <svg id="baro-svg" viewBox="0 0 340 115" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:90px;display:block">
+        <svg id="baro-svg" viewBox="0 0 340 115" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;max-height:70px;display:block;margin:0 auto">
           <!-- outer arc -->
           <path d="M10 100 A160 160 0 0 1 330 100" fill="#C4BAA4" stroke="#B8AE98" stroke-width="2"/>
           <path d="M28 100 A142 142 0 0 1 312 100" fill="#D6CEBC" stroke="#B8AE98" stroke-width="1"/>
