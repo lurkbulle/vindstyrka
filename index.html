@@ -1066,10 +1066,11 @@ function fetchSMHI(lat, lon) {
 var lastPressure = null;
 
 function updateBarometer(hpa) {
-  if (!hpa) return;
+  if (!hpa) { console.log('updateBarometer: hpa is falsy:', hpa); return; }
   lastPressure = hpa;
   var canvas = g('baro-canvas');
-  if (!canvas) return;
+  if (!canvas) { console.log('updateBarometer: canvas not found'); return; }
+  console.log('updateBarometer: drawing', hpa, 'canvas size:', canvas.width, canvas.height);
   var ctx = canvas.getContext('2d');
   var W = canvas.width, H = canvas.height;
   var cx = W/2, cy = H - 8;
@@ -1231,6 +1232,7 @@ function fetchWind() {
         drawTab();
         if (b.level >= 7) sendAlert(b.level);
         var pressureVal = wd.pressure;
+        console.log('Pressure received:', pressureVal, 'wd keys:', Object.keys(wd).join(','));
         // Calculate today's max/min from hourly data for the forecast card
         var todayTmax = wd.tA.length ? Math.max.apply(null, wd.tA) : wd.temp;
         var todayTmin = wd.tA.length ? Math.min.apply(null, wd.tA) : wd.temp;
