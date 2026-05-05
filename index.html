@@ -316,71 +316,8 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
       </div>
 
       <div class="baro-wrap" id="baro-wrap">
-        <div style="width:200px;margin:0 auto">
-        <svg id="baro-svg" viewBox="0 0 340 115" xmlns="http://www.w3.org/2000/svg" style="width:200px;height:68px;display:block">
-          <!-- outer arc -->
-          <path d="M10 100 A160 160 0 0 1 330 100" fill="#C4BAA4" stroke="#B8AE98" stroke-width="2"/>
-          <path d="M28 100 A142 142 0 0 1 312 100" fill="#D6CEBC" stroke="#B8AE98" stroke-width="1"/>
-          <!-- tick marks big -->
-          <g stroke="#4A6068" stroke-linecap="round" stroke-width="1.5">
-            <line x1="10" y1="100" x2="22" y2="100"/>
-            <line x1="12.2" y1="76.5" x2="23.4" y2="79.8"/>
-            <line x1="18.5" y1="54.0" x2="28.6" y2="59.8"/>
-            <line x1="34.2" y1="34.5" x2="42.5" y2="42.7"/>
-            <line x1="57.2" y1="19.4" x2="63.0" y2="29.0"/>
-            <line x1="170" y1="7" x2="170" y2="18.5"/>
-            <line x1="282.8" y1="19.4" x2="277.0" y2="29.0"/>
-            <line x1="305.8" y1="34.5" x2="297.5" y2="42.7"/>
-            <line x1="321.5" y1="54.0" x2="311.4" y2="59.8"/>
-            <line x1="327.8" y1="76.5" x2="316.6" y2="79.8"/>
-            <line x1="330" y1="100" x2="318" y2="100"/>
-          </g>
-          <!-- tick marks small -->
-          <g stroke="#B8AE98" stroke-linecap="round" stroke-width="1">
-            <line x1="10.5" y1="88.4" x2="19.5" y2="90.5"/>
-            <line x1="14.5" y1="65.3" x2="24.5" y2="69.7"/>
-            <line x1="25.5" y1="44.5" x2="34.5" y2="51.0"/>
-            <line x1="44.8" y1="26.8" x2="52.0" y2="35.5"/>
-            <line x1="128" y1="8.5" x2="129.5" y2="18.5"/>
-            <line x1="212" y1="8.5" x2="210.5" y2="18.5"/>
-            <line x1="295.2" y1="26.8" x2="288.0" y2="35.5"/>
-            <line x1="314.5" y1="44.5" x2="305.5" y2="51.0"/>
-            <line x1="325.5" y1="65.3" x2="315.5" y2="69.7"/>
-            <line x1="329.5" y1="88.4" x2="320.5" y2="90.5"/>
-          </g>
-          <!-- labels -->
-          <g font-family="DM Sans,sans-serif" font-size="9" fill="#4A6068" text-anchor="middle">
-            <text x="10" y="112">950</text>
-            <text x="170" y="8">1000</text>
-            <text x="330" y="112">1050</text>
-          </g>
-          <!-- weather symbols small -->
-          <g fill="none" stroke="#4A6068" stroke-width="1.1" stroke-linecap="round">
-            <path d="M60 72 a6 6 0 0 1 0-12 a4 4 0 0 1 8 2 a5 5 0 0 1 0 10z"/>
-            <line x1="58" y1="76" x2="58" y2="79"/>
-            <line x1="63" y1="77" x2="63" y2="80"/>
-            <line x1="68" y1="76" x2="68" y2="79"/>
-            <circle cx="270" cy="62" r="6"/>
-            <line x1="270" y1="52" x2="270" y2="50"/><line x1="270" y1="72" x2="270" y2="74"/>
-            <line x1="260" y1="62" x2="258" y2="62"/><line x1="280" y1="62" x2="282" y2="62"/>
-            <line x1="263" y1="55" x2="261" y2="53"/><line x1="277" y1="69" x2="279" y2="71"/>
-            <line x1="277" y1="55" x2="279" y2="53"/><line x1="263" y1="69" x2="261" y2="71"/>
-          </g>
-          <!-- needle -->
-          <g id="baro-needle" style="transform-origin:170px 100px;transform:rotate(0deg);transition:transform .8s cubic-bezier(.4,0,.2,1)">
-            <polygon points="170,20 167,68 170,60 173,68" fill="#2E5C6E"/>
-            <rect x="169.2" y="68" width="1.6" height="24" fill="#2E5C6E"/>
-            <polygon points="170,112 165,100 175,100" fill="#2E5C6E" opacity=".4"/>
-          </g>
-          <!-- center knob -->
-          <circle cx="170" cy="100" r="5" fill="#2E5C6E" stroke="#D6CEBC" stroke-width="1.5"/>
-          <!-- horizon line -->
-          <line x1="10" y1="100" x2="330" y2="100" stroke="#B8AE98" stroke-width="1"/>
-          <!-- pressure value -->
-          <text id="baro-val" x="170" y="110" text-anchor="middle" font-family="DM Serif Display,serif" font-size="13" fill="#1A2A2F">–</text>
-        </svg>
-        <div style="text-align:center;font-size:9px;color:var(--mid);margin-top:1px;letter-spacing:.05em">hPa</div>
-        </div>
+        <canvas id="baro-canvas" width="220" height="75" style="display:block;margin:0 auto"></canvas>
+        <div style="text-align:center;font-size:9px;color:var(--mid);margin-top:1px;letter-spacing:.05em"><span id="baro-val" style="font-family:'DM Serif Display',serif;font-size:13px;color:var(--ink)">–</span> hPa</div>
       </div>
 
       <div class="loc" id="loc"></div>
@@ -553,11 +490,11 @@ function applyTheme() {
   g('theme-meta').content = dark ? '#1A1F22' : '#D6CEBC';
 }
 function toggleTheme() {
-  autoTheme = false; // manual override disables auto
+  autoTheme = false;
   dark = !dark;
   localStorage.setItem('theme', dark ? 'dark' : 'light');
   applyTheme();
-  if (dataLoaded) drawTab();
+  if (dataLoaded) { drawTab(); if (lastPressure) updateBarometer(lastPressure); }
 }
 applyTheme();
 
@@ -1126,12 +1063,107 @@ function fetchSMHI(lat, lon) {
     });
 }
 
+var lastPressure = null;
+
 function updateBarometer(hpa) {
   if (!hpa) return;
-  var angle = (hpa - 1000) * 1.8;
-  angle = Math.max(-90, Math.min(90, angle));
-  g('baro-needle').style.transform = 'rotate(' + angle + 'deg)';
-  g('baro-needle').style.transformOrigin = '170px 100px';
+  lastPressure = hpa;
+  var canvas = g('baro-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var cx = W/2, cy = H - 8;
+  var R = H - 12;
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  var colBg   = isDark ? '#252C30' : '#D6CEBC';
+  var colRing = isDark ? '#2F383D' : '#C4BAA4';
+  var colTick = isDark ? '#8AABB5' : '#4A6068';
+  var colNdle = isDark ? '#4A8FA6' : '#2E5C6E';
+
+  ctx.clearRect(0, 0, W, H);
+
+  // outer arc fill
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, Math.PI, 0);
+  ctx.lineTo(cx + R, cy);
+  ctx.fillStyle = colRing;
+  ctx.fill();
+
+  // inner arc fill
+  ctx.beginPath();
+  ctx.arc(cx, cy, R - 10, Math.PI, 0);
+  ctx.fillStyle = colBg;
+  ctx.fill();
+
+  // tick marks — 950 to 1050, 180 degrees
+  for (var p = 950; p <= 1050; p += 5) {
+    var angle = Math.PI + ((p - 950) / 100) * Math.PI;
+    var isBig = (p % 10 === 0);
+    var r1 = R - 1;
+    var r2 = isBig ? R - 9 : R - 6;
+    ctx.beginPath();
+    ctx.moveTo(cx + r1 * Math.cos(angle), cy + r1 * Math.sin(angle));
+    ctx.lineTo(cx + r2 * Math.cos(angle), cy + r2 * Math.sin(angle));
+    ctx.strokeStyle = isBig ? colTick : (isDark ? '#3A4A52' : '#B8AE98');
+    ctx.lineWidth = isBig ? 1.5 : 1;
+    ctx.stroke();
+  }
+
+  // labels 950, 1000, 1050
+  ctx.font = '8px DM Sans, sans-serif';
+  ctx.fillStyle = colTick;
+  ctx.textAlign = 'center';
+  ctx.fillText('950',  cx - R + 8, cy - 2);
+  ctx.fillText('1000', cx,          cy - R + 10);
+  ctx.fillText('1050', cx + R - 8, cy - 2);
+
+  // needle
+  var needleAngle = Math.PI + ((hpa - 950) / 100) * Math.PI;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(needleAngle);
+  // arrow tip
+  ctx.beginPath();
+  ctx.moveTo(0, -(R - 14));
+  ctx.lineTo(-3, -(R - 30));
+  ctx.lineTo(0, -(R - 24));
+  ctx.lineTo(3, -(R - 30));
+  ctx.closePath();
+  ctx.fillStyle = colNdle;
+  ctx.fill();
+  // shaft
+  ctx.beginPath();
+  ctx.moveTo(0, -(R - 24));
+  ctx.lineTo(0, 8);
+  ctx.strokeStyle = colNdle;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  // counterweight
+  ctx.beginPath();
+  ctx.moveTo(-4, 8);
+  ctx.lineTo(4, 8);
+  ctx.lineTo(0, 14);
+  ctx.closePath();
+  ctx.fillStyle = colNdle;
+  ctx.globalAlpha = 0.4;
+  ctx.fill();
+  ctx.restore();
+
+  // center knob
+  ctx.beginPath();
+  ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+  ctx.fillStyle = colNdle;
+  ctx.globalAlpha = 1;
+  ctx.fill();
+
+  // horizon line
+  ctx.beginPath();
+  ctx.moveTo(cx - R, cy);
+  ctx.lineTo(cx + R, cy);
+  ctx.strokeStyle = isDark ? '#3A4A52' : '#B8AE98';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
   g('baro-val').textContent = Math.round(hpa);
 }
 
