@@ -1107,9 +1107,9 @@ function updateBarometer(hpa) {
   ctx.fillStyle = colBg;
   ctx.fill();
 
-  // tick marks: 950=left(PI) → 1050=right(0)
+  // tick marks: same formula as needle
   for (var p = 950; p <= 1050; p += 5) {
-    var a = Math.PI * (1 - (p - 950) / 100);
+    var a = Math.PI * ((p - 950) / 100 - 1);
     var isBig = (p % 10 === 0);
     var r1 = R - 1, r2 = isBig ? R - 8 : R - 5;
     ctx.beginPath();
@@ -1127,13 +1127,10 @@ function updateBarometer(hpa) {
   ctx.textAlign = 'center'; ctx.fillText('1000', cx, cy - R + 9);
   ctx.textAlign = 'right';  ctx.fillText('1050', W - 3, cy - 2);
 
-  // needle: 950=left(PI), 1000=up(PI/2), 1050=right(0)
-  // canvas rotate: 0=right, PI/2=down, PI=left, -PI/2=up
-  // so we need to subtract PI/2 from our angle
-  var baroAngle = Math.PI * (1 - (hpa - 950) / 100);
-  baroAngle = Math.max(0, Math.min(Math.PI, baroAngle));
-  // convert from math coords (0=right, PI=left) to canvas coords
-  var na = baroAngle - Math.PI/2;
+  // needle formula verified:
+  // 950 = -PI (left), 1000 = -PI/2 (up), 1050 = 0 (right)
+  var na = Math.PI * ((hpa - 950) / 100 - 1);
+  na = Math.max(-Math.PI, Math.min(0, na));
 
   ctx.save();
   ctx.translate(cx, cy);
