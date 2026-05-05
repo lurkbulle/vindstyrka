@@ -1070,112 +1070,49 @@ function updateBarometer(hpa) {
   lastPressure = hpa;
   var canvas = g('baro-canvas');
   if (!canvas) return;
-
-  // Retina fix — scale canvas for device pixel ratio
   var dpr = window.devicePixelRatio || 1;
-  var displayW = 220, displayH = 75;
-  canvas.width  = displayW * dpr;
-  canvas.height = displayH * dpr;
-  canvas.style.width  = displayW + 'px';
-  canvas.style.height = displayH + 'px';
-
+  var DW = 220, DH = 85;
+  canvas.width = DW*dpr; canvas.height = DH*dpr;
+  canvas.style.width = DW+'px'; canvas.style.height = DH+'px';
   var ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
-
-  var W = displayW, H = displayH;
-  var cx = W/2, cy = H - 4;
-  var R = H - 6;
-
+  var W=DW, H=DH, cx=W/2, cy=H-12, R=70;
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   var colBg   = isDark ? '#252C30' : '#D6CEBC';
   var colRing = isDark ? '#2F383D' : '#C4BAA4';
   var colTick = isDark ? '#C0D4DA' : '#1A2A2F';
   var colMid  = isDark ? '#5A8090' : '#B8AE98';
   var colNdle = isDark ? '#4A8FA6' : '#2E5C6E';
-
-  ctx.clearRect(0, 0, W, H);
-
-  // UPPER semicircle: arc goes anticlockwise from 0 (right) to PI (left)
-  // outer arc
-  ctx.beginPath();
-  ctx.arc(cx, cy, R, 0, Math.PI, true);
-  ctx.lineTo(cx - R, cy);
-  ctx.fillStyle = colRing;
-  ctx.fill();
-
-  // inner arc
-  ctx.beginPath();
-  ctx.arc(cx, cy, R - 9, 0, Math.PI, true);
-  ctx.lineTo(cx - (R-9), cy);
-  ctx.fillStyle = colBg;
-  ctx.fill();
-
-  // tick marks: same formula as needle
-  for (var p = 950; p <= 1050; p += 5) {
-    var a = Math.PI * ((p - 950) / 100 - 1);
-    var isBig = (p % 10 === 0);
-    var r1 = R - 1, r2 = isBig ? R - 8 : R - 5;
+  ctx.clearRect(0,0,W,H);
+  ctx.beginPath(); ctx.arc(cx,cy,R,Math.PI,2*Math.PI); ctx.lineTo(cx-R,cy); ctx.fillStyle=colRing; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,R-11,Math.PI,2*Math.PI); ctx.lineTo(cx-(R-11),cy); ctx.fillStyle=colBg; ctx.fill();
+  for (var p=950;p<=1050;p+=5) {
+    var a=Math.PI+(p-950)/100*Math.PI, big=p%10===0;
     ctx.beginPath();
-    ctx.moveTo(cx + r1*Math.cos(a), cy + r1*Math.sin(a));
-    ctx.lineTo(cx + r2*Math.cos(a), cy + r2*Math.sin(a));
-    ctx.strokeStyle = isBig ? colTick : colMid;
-    ctx.lineWidth = isBig ? 1.5 : 0.8;
-    ctx.stroke();
+    ctx.moveTo(cx+R*Math.cos(a),cy+R*Math.sin(a));
+    ctx.lineTo(cx+(R-(big?10:5))*Math.cos(a),cy+(R-(big?10:5))*Math.sin(a));
+    ctx.strokeStyle=big?colTick:colMid; ctx.lineWidth=big?1.5:0.8; ctx.stroke();
   }
-
-  // labels — crisp
-  ctx.font = '500 9px DM Sans, system-ui, sans-serif';
-  ctx.fillStyle = colTick;
-  ctx.textAlign = 'left';   ctx.fillText('950',  3, cy - 2);
-  ctx.textAlign = 'center'; ctx.fillText('1000', cx, cy - R + 9);
-  ctx.textAlign = 'right';  ctx.fillText('1050', W - 3, cy - 2);
-
-  // needle formula verified:
-  // 950 = -PI (left), 1000 = -PI/2 (up), 1050 = 0 (right)
-  var na = Math.PI * ((hpa - 950) / 100 - 1);
-  na = Math.max(-Math.PI, Math.min(0, na));
-
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(na);
-  ctx.beginPath();
-  ctx.moveTo(0, -(R-12));
-  ctx.lineTo(-3, -(R-26));
-  ctx.lineTo(0, -(R-21));
-  ctx.lineTo(3, -(R-26));
-  ctx.closePath();
-  ctx.fillStyle = colNdle;
-  ctx.fill();
-  // shaft
-  ctx.beginPath();
-  ctx.moveTo(0, -(R-21));
-  ctx.lineTo(0, 5);
-  ctx.strokeStyle = colNdle;
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-  // counterweight
-  ctx.beginPath();
-  ctx.moveTo(-4, 5); ctx.lineTo(4, 5); ctx.lineTo(0, 12);
-  ctx.closePath();
-  ctx.fillStyle = colNdle;
-  ctx.globalAlpha = 0.4;
-  ctx.fill();
-  ctx.globalAlpha = 1;
-  ctx.restore();
-
-  // knob
-  ctx.beginPath();
-  ctx.arc(cx, cy, 4, 0, Math.PI*2);
-  ctx.fillStyle = colNdle;
-  ctx.fill();
-
-  // baseline
-  ctx.beginPath();
-  ctx.moveTo(4, cy); ctx.lineTo(W-4, cy);
-  ctx.strokeStyle = colMid;
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
+  ctx.font='bold 9px DM Sans,system-ui,sans-serif'; ctx.fillStyle=colTick; ctx.textAlign='center';
+  [[950,'950'],[1000,'1000'],[1050,'1050']].forEach(function(v){
+    var a=Math.PI+(v[0]-950)/100*Math.PI, lr=R-20;
+    ctx.fillText(v[1],cx+lr*Math.cos(a),cy+lr*Math.sin(a)+3);
+  });
+  ctx.beginPath(); ctx.moveTo(cx-R,cy); ctx.lineTo(cx+R,cy); ctx.strokeStyle=colMid; ctx.lineWidth=1; ctx.stroke();
+  var na=Math.PI+(hpa-950)/100*Math.PI;
+  var nl=R-14, tx=Math.cos(na), ty=Math.sin(na), px=-ty, py=tx;
+  var tipX=cx+nl*tx,tipY=cy+nl*ty;
+  var b1x=cx+4*px,b1y=cy+4*py,b2x=cx-4*px,b2y=cy-4*py;
+  var mx=cx+(nl-12)*tx,my=cy+(nl-12)*ty;
+  var m1x=mx+2.5*px,m1y=my+2.5*py,m2x=mx-2.5*px,m2y=my-2.5*py;
+  ctx.beginPath(); ctx.moveTo(tipX,tipY); ctx.lineTo(m2x,m2y); ctx.lineTo(b2x,b2y);
+  ctx.lineTo(b1x,b1y); ctx.lineTo(m1x,m1y); ctx.closePath(); ctx.fillStyle=colNdle; ctx.fill();
+  var cwX=cx-8*tx,cwY=cy-8*ty;
+  ctx.beginPath(); ctx.moveTo(cx+3*px,cy+3*py); ctx.lineTo(cwX+3*px,cwY+3*py);
+  ctx.lineTo(cwX,cwY); ctx.lineTo(cwX-3*px,cwY-3*py); ctx.lineTo(cx-3*px,cy-3*py);
+  ctx.closePath(); ctx.fillStyle=colNdle; ctx.globalAlpha=0.4; ctx.fill(); ctx.globalAlpha=1;
+  ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2); ctx.fillStyle=colNdle; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,2,0,Math.PI*2); ctx.fillStyle=colBg; ctx.fill();
   g('baro-val').textContent = Math.round(hpa);
 }
 
