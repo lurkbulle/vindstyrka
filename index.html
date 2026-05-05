@@ -316,87 +316,69 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
       </div>
 
       <div class="baro-wrap" id="baro-wrap">
-        <svg id="baro-svg" viewBox="0 0 340 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+        <svg id="baro-svg" viewBox="0 0 340 115" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:90px;display:block">
           <!-- outer arc -->
-          <path d="M10 130 A160 160 0 0 1 330 130" fill="#C4BAA4" stroke="#B8AE98" stroke-width="2"/>
-          <path d="M28 130 A142 142 0 0 1 312 130" fill="#D6CEBC" stroke="#B8AE98" stroke-width="1"/>
+          <path d="M10 100 A160 160 0 0 1 330 100" fill="#C4BAA4" stroke="#B8AE98" stroke-width="2"/>
+          <path d="M28 100 A142 142 0 0 1 312 100" fill="#D6CEBC" stroke="#B8AE98" stroke-width="1"/>
           <!-- tick marks big -->
           <g stroke="#4A6068" stroke-linecap="round" stroke-width="1.5">
-            <line x1="10" y1="130" x2="22" y2="130"/>
-            <line x1="12.2" y1="106.5" x2="23.4" y2="109.8"/>
-            <line x1="18.5" y1="84.0" x2="28.6" y2="89.8"/>
-            <line x1="34.2" y1="64.5" x2="42.5" y2="72.7"/>
-            <line x1="57.2" y1="49.4" x2="63.0" y2="59.0"/>
-            <line x1="85.5" y1="39.8" x2="88.7" y2="50.4"/>
-            <line x1="170" y1="37" x2="170" y2="48.5"/>
-            <line x1="254.5" y1="39.8" x2="251.3" y2="50.4"/>
-            <line x1="282.8" y1="49.4" x2="277.0" y2="59.0"/>
-            <line x1="305.8" y1="64.5" x2="297.5" y2="72.7"/>
-            <line x1="321.5" y1="84.0" x2="311.4" y2="89.8"/>
-            <line x1="327.8" y1="106.5" x2="316.6" y2="109.8"/>
-            <line x1="330" y1="130" x2="318" y2="130"/>
+            <line x1="10" y1="100" x2="22" y2="100"/>
+            <line x1="12.2" y1="76.5" x2="23.4" y2="79.8"/>
+            <line x1="18.5" y1="54.0" x2="28.6" y2="59.8"/>
+            <line x1="34.2" y1="34.5" x2="42.5" y2="42.7"/>
+            <line x1="57.2" y1="19.4" x2="63.0" y2="29.0"/>
+            <line x1="170" y1="7" x2="170" y2="18.5"/>
+            <line x1="282.8" y1="19.4" x2="277.0" y2="29.0"/>
+            <line x1="305.8" y1="34.5" x2="297.5" y2="42.7"/>
+            <line x1="321.5" y1="54.0" x2="311.4" y2="59.8"/>
+            <line x1="327.8" y1="76.5" x2="316.6" y2="79.8"/>
+            <line x1="330" y1="100" x2="318" y2="100"/>
           </g>
           <!-- tick marks small -->
           <g stroke="#B8AE98" stroke-linecap="round" stroke-width="1">
-            <line x1="10.5" y1="118.4" x2="19.5" y2="120.5"/>
-            <line x1="14.5" y1="95.3" x2="24.5" y2="99.7"/>
-            <line x1="25.5" y1="74.5" x2="34.5" y2="81.0"/>
-            <line x1="44.8" y1="56.8" x2="52.0" y2="65.5"/>
-            <line x1="70.5" y1="44.0" x2="75.5" y2="54.2"/>
-            <line x1="128" y1="37.5" x2="129.5" y2="48.2"/>
-            <line x1="212" y1="37.5" x2="210.5" y2="48.2"/>
-            <line x1="269.5" y1="44.0" x2="264.5" y2="54.2"/>
-            <line x1="295.2" y1="56.8" x2="288.0" y2="65.5"/>
-            <line x1="314.5" y1="74.5" x2="305.5" y2="81.0"/>
-            <line x1="325.5" y1="95.3" x2="315.5" y2="99.7"/>
-            <line x1="329.5" y1="118.4" x2="320.5" y2="120.5"/>
+            <line x1="10.5" y1="88.4" x2="19.5" y2="90.5"/>
+            <line x1="14.5" y1="65.3" x2="24.5" y2="69.7"/>
+            <line x1="25.5" y1="44.5" x2="34.5" y2="51.0"/>
+            <line x1="44.8" y1="26.8" x2="52.0" y2="35.5"/>
+            <line x1="128" y1="8.5" x2="129.5" y2="18.5"/>
+            <line x1="212" y1="8.5" x2="210.5" y2="18.5"/>
+            <line x1="295.2" y1="26.8" x2="288.0" y2="35.5"/>
+            <line x1="314.5" y1="44.5" x2="305.5" y2="51.0"/>
+            <line x1="325.5" y1="65.3" x2="315.5" y2="69.7"/>
+            <line x1="329.5" y1="88.4" x2="320.5" y2="90.5"/>
           </g>
           <!-- labels -->
           <g font-family="DM Sans,sans-serif" font-size="9" fill="#4A6068" text-anchor="middle">
-            <text x="10" y="144">950</text>
-            <text x="38" y="120">960</text>
-            <text x="46" y="96">970</text>
-            <text x="64" y="76">980</text>
-            <text x="90" y="60">990</text>
-            <text x="170" y="38">1000</text>
-            <text x="250" y="60">1010</text>
-            <text x="276" y="76">1020</text>
-            <text x="294" y="96">1030</text>
-            <text x="302" y="120">1040</text>
-            <text x="330" y="144">1050</text>
+            <text x="10" y="112">950</text>
+            <text x="170" y="8">1000</text>
+            <text x="330" y="112">1050</text>
           </g>
-          <!-- weather symbols -->
-          <g fill="none" stroke="#4A6068" stroke-width="1.2" stroke-linecap="round">
-            <!-- cloud/rain left (low pressure) -->
-            <path d="M58 92 a8 8 0 0 1 0-16 a5 5 0 0 1 10 3 a7 7 0 0 1 0 13z"/>
-            <line x1="56" y1="97" x2="56" y2="101"/>
-            <line x1="61" y1="99" x2="61" y2="103"/>
-            <line x1="66" y1="97" x2="66" y2="101"/>
-            <!-- sun right (high pressure) -->
-            <circle cx="272" cy="82" r="7"/>
-            <line x1="272" y1="71" x2="272" y2="69"/>
-            <line x1="272" y1="93" x2="272" y2="95"/>
-            <line x1="261" y1="82" x2="259" y2="82"/>
-            <line x1="283" y1="82" x2="285" y2="82"/>
-            <line x1="264" y1="74" x2="262" y2="72"/>
-            <line x1="280" y1="90" x2="282" y2="92"/>
-            <line x1="280" y1="74" x2="282" y2="72"/>
-            <line x1="264" y1="90" x2="262" y2="92"/>
+          <!-- weather symbols small -->
+          <g fill="none" stroke="#4A6068" stroke-width="1.1" stroke-linecap="round">
+            <path d="M60 72 a6 6 0 0 1 0-12 a4 4 0 0 1 8 2 a5 5 0 0 1 0 10z"/>
+            <line x1="58" y1="76" x2="58" y2="79"/>
+            <line x1="63" y1="77" x2="63" y2="80"/>
+            <line x1="68" y1="76" x2="68" y2="79"/>
+            <circle cx="270" cy="62" r="6"/>
+            <line x1="270" y1="52" x2="270" y2="50"/><line x1="270" y1="72" x2="270" y2="74"/>
+            <line x1="260" y1="62" x2="258" y2="62"/><line x1="280" y1="62" x2="282" y2="62"/>
+            <line x1="263" y1="55" x2="261" y2="53"/><line x1="277" y1="69" x2="279" y2="71"/>
+            <line x1="277" y1="55" x2="279" y2="53"/><line x1="263" y1="69" x2="261" y2="71"/>
           </g>
-          <!-- needle group — rotated by JS around center (170,130) -->
-          <g id="baro-needle" style="transform-origin:170px 130px;transform:rotate(0deg);transition:transform .8s cubic-bezier(.4,0,.2,1)">
-            <polygon points="170,42 167,90 170,82 173,90" fill="#2E5C6E"/>
-            <rect x="169.2" y="90" width="1.6" height="32" fill="#2E5C6E"/>
-            <polygon points="170,148 164,132 176,132" fill="#2E5C6E" opacity=".4"/>
+          <!-- needle -->
+          <g id="baro-needle" style="transform-origin:170px 100px;transform:rotate(0deg);transition:transform .8s cubic-bezier(.4,0,.2,1)">
+            <polygon points="170,20 167,68 170,60 173,68" fill="#2E5C6E"/>
+            <rect x="169.2" y="68" width="1.6" height="24" fill="#2E5C6E"/>
+            <polygon points="170,112 165,100 175,100" fill="#2E5C6E" opacity=".4"/>
           </g>
           <!-- center knob -->
-          <circle cx="170" cy="130" r="6" fill="#2E5C6E" stroke="#D6CEBC" stroke-width="1.5"/>
+          <circle cx="170" cy="100" r="5" fill="#2E5C6E" stroke="#D6CEBC" stroke-width="1.5"/>
           <!-- horizon line -->
-          <line x1="10" y1="130" x2="330" y2="130" stroke="#B8AE98" stroke-width="1"/>
+          <line x1="10" y1="100" x2="330" y2="100" stroke="#B8AE98" stroke-width="1"/>
           <!-- pressure value -->
-          <text id="baro-val" x="170" y="152" text-anchor="middle" font-family="DM Serif Display,serif" font-size="16" fill="#1A2A2F">–</text>
-          <text x="170" y="163" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#4A6068">hPa</text>
+          <text id="baro-val" x="170" y="110" text-anchor="middle" font-family="DM Serif Display,serif" font-size="13" fill="#1A2A2F">–</text>
         </svg>
+        <div style="text-align:center;font-size:9px;color:var(--mid);margin-top:1px;letter-spacing:.05em">hPa</div>
       </div>
 
       <div class="loc" id="loc"></div>
@@ -1144,11 +1126,10 @@ function fetchSMHI(lat, lon) {
 
 function updateBarometer(hpa) {
   if (!hpa) return;
-  // Scale: 950–1050 hPa = 180 degrees, center at 1000 = 0 deg (top)
-  // Each hPa = 1.8 degrees
   var angle = (hpa - 1000) * 1.8;
   angle = Math.max(-90, Math.min(90, angle));
   g('baro-needle').style.transform = 'rotate(' + angle + 'deg)';
+  g('baro-needle').style.transformOrigin = '170px 100px';
   g('baro-val').textContent = Math.round(hpa);
 }
 
