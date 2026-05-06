@@ -418,6 +418,7 @@ var seaLoaded = false;
 var chartWindData = [];
 var chartTempData = [];
 var chartLabels   = [];
+var chartDirData  = [];
 var activeTab = 'wind';
 // If user has never set theme manually, use auto mode
 var themeStorage = localStorage.getItem('theme');
@@ -588,23 +589,26 @@ function switchTab(tab) {
 
 function drawTab() {
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  var data, color, fill, unit;
+  var data, color, fill, unit, dirs;
   if (activeTab === 'wind') {
     data  = chartWindData;
     color = isDark ? '#6ABDD4' : '#2E5C6E';
     fill  = isDark ? 'rgba(106,189,212,.28)' : 'rgba(46,92,110,.18)';
     unit  = ' m/s';
+    dirs  = chartDirData;
   } else {
     data  = chartTempData;
     color = isDark ? '#D4A060' : '#A07030';
     fill  = isDark ? 'rgba(212,160,96,.28)' : 'rgba(160,112,48,.18)';
     unit  = '°';
+    dirs  = [];
   }
-  drawChart('chart-svg','chart-tooltip','chart-labels', data, chartLabels, color, fill, 60, unit);
+  drawChart('chart-svg','chart-tooltip','chart-labels', data, chartLabels, color, fill, 60, unit, dirs);
 }
 
-function drawChart(svgId, tipId, lblId, data, labels, color, fill, H, unit) {
+function drawChart(svgId, tipId, lblId, data, labels, color, fill, H, unit, dirs) {
   unit = unit || '';
+  dirs = dirs || [];
   var W=300, pad=6, i;
   if (!data || data.length < 2) return;
   var mn=data[0], mx=data[0];
@@ -634,8 +638,26 @@ function drawChart(svgId, tipId, lblId, data, labels, color, fill, H, unit) {
   var dots = '';
   for (i=0;i<xs.length;i++) dots += '<circle class="cdot" cx="'+xs[i]+'" cy="'+ys[i]+'" r="4" fill="'+color+'" stroke="var(--bg2)" stroke-width="1.5" data-i="'+i+'" style="cursor:pointer"/>';
 
+  // Direction arrows above dots (wind chart only)
+  var arrows = '';
+  if (dirs && dirs.length) {
+    for (i=0;i<xs.length;i++) {
+      if (dirs[i] === null || dirs[i] === undefined) continue;
+      var aRad = (dirs[i] - 90) * Math.PI / 180;
+      var ax = xs[i], ay = ys[i] - 9;
+      var len = 4;
+      var x1 = ax - len*Math.cos(aRad), y1 = ay - len*Math.sin(aRad);
+      var x2 = ax + len*Math.cos(aRad), y2 = ay + len*Math.sin(aRad);
+      var hx = ax + (len+3)*Math.cos(aRad), hy = ay + (len+3)*Math.sin(aRad);
+      var p1x = x2+2*Math.sin(aRad), p1y = y2-2*Math.cos(aRad);
+      var p2x = x2-2*Math.sin(aRad), p2y = y2+2*Math.cos(aRad);
+      arrows += '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+color+'" stroke-width="1.2" stroke-linecap="round" opacity=".65"/>';
+      arrows += '<polygon points="'+hx+','+hy+' '+p1x+','+p1y+' '+p2x+','+p2y+'" fill="'+color+'" opacity=".65"/>';
+    }
+  }
+
   var svg = g(svgId);
-  svg.innerHTML = '<path d="'+area+'" fill="'+fill+'"/><path d="'+line+'" fill="none" stroke="'+color+'" stroke-width="1.8" stroke-linejoin="round"/>'+valLbls+dots;
+  svg.innerHTML = '<path d="'+area+'" fill="'+fill+'"/><path d="'+line+'" fill="none" stroke="'+color+'" stroke-width="1.8" stroke-linejoin="round"/>'+valLbls+arrows+dots;
 
   var dots2 = svg.querySelectorAll('.cdot');
   for (i=0;i<dots2.length;i++) {
@@ -1002,15 +1024,20 @@ function fetchForecast5(lat, lon, currentMs, currentGust, currentTmax, currentDe
 
 // ── Fetch weather ─────────────────────────────────────────
 function fetchOpenMeteo(lat, lon) {
-  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m,surface_pressure&hourly=wind_speed_10m,temperature_2m&wind_speed_unit=ms&timezone=auto&forecast_days=1&models=best_match')
+  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,temperature_2m,surface_pressure&hourly=wind_speed_10m,temperature_2m,wind_direction_10m&wind_speed_unit=ms&timezone=auto&forecast_days=1&models=best_match')
     .then(function(r) { if(!r.ok) throw new Error('Open-Meteo '+r.status); return r.json(); })
     .then(function(d) {
-      var c=d.current, nowH=new Date().getHours(), wA=[], tA=[], lA=[];
+      var c=d.current, nowH=new Date().getHours(), wA=[], tA=[], lA=[], dA=[];
       for (var i=0;i<d.hourly.time.length;i++) {
         var h=parseInt(d.hourly.time[i].slice(11,13));
-        if (h>=nowH && h<=23) { wA.push(d.hourly.wind_speed_10m[i]); tA.push(d.hourly.temperature_2m[i]); lA.push(h+':00'); }
+        if (h>=nowH && h<=23) {
+          wA.push(d.hourly.wind_speed_10m[i]);
+          tA.push(d.hourly.temperature_2m[i]);
+          lA.push(h+':00');
+          dA.push(d.hourly.wind_direction_10m[i]);
+        }
       }
-      return {ms:c.wind_speed_10m, deg:c.wind_direction_10m, temp:c.temperature_2m, gust:c.wind_gusts_10m, pressure:c.surface_pressure, wA:wA, tA:tA, lA:lA};
+      return {ms:c.wind_speed_10m, deg:c.wind_direction_10m, temp:c.temperature_2m, gust:c.wind_gusts_10m, pressure:c.surface_pressure, wA:wA, tA:tA, lA:lA, dA:dA};
     });
 }
 
@@ -1042,24 +1069,23 @@ function fetchSMHI(lat, lon) {
       if (pres === null) pres = val(now,'msl');
       if (ms===null||deg===null||temp===null) throw new Error('Saknar vinddata');
       var midnight=new Date(); midnight.setHours(23,59,59,999);
-      var wA=[],tA=[],lA=[], now2=new Date();
+      var wA=[],tA=[],lA=[],dA=[], now2=new Date();
       // Include current hour too, and extend to next day if few points
       d.timeSeries.forEach(function(ts) {
         var t=new Date(ts.time);
         if (t>=now2 && wA.length<12) {
-          var w=val(ts,'wind_speed'), tmp=val(ts,'air_temperature');
-          if (w!==null && tmp!==null) { wA.push(w); tA.push(tmp); lA.push(t.getHours()+':00'); }
+          var w=val(ts,'wind_speed'), tmp=val(ts,'air_temperature'), wd2=val(ts,'wind_from_direction');
+          if (w!==null && tmp!==null) { wA.push(w); tA.push(tmp); lA.push(t.getHours()+':00'); dA.push(wd2||0); }
         }
       });
-      // Need at least 2 points for chart
       if (wA.length < 2) {
         d.timeSeries.slice(0,6).forEach(function(ts) {
           var t=new Date(ts.time);
-          var w=val(ts,'wind_speed'), tmp=val(ts,'air_temperature');
-          if (w!==null && tmp!==null && wA.length<6) { wA.push(w); tA.push(tmp); lA.push(t.getHours()+':00'); }
+          var w=val(ts,'wind_speed'), tmp=val(ts,'air_temperature'), wd2=val(ts,'wind_from_direction');
+          if (w!==null && tmp!==null && wA.length<6) { wA.push(w); tA.push(tmp); lA.push(t.getHours()+':00'); dA.push(wd2||0); }
         });
       }
-      return {ms:ms, deg:deg, temp:temp, gust:gust, pressure:pres, wA:wA, tA:tA, lA:lA};
+      return {ms:ms, deg:deg, temp:temp, gust:gust, pressure:pres, wA:wA, tA:tA, lA:lA, dA:dA};
     });
 }
 
@@ -1171,7 +1197,7 @@ function fetchWind() {
         g('bf-popup').style.display = 'none';
         g('needle-group').style.transform = 'rotate('+wd.deg+'deg)';
         g('needle-group').style.transformOrigin = '50px 50px';
-        chartWindData = wd.wA; chartTempData = wd.tA; chartLabels = wd.lA;
+        chartWindData = wd.wA; chartTempData = wd.tA; chartLabels = wd.lA; chartDirData = wd.dA || [];
         activeTab = 'wind';
         g('dtab-wind').className = 'data-tab active';
         g('dtab-temp').className = 'data-tab';
