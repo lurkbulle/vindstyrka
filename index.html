@@ -665,7 +665,8 @@ function drawChart(svgId, tipId, lblId, data, labels, color, fill, H, unit, dirs
       dot.addEventListener('click', function(e) {
         var sr=svg.getBoundingClientRect(), br=svg.parentElement.getBoundingClientRect();
         var tt=g(tipId);
-        tt.textContent = labels[di]+'  '+data[di].toFixed(1)+unit;
+        var dirStr = (dirs && dirs[di] !== undefined && dirs[di] !== null) ? ' '+deg2dir(dirs[di]) : '';
+        tt.textContent = labels[di]+'  '+data[di].toFixed(1)+unit+dirStr;
         tt.style.left = ((xi/W)*sr.width+sr.left-br.left)+'px';
         tt.style.top  = ((yi/H)*sr.height+sr.top-br.top)+'px';
         tt.className = 'chart-tooltip show';
