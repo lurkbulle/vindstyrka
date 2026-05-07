@@ -24,8 +24,8 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
 .src-btn{font-size:10px;font-weight:500;padding:4px 9px;border-radius:18px;border:none;cursor:pointer;background:transparent;color:var(--mid);transition:background .15s,color .15s;letter-spacing:.02em}
 .src-btn.active{background:var(--fjord);color:#E8E0D0}
 .theme-btn{width:28px;height:28px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background .2s;flex-shrink:0}
-.mid{flex:1;min-height:0;position:relative;z-index:1;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:.15rem 1.25rem 0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
-.foot{flex-shrink:0;position:sticky;bottom:0;z-index:3;width:100%;max-width:440px;padding:.4rem 1.25rem .8rem;background:var(--bg)}
+.mid{flex:1;min-height:0;position:relative;z-index:1;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:.15rem 1.25rem 80px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.foot{position:fixed;bottom:0;left:0;right:0;z-index:3;display:flex;flex-direction:column;align-items:center;background:var(--bg);padding:0 0 env(safe-area-inset-bottom,0px)}.foot-inner{width:100%;max-width:440px;padding:.4rem 1.25rem .8rem}
 .idle-screen{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.5rem;margin:auto}
 @keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .idle-compass{width:76px;height:76px}
@@ -325,7 +325,7 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
   </div>
 
   <div class="foot">
-    <div class="alert-banner" id="alert-banner" style="display:none">
+    <div class="foot-inner"> id="alert-banner" style="display:none">
       <p><strong>&#9888; Hård vind</strong> – Beaufort 7 eller mer. Var försiktig utomhus.</p>
       <button class="alert-close" onclick="g('alert-banner').style.display='none'">&#215;</button>
     </div>
@@ -376,6 +376,7 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
       </span>
     </div>
     <button class="btn" id="btn" onclick="fetchWind()">Hämta vinddata</button>
+    </div><!-- foot-inner -->
   </div>
 </div>
 
