@@ -25,7 +25,7 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
 .src-btn.active{background:var(--fjord);color:#E8E0D0}
 .theme-btn{width:28px;height:28px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background .2s;flex-shrink:0}
 .mid{flex:1;position:relative;z-index:1;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:.15rem 1.25rem 0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
-.foot{position:relative;z-index:1;width:100%;max-width:440px;padding:.4rem 1.25rem .8rem}
+.foot{position:relative;z-index:1;width:100%;max-width:440px;padding:.4rem 1.25rem .8rem;margin-top:auto}
 .idle-screen{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.5rem;margin:auto}
 @keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .idle-compass{width:76px;height:76px}
@@ -643,7 +643,7 @@ function drawChart(svgId, tipId, lblId, data, labels, color, fill, H, unit, dirs
   if (dirs && dirs.length) {
     for (i=0;i<xs.length;i++) {
       if (dirs[i] === null || dirs[i] === undefined) continue;
-      var aRad = (dirs[i] - 90) * Math.PI / 180;
+      var aRad = (dirs[i] + 90) * Math.PI / 180; // +90 instead of -90, flips direction
       var ax = xs[i], ay = ys[i] - 9;
       var len = 4;
       var x1 = ax - len*Math.cos(aRad), y1 = ay - len*Math.sin(aRad);
@@ -893,7 +893,7 @@ function renderForecast5(tab) {
           + '🌡 Min: '+day.tmin.toFixed(0)+'°</div>';
       } else {
         var dirLabel = deg2dir(day.dir);
-        var arrowSvg = '<svg width="22" height="22" viewBox="0 0 28 28" style="display:inline-block;vertical-align:middle;transform:rotate('+day.dir+'deg)">'
+        var arrowSvg = '<svg width="22" height="22" viewBox="0 0 28 28" style="display:inline-block;vertical-align:middle;transform:rotate('+(day.dir+180)+'deg)">'
           + '<polygon points="14,2 18,20 14,17 10,20" fill="rgba(232,224,208,.9)"/>'
           + '<polygon points="14,26 18,8 14,11 10,8" fill="rgba(232,224,208,.35)"/>'
           + '</svg>';
@@ -1204,7 +1204,7 @@ function fetchWind() {
         g('bf-num').textContent  = 'Beaufort '+b.level;
         currentBfLevel = b.level;
         g('bf-popup').style.display = 'none';
-        g('needle-group').style.transform = 'rotate('+wd.deg+'deg)';
+        g('needle-group').style.transform = 'rotate('+(wd.deg+180)+'deg)';
         g('needle-group').style.transformOrigin = '50px 50px';
         chartWindData = wd.wA; chartTempData = wd.tA; chartLabels = wd.lA; chartDirData = wd.dA || [];
         activeTab = 'wind';
