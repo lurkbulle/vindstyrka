@@ -66,7 +66,7 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'DM Sa
 .fday-name{font-size:10px;font-weight:600;color:var(--mid);letter-spacing:.04em;margin-bottom:.2rem;text-transform:uppercase}
 .fday.today .fday-name{color:var(--fjord)}
 .fday.today{border:1.5px solid var(--fjord)}
-.fday-icon{font-size:18px;margin-bottom:.15rem;line-height:1}
+.fday-icon{height:36px;margin-bottom:.15rem;line-height:1;display:flex;align-items:center;justify-content:center}
 .fday-wind{font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink);line-height:1}
 .fday-unit{font-size:9px;color:var(--mid);font-family:'DM Sans',sans-serif}
 .fday-temp{font-size:11px;font-weight:500;color:var(--ink);margin-top:.15rem}
@@ -849,13 +849,30 @@ function loadSeaLevel() {
 var DAY_NAMES = ['Sön','Mån','Tis','Ons','Tor','Fre','Lör'];
 var forecast5data = [];
 
-function bfIcon(ms) {
-  if (ms < 0.3)  return '🌫';
-  if (ms < 3.4)  return '🍃';
-  if (ms < 7.9)  return '💨';
-  if (ms < 13.8) return '🌬';
-  if (ms < 20.7) return '🌊';
-  return '🌀';
+function bfIcon(ms, dir) {
+  // SMHI-style wind barb: direction + feathers for strength
+  var color = getBf(ms).color;
+  var rotate = (dir !== undefined && dir !== null) ? (dir + 180) : 0; // point where wind blows TO
+  var feathers = '';
+  var remaining = ms;
+  var fx = -18; // start from left of shaft
+  // 25+ m/s = filled triangle
+  if (ms >= 25) {
+    feathers = '<polygon points="'+(fx)+',0 '+(fx+14)+',-12 '+(fx+14)+',0" fill="'+color+'"/>';
+  } else {
+    // each full feather = 5 m/s
+    var numFull = Math.floor(ms / 5);
+    for (var f = 0; f < numFull && f < 5; f++) {
+      var fxp = fx + f * 6;
+      feathers += '<line x1="'+fxp+'" y1="0" x2="'+(fxp+8)+'" y2="-11" stroke="'+color+'" stroke-width="2" stroke-linecap="round"/>';
+    }
+  }
+  return '<svg width="36" height="36" viewBox="-24 -18 48 36" xmlns="http://www.w3.org/2000/svg"'
+    + ' style="transform:rotate('+rotate+'deg);display:block;margin:0 auto">'
+    + '<line x1="-20" y1="0" x2="14" y2="0" stroke="'+color+'" stroke-width="2.2" stroke-linecap="round"/>'
+    + '<polygon points="14,0 6,-4 6,4" fill="'+color+'"/>'
+    + feathers
+    + '</svg>';
 }
 
 function tempIcon(tmax) {
@@ -877,7 +894,7 @@ function renderForecast5(tab) {
     var isExp = (i === expandedIdx);
     var icon = showTemp
       ? (day.wcode !== null && day.wcode !== undefined ? wmoIcon(day.wcode) : tempIcon(day.tmax))
-      : bfIcon(day.wind);
+      : bfIcon(day.wind, day.dir);
     var main = showTemp
       ? day.tmax.toFixed(0)+'°<span class="fday-unit"> max</span>'
       : day.wind.toFixed(1)+'<span class="fday-unit"> m/s</span>';
