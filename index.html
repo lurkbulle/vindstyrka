@@ -849,10 +849,11 @@ function loadSeaLevel() {
 var DAY_NAMES = ['Sön','Mån','Tis','Ons','Tor','Fre','Lör'];
 var forecast5data = [];
 
-function bfIcon(ms, dir) {
-  // SMHI-style wind barb: direction + feathers for strength
-  var color = getBf(ms).color;
-  var rotate = (dir !== undefined && dir !== null) ? (dir + 180) : 0; // point where wind blows TO
+function bfIcon(ms, dir, expanded) {
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  // Use light color when card is expanded (blue bg) or in dark mode
+  var color = (expanded || isDark) ? '#E8E0D0' : getBf(ms).color;
+  var rotate = (dir !== undefined && dir !== null) ? (dir + 180) : 0;
   var feathers = '';
   var remaining = ms;
   var fx = -18; // start from left of shaft
@@ -894,7 +895,7 @@ function renderForecast5(tab) {
     var isExp = (i === expandedIdx);
     var icon = showTemp
       ? (day.wcode !== null && day.wcode !== undefined ? wmoIcon(day.wcode) : tempIcon(day.tmax))
-      : bfIcon(day.wind, day.dir);
+      : bfIcon(day.wind, day.dir, isExp);
     var main = showTemp
       ? day.tmax.toFixed(0)+'°<span class="fday-unit"> max</span>'
       : day.wind.toFixed(1)+'<span class="fday-unit"> m/s</span>';
