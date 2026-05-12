@@ -852,8 +852,10 @@ var forecast5data = [];
 function bfIcon(ms, dir, expanded) {
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   var color = (expanded || isDark) ? '#E8E0D0' : getBf(ms).color;
-  // rotate so arrow points where wind blows TO
-  var rotate = (dir !== undefined && dir !== null) ? (dir + 180) : 0;
+  // SVG 0°=right, compass 0°=north
+  // Wind FROM dir → blows TO dir+180
+  // To point arrow toward dir+180 in SVG: rotate = (dir+180) - 90 = dir+90
+  var rotate = (dir !== undefined && dir !== null) ? (dir + 90) : 0;
   // Feathers branch off the TAIL (left end) perpendicular to shaft
   // Since whole SVG rotates, feathers always stay attached to tail correctly
   var feathers = '';
