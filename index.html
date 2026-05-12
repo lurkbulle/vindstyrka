@@ -851,27 +851,29 @@ var forecast5data = [];
 
 function bfIcon(ms, dir, expanded) {
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  // Use light color when card is expanded (blue bg) or in dark mode
   var color = (expanded || isDark) ? '#E8E0D0' : getBf(ms).color;
+  // rotate so arrow points where wind blows TO
   var rotate = (dir !== undefined && dir !== null) ? (dir + 180) : 0;
+  // Feathers branch off the TAIL (left end) perpendicular to shaft
+  // Since whole SVG rotates, feathers always stay attached to tail correctly
   var feathers = '';
-  var remaining = ms;
-  var fx = -18; // start from left of shaft
-  // 25+ m/s = filled triangle
   if (ms >= 25) {
-    feathers = '<polygon points="'+(fx)+',0 '+(fx+14)+',-12 '+(fx+14)+',0" fill="'+color+'"/>';
+    feathers = '<polygon points="-20,0 -8,-13 -8,0" fill="'+color+'"/>';
   } else {
-    // each full feather = 5 m/s
-    var numFull = Math.floor(ms / 5);
-    for (var f = 0; f < numFull && f < 5; f++) {
-      var fxp = fx + f * 6;
-      feathers += '<line x1="'+fxp+'" y1="0" x2="'+(fxp+8)+'" y2="-11" stroke="'+color+'" stroke-width="2" stroke-linecap="round"/>';
+    var numFull = Math.min(Math.floor(ms / 5), 5);
+    for (var f = 0; f < numFull; f++) {
+      var fx = -20 + f * 6;
+      feathers += '<line x1="'+fx+'" y1="0" x2="'+(fx+9)+'" y2="-12" stroke="'+color+'" stroke-width="2" stroke-linecap="round"/>';
+    }
+    if (ms % 5 >= 2) {
+      var hx = -20 + numFull * 6;
+      feathers += '<line x1="'+hx+'" y1="0" x2="'+(hx+4)+'" y2="-6" stroke="'+color+'" stroke-width="2" stroke-linecap="round"/>';
     }
   }
   return '<svg width="36" height="36" viewBox="-24 -18 48 36" xmlns="http://www.w3.org/2000/svg"'
     + ' style="transform:rotate('+rotate+'deg);display:block;margin:0 auto">'
-    + '<line x1="-20" y1="0" x2="14" y2="0" stroke="'+color+'" stroke-width="2.2" stroke-linecap="round"/>'
-    + '<polygon points="14,0 6,-4 6,4" fill="'+color+'"/>'
+    + '<line x1="-20" y1="0" x2="12" y2="0" stroke="'+color+'" stroke-width="2.2" stroke-linecap="round"/>'
+    + '<polygon points="12,0 4,-4 4,4" fill="'+color+'"/>'
     + feathers
     + '</svg>';
 }
