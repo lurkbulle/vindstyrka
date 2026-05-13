@@ -880,8 +880,9 @@ function bfIcon(ms, dir, expanded) {
     + '</svg>';
 }
 
-function tempIcon(tmax) {
-  var c = document.documentElement.getAttribute('data-theme')==='dark' ? '#8AABB5' : '#2E5C6E';
+function tempIcon(tmax, expanded) {
+  var isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  var c = (expanded || isDark) ? '#E8E0D0' : '#2E5C6E';
   var s = ' xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto" fill="none" stroke="'+c+'" stroke-linecap="round"';
   if (tmax >= 25) {
     // Sun
@@ -1022,8 +1023,9 @@ function renderForecast5(tab) {
 // hourly forecast data per day: array of 11 arrays
 var hourlyByDay = [];
 
-function wmoIcon(code) {
-  var c = document.documentElement.getAttribute('data-theme')==='dark' ? '#8AABB5' : '#2E5C6E';
+function wmoIcon(code, expanded) {
+  var isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  var c = (expanded || isDark) ? '#E8E0D0' : '#2E5C6E';
   var s = ' xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto" fill="none" stroke="'+c+'" stroke-linecap="round" stroke-width="1.8"';
   // Sun
   var sun = '<circle cx="9" cy="9" r="3"/>'
